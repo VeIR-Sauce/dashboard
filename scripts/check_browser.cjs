@@ -119,6 +119,10 @@ async function main() {
     await until('document.getElementById("parse-search")?.value === "llvm.add"');
     assert.equal(await evaluate('document.getElementById("parse-status").value'), "observed");
     await screenshot("parsing");
+    await evaluate('document.querySelector("nav a[href=\\"#catalog\\"]").click()');
+    await until('document.getElementById("catalog-details").open && !document.body.classList.contains("parsing-view")');
+    await evaluate('history.back()');
+    await until('document.body.classList.contains("parsing-view") && document.getElementById("parse-search").value === "llvm.add"');
     await evaluate('document.querySelector("#parsing-operations details").open = true');
     await evaluate('document.querySelector("#parsing-operations td:last-child a").click()');
     await until('document.getElementById("requirement-details").open && document.querySelector("#rows details")?.open');

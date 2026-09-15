@@ -34,6 +34,9 @@ function requirementLink(req, label) {
 function applyRoute() {
   const route = progress.route(data, location.hash);
   if (!route) {
+    parsingView = false;
+    document.body.classList.remove("parsing-view"); $("parsing-page").hidden = true;
+    render();
     const section = location.hash.slice(1);
     $(section === "catalog" ? "catalog-details" : "requirement-details").open = true;
     $(section).scrollIntoView();
