@@ -1,8 +1,9 @@
 # VeIR progress and correctness tracker
 
 This repository contains the standalone tracker and its tested HTML interface.
-The reviewable static snapshot is in `docs/index.html`; Pages hosting is pending
-a separate organization address or custom domain.
+The deployment target is [VeIR-Sauce/dashboard](https://github.com/VeIR-Sauce/dashboard),
+with the website at [veir-sauce.github.io/dashboard](https://veir-sauce.github.io/dashboard/).
+The reviewable static snapshot also opens locally from `docs/index.html`.
 
 An executable **proposed test contract**, a capability tracker, and an offline / GitHub Pages dashboard. The two burndowns measure requirements without completed test evidence and requirements whose stated tests do not yet pass. Passing samples are not proofs, and a missing interpreter is not a completed feature.
 
@@ -128,11 +129,17 @@ require several hours. Only completed same-repository default-branch push,
 scheduled or manual runs can seed history. PR artifacts, incomplete searches,
 invalid archives and failed restores cannot silently reset a baseline.
 
+For `VeIR-Sauce/dashboard`, configure GitHub Pages to **Deploy from a branch**,
+select branch **codex/veir-progress**, and select **/docs**. This publishes the
+committed, tested snapshot at <https://veir-sauce.github.io/dashboard/>. Later
+pushes that update `docs/` publish the new snapshot at the same address. The
+organization owns this Pages site independently of any personal Pages site.
+
 The complete scheduled measurement and Actions-based Pages deployment template
-is retained in `integrations/progress-actions.yml`. Hosting is deliberately not
-configured to use `zaz.github.io`: choose a separate organization address or a
-custom domain before enabling deployment. Committed source and HTML do not by
-themselves render a website at the GitHub repository URL.
+is retained in `integrations/progress-actions.yml`. Switching to that template
+also requires switching the Pages publishing source to **GitHub Actions**. The
+manual measurement workflow currently produces reviewable artifacts; recording
+that evidence and regenerating `docs/` is a separate reviewed update.
 
 ## Validate this implementation
 
