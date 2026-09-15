@@ -1,0 +1,2258 @@
+{
+  "schema_version": 1,
+  "source_revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+  "requirements": [
+    {
+      "id": "upstream.addressof_function.verification",
+      "title": "addressof function \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.addressof",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.addressof_function.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/addressof_function.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/addressof_function.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.addressof_function.roundtrip",
+      "title": "addressof function \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.addressof",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.addressof_function.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/addressof_function.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/addressof_function.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.addressof_quoted_global.verification",
+      "title": "addressof quoted global \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.addressof",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.addressof_quoted_global.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/addressof_quoted_global.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/addressof_quoted_global.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.addressof_quoted_global.roundtrip",
+      "title": "addressof quoted global \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.addressof",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.addressof_quoted_global.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/addressof_quoted_global.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/addressof_quoted_global.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.alias.verification",
+      "title": "alias \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.addressof",
+        "llvm.mlir.alias",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.alias.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/alias.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/alias.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.alias.roundtrip",
+      "title": "alias \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.addressof",
+        "llvm.mlir.alias",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.alias.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/alias.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/alias.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.assume.verification",
+      "title": "assume \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.assume",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.assume.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/assume.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/assume.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.assume.roundtrip",
+      "title": "assume \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.assume",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.assume.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/assume.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/assume.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.call.verification",
+      "title": "call \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.call",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.call.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/call.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/call.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.call.roundtrip",
+      "title": "call \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.call",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.call.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/call.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/call.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.call_indirect.verification",
+      "title": "call indirect \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.call",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.call_indirect.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/call_indirect.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/call_indirect.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.call_indirect.roundtrip",
+      "title": "call indirect \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.call",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.call_indirect.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/call_indirect.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/call_indirect.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.call_intrinsic.verification",
+      "title": "call intrinsic \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.call_intrinsic",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.call_intrinsic.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/call_intrinsic.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/call_intrinsic.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.call_intrinsic.roundtrip",
+      "title": "call intrinsic \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.call_intrinsic",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.call_intrinsic.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/call_intrinsic.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/call_intrinsic.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.cconv-linkage.verification",
+      "title": "cconv-linkage \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.unreachable"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.cconv-linkage.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/cconv-linkage.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/cconv-linkage.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.cconv-linkage.roundtrip",
+      "title": "cconv-linkage \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.unreachable"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.cconv-linkage.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/cconv-linkage.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/cconv-linkage.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.comdat.verification",
+      "title": "comdat \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.comdat",
+        "llvm.comdat_selector",
+        "llvm.func",
+        "llvm.mlir.global"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.comdat.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/comdat.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/comdat.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.comdat.roundtrip",
+      "title": "comdat \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.comdat",
+        "llvm.comdat_selector",
+        "llvm.func",
+        "llvm.mlir.global"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.comdat.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/comdat.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/comdat.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.constant_attr_width_normalization.verification",
+      "title": "constant attr width normalization \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.constant_attr_width_normalization.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/constant_attr_width_normalization.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/constant_attr_width_normalization.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.constant_attr_width_normalization.roundtrip",
+      "title": "constant attr width normalization \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.constant_attr_width_normalization.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/constant_attr_width_normalization.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/constant_attr_width_normalization.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.constant_dense_vector.verification",
+      "title": "constant dense vector \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.constant_dense_vector.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/constant_dense_vector.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/constant_dense_vector.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.constant_dense_vector.roundtrip",
+      "title": "constant dense vector \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.constant_dense_vector.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/constant_dense_vector.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/constant_dense_vector.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.constant_range.verification",
+      "title": "constant range \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.constant_range.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/constant_range.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/constant_range.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.constant_range.roundtrip",
+      "title": "constant range \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.constant_range.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/constant_range.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/constant_range.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.exact_disjoint.verification",
+      "title": "exact disjoint \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.ashr",
+        "llvm.func",
+        "llvm.lshr",
+        "llvm.or",
+        "llvm.return",
+        "llvm.sdiv",
+        "llvm.udiv"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.exact_disjoint.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/exact_disjoint.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/exact_disjoint.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.exact_disjoint.roundtrip",
+      "title": "exact disjoint \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.ashr",
+        "llvm.func",
+        "llvm.lshr",
+        "llvm.or",
+        "llvm.return",
+        "llvm.sdiv",
+        "llvm.udiv"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.exact_disjoint.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/exact_disjoint.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/exact_disjoint.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.extractvalue.verification",
+      "title": "extractvalue \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.extractvalue",
+        "llvm.func",
+        "llvm.mlir.undef",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.extractvalue.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/extractvalue.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/extractvalue.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.extractvalue.roundtrip",
+      "title": "extractvalue \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.extractvalue",
+        "llvm.func",
+        "llvm.mlir.undef",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.extractvalue.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/extractvalue.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/extractvalue.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.fcmp.verification",
+      "title": "fcmp \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.fcmp",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.fcmp.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/fcmp.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/fcmp.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.fcmp.roundtrip",
+      "title": "fcmp \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.fcmp",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.fcmp.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/fcmp.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/fcmp.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.fence.verification",
+      "title": "fence \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.fence",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.fence.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/fence.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/fence.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.fence.roundtrip",
+      "title": "fence \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.fence",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.fence.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/fence.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/fence.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.func_properties.verification",
+      "title": "func properties \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.func_properties.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/func_properties.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/func_properties.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.func_properties.roundtrip",
+      "title": "func properties \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.func_properties.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/func_properties.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/func_properties.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.global_initializer.verification",
+      "title": "global initializer \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.insertvalue",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.mlir.undef",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_initializer.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_initializer.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_initializer.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.global_initializer.roundtrip",
+      "title": "global initializer \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.insertvalue",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.mlir.undef",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_initializer.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_initializer.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_initializer.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.global_initializer_forms.verification",
+      "title": "global initializer forms \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_initializer_forms.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_initializer_forms.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_initializer_forms.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.global_initializer_forms.roundtrip",
+      "title": "global initializer forms \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_initializer_forms.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_initializer_forms.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_initializer_forms.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.global_load_store.verification",
+      "title": "global load store \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.add",
+        "llvm.func",
+        "llvm.load",
+        "llvm.mlir.addressof",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.return",
+        "llvm.store"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_load_store.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_load_store.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_load_store.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.global_load_store.roundtrip",
+      "title": "global load store \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.add",
+        "llvm.func",
+        "llvm.load",
+        "llvm.mlir.addressof",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.return",
+        "llvm.store"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_load_store.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_load_store.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_load_store.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.global_optional_alignment.verification",
+      "title": "global optional alignment \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.mlir.global"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_optional_alignment.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_optional_alignment.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_optional_alignment.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.global_optional_alignment.roundtrip",
+      "title": "global optional alignment \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.mlir.global"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.global_optional_alignment.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/global_optional_alignment.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/global_optional_alignment.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.insertelement.verification",
+      "title": "insertelement \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.insertelement",
+        "llvm.mlir.constant",
+        "llvm.mlir.poison",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.insertelement.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/insertelement.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/insertelement.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.insertelement.roundtrip",
+      "title": "insertelement \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.insertelement",
+        "llvm.mlir.constant",
+        "llvm.mlir.poison",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.insertelement.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/insertelement.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/insertelement.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.insertvalue.verification",
+      "title": "insertvalue \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.insertvalue",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.mlir.undef",
+        "llvm.mlir.zero",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.insertvalue.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/insertvalue.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/insertvalue.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.insertvalue.roundtrip",
+      "title": "insertvalue \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.insertvalue",
+        "llvm.mlir.constant",
+        "llvm.mlir.global",
+        "llvm.mlir.undef",
+        "llvm.mlir.zero",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.insertvalue.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/insertvalue.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/insertvalue.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.lifetime.verification",
+      "title": "lifetime \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.alloca",
+        "llvm.func",
+        "llvm.intr.lifetime.end",
+        "llvm.intr.lifetime.start",
+        "llvm.load",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.lifetime.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/lifetime.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/lifetime.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.lifetime.roundtrip",
+      "title": "lifetime \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.alloca",
+        "llvm.func",
+        "llvm.intr.lifetime.end",
+        "llvm.intr.lifetime.start",
+        "llvm.load",
+        "llvm.mlir.constant",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.lifetime.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/lifetime.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/lifetime.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.loop_annotation.verification",
+      "title": "loop annotation \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.br",
+        "llvm.cond_br",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.loop_annotation.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/loop_annotation.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/loop_annotation.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.loop_annotation.roundtrip",
+      "title": "loop annotation \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.br",
+        "llvm.cond_br",
+        "llvm.func",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.loop_annotation.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/loop_annotation.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/loop_annotation.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.mem_intrinsics.verification",
+      "title": "mem intrinsics \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.memcpy",
+        "llvm.intr.memmove",
+        "llvm.intr.memset",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mem_intrinsics.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mem_intrinsics.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mem_intrinsics.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.mem_intrinsics.roundtrip",
+      "title": "mem intrinsics \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.memcpy",
+        "llvm.intr.memmove",
+        "llvm.intr.memset",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mem_intrinsics.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mem_intrinsics.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mem_intrinsics.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.mem_intrinsics_bundles.verification",
+      "title": "mem intrinsics bundles \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.memcpy",
+        "llvm.intr.memmove",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mem_intrinsics_bundles.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mem_intrinsics_bundles.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mem_intrinsics_bundles.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.mem_intrinsics_bundles.roundtrip",
+      "title": "mem intrinsics bundles \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.memcpy",
+        "llvm.intr.memmove",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mem_intrinsics_bundles.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mem_intrinsics_bundles.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mem_intrinsics_bundles.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.memory_effects.verification",
+      "title": "memory effects \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.call",
+        "llvm.func",
+        "llvm.load",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.memory_effects.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/memory_effects.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/memory_effects.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.memory_effects.roundtrip",
+      "title": "memory effects \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.call",
+        "llvm.func",
+        "llvm.load",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.memory_effects.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/memory_effects.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/memory_effects.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.mlir_undef.verification",
+      "title": "mlir undef \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.global",
+        "llvm.mlir.undef",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mlir_undef.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mlir_undef.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mlir_undef.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.mlir_undef.roundtrip",
+      "title": "mlir undef \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.global",
+        "llvm.mlir.undef",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mlir_undef.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mlir_undef.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mlir_undef.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.mlir_zero.verification",
+      "title": "mlir zero \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.zero",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mlir_zero.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mlir_zero.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mlir_zero.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.mlir_zero.roundtrip",
+      "title": "mlir zero \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.zero",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.mlir_zero.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/mlir_zero.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/mlir_zero.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.ptr_int_casts.verification",
+      "title": "ptr int casts \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.and",
+        "llvm.func",
+        "llvm.inttoptr",
+        "llvm.mlir.constant",
+        "llvm.ptrtoint",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.ptr_int_casts.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/ptr_int_casts.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/ptr_int_casts.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.ptr_int_casts.roundtrip",
+      "title": "ptr int casts \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.and",
+        "llvm.func",
+        "llvm.inttoptr",
+        "llvm.mlir.constant",
+        "llvm.ptrtoint",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.ptr_int_casts.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/ptr_int_casts.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/ptr_int_casts.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.store.verification",
+      "title": "store \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.alloca",
+        "llvm.func",
+        "llvm.load",
+        "llvm.mlir.constant",
+        "llvm.return",
+        "llvm.store"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.store.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/store.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/store.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.store.roundtrip",
+      "title": "store \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.alloca",
+        "llvm.func",
+        "llvm.load",
+        "llvm.mlir.constant",
+        "llvm.return",
+        "llvm.store"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.store.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/store.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/store.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.switch.verification",
+      "title": "switch \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return",
+        "llvm.switch"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.switch.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/switch.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/switch.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.switch.roundtrip",
+      "title": "switch \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.mlir.constant",
+        "llvm.return",
+        "llvm.switch"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.switch.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/switch.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/switch.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.tbaa.verification",
+      "title": "tbaa \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.load",
+        "llvm.return",
+        "llvm.store"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.tbaa.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/tbaa.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/tbaa.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.tbaa.roundtrip",
+      "title": "tbaa \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.load",
+        "llvm.return",
+        "llvm.store"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.tbaa.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/tbaa.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/tbaa.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.uwtable-kind.verification",
+      "title": "uwtable-kind \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.unreachable"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.uwtable-kind.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/uwtable-kind.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/uwtable-kind.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.uwtable-kind.roundtrip",
+      "title": "uwtable-kind \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.unreachable"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.uwtable-kind.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/uwtable-kind.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/uwtable-kind.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.varargs.verification",
+      "title": "varargs \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.alloca",
+        "llvm.func",
+        "llvm.intr.vaend",
+        "llvm.intr.vastart",
+        "llvm.mlir.constant",
+        "llvm.return",
+        "llvm.va_arg"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.varargs.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/varargs.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/varargs.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.varargs.roundtrip",
+      "title": "varargs \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.alloca",
+        "llvm.func",
+        "llvm.intr.vaend",
+        "llvm.intr.vastart",
+        "llvm.mlir.constant",
+        "llvm.return",
+        "llvm.va_arg"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.varargs.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/varargs.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/varargs.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.vector_reduce_or.verification",
+      "title": "vector reduce or \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.vector.reduce.or",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.vector_reduce_or.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/vector_reduce_or.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/vector_reduce_or.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.vector_reduce_or.roundtrip",
+      "title": "vector reduce or \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.intr.vector.reduce.or",
+        "llvm.return"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.vector_reduce_or.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/vector_reduce_or.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/vector_reduce_or.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    },
+    {
+      "id": "upstream.zext_nonneg.verification",
+      "title": "zext nonneg \u00b7 verification",
+      "scope": "llvm-compat",
+      "stage": "verification",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.return",
+        "llvm.zext"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.zext_nonneg.verification.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/zext_nonneg.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/zext_nonneg.mlir"
+      },
+      "contract": "Both tools accept the original upstream fixture with registered LLVM operations."
+    },
+    {
+      "id": "upstream.zext_nonneg.roundtrip",
+      "title": "zext nonneg \u00b7 roundtrip",
+      "scope": "llvm-compat",
+      "stage": "roundtrip",
+      "state": "specified",
+      "operations": [
+        "llvm.func",
+        "llvm.return",
+        "llvm.zext"
+      ],
+      "source_groups": [],
+      "test_ids": [
+        "upstream.zext_nonneg.roundtrip.fixture"
+      ],
+      "provenance": {
+        "revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+        "path": "Test/LLVM/zext_nonneg.mlir",
+        "url": "https://github.com/opencompl/veir/blob/67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8/Test/LLVM/zext_nonneg.mlir"
+      },
+      "contract": "Preserve all properties and structure of this pinned upstream fixture through strict VeIR parsing/printing, as judged by independent canonical MLIR and stable VeIR reprinting. This is a file-level contract, not complete operation semantics."
+    }
+  ],
+  "tests": [
+    {
+      "id": "upstream.addressof_function.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/addressof_function.mlir",
+      "input_sha256": "7545be58f36bde6be61c49a1e3790d6e59a8370172235c10cb2f77dc3fde060b",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.addressof_function.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/addressof_function.mlir",
+      "input_sha256": "7545be58f36bde6be61c49a1e3790d6e59a8370172235c10cb2f77dc3fde060b"
+    },
+    {
+      "id": "upstream.addressof_quoted_global.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/addressof_quoted_global.mlir",
+      "input_sha256": "35d1df5317cdb39e1ff78d05171a418deb4832a4b136e6b283a119a8c4dc8d3d",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.addressof_quoted_global.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/addressof_quoted_global.mlir",
+      "input_sha256": "35d1df5317cdb39e1ff78d05171a418deb4832a4b136e6b283a119a8c4dc8d3d"
+    },
+    {
+      "id": "upstream.alias.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/alias.mlir",
+      "input_sha256": "344c745422889a62d903317ea7de5fcb08108f41c0fa1e8a67c8b9d55c15e2a2",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.alias.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/alias.mlir",
+      "input_sha256": "344c745422889a62d903317ea7de5fcb08108f41c0fa1e8a67c8b9d55c15e2a2"
+    },
+    {
+      "id": "upstream.assume.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/assume.mlir",
+      "input_sha256": "d03c74166b37d7e454aec89a1c208eab9150cd2b031ee70a91ccace8a7cc8661",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.assume.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/assume.mlir",
+      "input_sha256": "d03c74166b37d7e454aec89a1c208eab9150cd2b031ee70a91ccace8a7cc8661"
+    },
+    {
+      "id": "upstream.call.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/call.mlir",
+      "input_sha256": "391873e8732d63e32216c4cef016f879d04f8ad65bce3818fbc180d898641578",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.call.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/call.mlir",
+      "input_sha256": "391873e8732d63e32216c4cef016f879d04f8ad65bce3818fbc180d898641578"
+    },
+    {
+      "id": "upstream.call_indirect.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/call_indirect.mlir",
+      "input_sha256": "3cbfac91cbe01d1d724d4382b76fe0283cacdf5369611f0670912c9478e029cd",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.call_indirect.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/call_indirect.mlir",
+      "input_sha256": "3cbfac91cbe01d1d724d4382b76fe0283cacdf5369611f0670912c9478e029cd"
+    },
+    {
+      "id": "upstream.call_intrinsic.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/call_intrinsic.mlir",
+      "input_sha256": "370f844117c8e64356b72fe70176dd0ad25efff4d18b0cad77576d91e24f3304",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.call_intrinsic.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/call_intrinsic.mlir",
+      "input_sha256": "370f844117c8e64356b72fe70176dd0ad25efff4d18b0cad77576d91e24f3304"
+    },
+    {
+      "id": "upstream.cconv-linkage.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/cconv-linkage.mlir",
+      "input_sha256": "f8286a0470e73780004e3fb5620c98e2722fc3958259a60fc31ff235b9f7dbf3",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.cconv-linkage.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/cconv-linkage.mlir",
+      "input_sha256": "f8286a0470e73780004e3fb5620c98e2722fc3958259a60fc31ff235b9f7dbf3"
+    },
+    {
+      "id": "upstream.comdat.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/comdat.mlir",
+      "input_sha256": "cd460689817dfeaa6a3773b9e033559f8b686352eab9ecf62ccdb73953d3b889",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.comdat.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/comdat.mlir",
+      "input_sha256": "cd460689817dfeaa6a3773b9e033559f8b686352eab9ecf62ccdb73953d3b889"
+    },
+    {
+      "id": "upstream.constant_attr_width_normalization.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/constant_attr_width_normalization.mlir",
+      "input_sha256": "2dec27eb61133d3943b3166f0180e4ec49b78f89854d1d7c5a3e30c91239acd0",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.constant_attr_width_normalization.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/constant_attr_width_normalization.mlir",
+      "input_sha256": "2dec27eb61133d3943b3166f0180e4ec49b78f89854d1d7c5a3e30c91239acd0"
+    },
+    {
+      "id": "upstream.constant_dense_vector.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/constant_dense_vector.mlir",
+      "input_sha256": "dc781b0188cc88278f0ada39e04a9e195004db6c90904aff93eb36f82e34d935",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.constant_dense_vector.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/constant_dense_vector.mlir",
+      "input_sha256": "dc781b0188cc88278f0ada39e04a9e195004db6c90904aff93eb36f82e34d935"
+    },
+    {
+      "id": "upstream.constant_range.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/constant_range.mlir",
+      "input_sha256": "f08577afd9b04de1a778ecc52678f030ada7c076775372cdbb6fd193e47ed8c0",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.constant_range.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/constant_range.mlir",
+      "input_sha256": "f08577afd9b04de1a778ecc52678f030ada7c076775372cdbb6fd193e47ed8c0"
+    },
+    {
+      "id": "upstream.exact_disjoint.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/exact_disjoint.mlir",
+      "input_sha256": "3973c289b0707e48fb3b3fe5a25f54218c55add6fc733b60ede43ea0b41f88c5",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.exact_disjoint.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/exact_disjoint.mlir",
+      "input_sha256": "3973c289b0707e48fb3b3fe5a25f54218c55add6fc733b60ede43ea0b41f88c5"
+    },
+    {
+      "id": "upstream.extractvalue.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/extractvalue.mlir",
+      "input_sha256": "e3934476b0b7f37cacbf7cac02bc3539bf5ebfbdf36bf035229f29e9371e7118",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.extractvalue.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/extractvalue.mlir",
+      "input_sha256": "e3934476b0b7f37cacbf7cac02bc3539bf5ebfbdf36bf035229f29e9371e7118"
+    },
+    {
+      "id": "upstream.fcmp.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/fcmp.mlir",
+      "input_sha256": "2d942fae8e24618dfcba24dacf84496f64bde0b04ac33b9c19fb9c6897bd1c0b",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.fcmp.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/fcmp.mlir",
+      "input_sha256": "2d942fae8e24618dfcba24dacf84496f64bde0b04ac33b9c19fb9c6897bd1c0b"
+    },
+    {
+      "id": "upstream.fence.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/fence.mlir",
+      "input_sha256": "00bb8a0af0aaab15319175ea56326c786c94049962283993417ba96499efebf9",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.fence.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/fence.mlir",
+      "input_sha256": "00bb8a0af0aaab15319175ea56326c786c94049962283993417ba96499efebf9"
+    },
+    {
+      "id": "upstream.func_properties.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/func_properties.mlir",
+      "input_sha256": "b4a64c12d3d27a509ebec1a7eedc1a74d9cf5dffe02e6290d82d539781758fc7",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.func_properties.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/func_properties.mlir",
+      "input_sha256": "b4a64c12d3d27a509ebec1a7eedc1a74d9cf5dffe02e6290d82d539781758fc7"
+    },
+    {
+      "id": "upstream.global_initializer.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/global_initializer.mlir",
+      "input_sha256": "6b23ac94d3fb64bcfdde2c8ded518e8d6485716dfa8b8aa2251f89553630b085",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.global_initializer.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/global_initializer.mlir",
+      "input_sha256": "6b23ac94d3fb64bcfdde2c8ded518e8d6485716dfa8b8aa2251f89553630b085"
+    },
+    {
+      "id": "upstream.global_initializer_forms.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/global_initializer_forms.mlir",
+      "input_sha256": "a6732334297cd46f47388421f7dbfeb2b861122d4eb5fb599ac388edf43fd019",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.global_initializer_forms.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/global_initializer_forms.mlir",
+      "input_sha256": "a6732334297cd46f47388421f7dbfeb2b861122d4eb5fb599ac388edf43fd019"
+    },
+    {
+      "id": "upstream.global_load_store.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/global_load_store.mlir",
+      "input_sha256": "716bc3fbabd4b18447654b34a0b13361923fba8e73e671026f4b3a89505a6efe",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.global_load_store.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/global_load_store.mlir",
+      "input_sha256": "716bc3fbabd4b18447654b34a0b13361923fba8e73e671026f4b3a89505a6efe"
+    },
+    {
+      "id": "upstream.global_optional_alignment.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/global_optional_alignment.mlir",
+      "input_sha256": "b8ca181bbf8ba56f6f054b9017d14d27bcd3a5a9531336c3f8cb2ecea7aefed6",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.global_optional_alignment.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/global_optional_alignment.mlir",
+      "input_sha256": "b8ca181bbf8ba56f6f054b9017d14d27bcd3a5a9531336c3f8cb2ecea7aefed6"
+    },
+    {
+      "id": "upstream.insertelement.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/insertelement.mlir",
+      "input_sha256": "e055e553c0665dba1366fb45eb8a8f2bd8238c0d19867e9e33714c15598509ff",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.insertelement.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/insertelement.mlir",
+      "input_sha256": "e055e553c0665dba1366fb45eb8a8f2bd8238c0d19867e9e33714c15598509ff"
+    },
+    {
+      "id": "upstream.insertvalue.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/insertvalue.mlir",
+      "input_sha256": "2fb5c197301650b2865bfdbf34bdb662aec46a53a63d0c5a963c9929c427dc6f",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.insertvalue.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/insertvalue.mlir",
+      "input_sha256": "2fb5c197301650b2865bfdbf34bdb662aec46a53a63d0c5a963c9929c427dc6f"
+    },
+    {
+      "id": "upstream.lifetime.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/lifetime.mlir",
+      "input_sha256": "2d5d5a2af06fc89ab81ca8e61131cbf28e1890784117303184cd17dadafa8114",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.lifetime.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/lifetime.mlir",
+      "input_sha256": "2d5d5a2af06fc89ab81ca8e61131cbf28e1890784117303184cd17dadafa8114"
+    },
+    {
+      "id": "upstream.loop_annotation.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/loop_annotation.mlir",
+      "input_sha256": "838f1ca1e914badd52adfbceb5bc34c7e4f56fe5201af65c19d09c54d9570041",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.loop_annotation.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/loop_annotation.mlir",
+      "input_sha256": "838f1ca1e914badd52adfbceb5bc34c7e4f56fe5201af65c19d09c54d9570041"
+    },
+    {
+      "id": "upstream.mem_intrinsics.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/mem_intrinsics.mlir",
+      "input_sha256": "952ee0c99ffd6968f9c5cc5029b3054f87dbc3064b7f3f2317b88429f6d34c02",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.mem_intrinsics.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/mem_intrinsics.mlir",
+      "input_sha256": "952ee0c99ffd6968f9c5cc5029b3054f87dbc3064b7f3f2317b88429f6d34c02"
+    },
+    {
+      "id": "upstream.mem_intrinsics_bundles.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/mem_intrinsics_bundles.mlir",
+      "input_sha256": "0715aeb0f115f3ce4c011f96beba428d6fe1627672d47fb0ad75a8dd9ce9b4af",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.mem_intrinsics_bundles.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/mem_intrinsics_bundles.mlir",
+      "input_sha256": "0715aeb0f115f3ce4c011f96beba428d6fe1627672d47fb0ad75a8dd9ce9b4af"
+    },
+    {
+      "id": "upstream.memory_effects.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/memory_effects.mlir",
+      "input_sha256": "6e400421f056ecada096cd19cda5baf5f92ef3710ca54a25ca2170cc74c81056",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.memory_effects.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/memory_effects.mlir",
+      "input_sha256": "6e400421f056ecada096cd19cda5baf5f92ef3710ca54a25ca2170cc74c81056"
+    },
+    {
+      "id": "upstream.mlir_undef.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/mlir_undef.mlir",
+      "input_sha256": "10a62cc96f483b6a46b66cbe9edc7f07bff5e40d44b06fbb283ed2c63f721f37",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.mlir_undef.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/mlir_undef.mlir",
+      "input_sha256": "10a62cc96f483b6a46b66cbe9edc7f07bff5e40d44b06fbb283ed2c63f721f37"
+    },
+    {
+      "id": "upstream.mlir_zero.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/mlir_zero.mlir",
+      "input_sha256": "72c4015e5bb92d0e09b55de31044a9e595a2a7c1937ca78f0e4aba83bc19cbea",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.mlir_zero.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/mlir_zero.mlir",
+      "input_sha256": "72c4015e5bb92d0e09b55de31044a9e595a2a7c1937ca78f0e4aba83bc19cbea"
+    },
+    {
+      "id": "upstream.ptr_int_casts.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/ptr_int_casts.mlir",
+      "input_sha256": "e44c57323a84240baa972ecbc819bfff0b0a3d2c2ad9ddd1012655f0d7ad8a46",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.ptr_int_casts.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/ptr_int_casts.mlir",
+      "input_sha256": "e44c57323a84240baa972ecbc819bfff0b0a3d2c2ad9ddd1012655f0d7ad8a46"
+    },
+    {
+      "id": "upstream.store.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/store.mlir",
+      "input_sha256": "78fc79bc940d1871e8b0b83692e99d2e935ab0be812b2bbda2c33eaa8049386c",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.store.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/store.mlir",
+      "input_sha256": "78fc79bc940d1871e8b0b83692e99d2e935ab0be812b2bbda2c33eaa8049386c"
+    },
+    {
+      "id": "upstream.switch.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/switch.mlir",
+      "input_sha256": "093b755da55075f7f1bc602b0d30098ba97826c49966aab21f540195eb81d0b7",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.switch.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/switch.mlir",
+      "input_sha256": "093b755da55075f7f1bc602b0d30098ba97826c49966aab21f540195eb81d0b7"
+    },
+    {
+      "id": "upstream.tbaa.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/tbaa.mlir",
+      "input_sha256": "7f7692b301905e7d08b181c8054006f2ce4a5fb6de45d065ca2e0ff38e8c0e4c",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.tbaa.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/tbaa.mlir",
+      "input_sha256": "7f7692b301905e7d08b181c8054006f2ce4a5fb6de45d065ca2e0ff38e8c0e4c"
+    },
+    {
+      "id": "upstream.uwtable-kind.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/uwtable-kind.mlir",
+      "input_sha256": "34e1f3d22460036cf0a8c52e81850010f2bf1e9f4cbec0129875456e1fdf88aa",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.uwtable-kind.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/uwtable-kind.mlir",
+      "input_sha256": "34e1f3d22460036cf0a8c52e81850010f2bf1e9f4cbec0129875456e1fdf88aa"
+    },
+    {
+      "id": "upstream.varargs.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/varargs.mlir",
+      "input_sha256": "f61a989187fcbcb43fcc456a74c00c48d2036e9e0729acebe5b7e7188d1c5e46",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.varargs.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/varargs.mlir",
+      "input_sha256": "f61a989187fcbcb43fcc456a74c00c48d2036e9e0729acebe5b7e7188d1c5e46"
+    },
+    {
+      "id": "upstream.vector_reduce_or.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/vector_reduce_or.mlir",
+      "input_sha256": "ed4f990e1d48d9419884aaf5e34b78ec15c2b90ccffbe7dcd0c8549055d058f9",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.vector_reduce_or.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/vector_reduce_or.mlir",
+      "input_sha256": "ed4f990e1d48d9419884aaf5e34b78ec15c2b90ccffbe7dcd0c8549055d058f9"
+    },
+    {
+      "id": "upstream.zext_nonneg.verification.fixture",
+      "kind": "verify",
+      "input": "cases/upstream/zext_nonneg.mlir",
+      "input_sha256": "aa0712506b7becdc01d6be67bd71df7982f5f7fe20c2eb3b48dc91f331dfc1b1",
+      "expect": "accept"
+    },
+    {
+      "id": "upstream.zext_nonneg.roundtrip.fixture",
+      "kind": "roundtrip",
+      "input": "cases/upstream/zext_nonneg.mlir",
+      "input_sha256": "aa0712506b7becdc01d6be67bd71df7982f5f7fe20c2eb3b48dc91f331dfc1b1"
+    }
+  ]
+}

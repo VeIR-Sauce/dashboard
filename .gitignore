@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.artifacts/
+.venv/
+.ruff_cache/
+site-output/

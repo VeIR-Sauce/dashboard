@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "label": "linux-x86_64-llvm-6a2d309c",
+  "llvm_revision": "6a2d309c7d204730a9a35f3261f8448efeb6c5e3",
+  "veir_base_revision": "67bfe3c11d0f7dee0eb80a1b330460ebbd67e8a8",
+  "veir_patch": "integrations/veir-test-instrumentation.patch",
+  "lean_toolchain": "leanprover/lean4:v4.33.0",
+  "description": "Proposed baseline profile. MLIR verifier, translator and execution engine are built from one commit. The temporary VeIR patch supplies lossless JSON output and explicit unavailable-reference handling. Every receipt also records actual binary hashes."
+}

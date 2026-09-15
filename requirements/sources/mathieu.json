@@ -1,0 +1,1409 @@
+{
+  "schema_version": 1,
+  "source": {
+    "file": "LLVM_VERIFIER_COMPARISON.md",
+    "sha256": "b3d81027ea4b43b180af696db2a409ac7f651a2c6b93104862663acd78e16386",
+    "llvm_revision": "6dfe1677ab8dffbc6ec13d53a1e0215d75147689",
+    "veir_comparison_revision": null,
+    "original_zulip_url": null,
+    "attribution": "Mathieu Fehr, as identified by the user"
+  },
+  "groups": [
+    {
+      "id": "MF-S01",
+      "title": "Rejection of `i0`",
+      "description": "Veir rejects direct scalar `i0` operands/results that MLIR accepts. This includes memory-intrinsic lengths, branch-forwarded values, and the scalar result of vector reduction; it is not a recursive check of aggregate element types.",
+      "operations": [
+        {
+          "name": "llvm.mlir.constant",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2237"
+        },
+        {
+          "name": "llvm.mlir.poison",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2188"
+        },
+        {
+          "name": "llvm.mlir.undef",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2166"
+        },
+        {
+          "name": "llvm.mlir.zero",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2211"
+        },
+        {
+          "name": "llvm.and",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L163"
+        },
+        {
+          "name": "llvm.or",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L164"
+        },
+        {
+          "name": "llvm.xor",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L167"
+        },
+        {
+          "name": "llvm.add",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L152"
+        },
+        {
+          "name": "llvm.sub",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L154"
+        },
+        {
+          "name": "llvm.shl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L168"
+        },
+        {
+          "name": "llvm.lshr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L171"
+        },
+        {
+          "name": "llvm.ashr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L172"
+        },
+        {
+          "name": "llvm.intr.ctlz",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L177"
+        },
+        {
+          "name": "llvm.intr.cttz",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L178"
+        },
+        {
+          "name": "llvm.va_arg",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L784"
+        },
+        {
+          "name": "llvm.intr.memset",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L286"
+        },
+        {
+          "name": "llvm.intr.memcpy",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L254"
+        },
+        {
+          "name": "llvm.intr.memmove",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L255"
+        },
+        {
+          "name": "llvm.intr.ctpop",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L179"
+        },
+        {
+          "name": "llvm.intr.bswap",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L176"
+        },
+        {
+          "name": "llvm.intr.bitreverse",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L175"
+        },
+        {
+          "name": "llvm.intr.fshl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L180"
+        },
+        {
+          "name": "llvm.intr.fshr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L181"
+        },
+        {
+          "name": "llvm.intr.assume",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L640"
+        },
+        {
+          "name": "llvm.intr.vector.reduce.or",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L962"
+        },
+        {
+          "name": "llvm.mul",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L155"
+        },
+        {
+          "name": "llvm.sdiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L159"
+        },
+        {
+          "name": "llvm.udiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L157"
+        },
+        {
+          "name": "llvm.srem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L162"
+        },
+        {
+          "name": "llvm.urem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L161"
+        },
+        {
+          "name": "llvm.icmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L185"
+        },
+        {
+          "name": "llvm.select",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1072"
+        },
+        {
+          "name": "llvm.trunc",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L707"
+        },
+        {
+          "name": "llvm.sext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L696"
+        },
+        {
+          "name": "llvm.zext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L701"
+        },
+        {
+          "name": "llvm.br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1106"
+        },
+        {
+          "name": "llvm.cond_br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1126"
+        },
+        {
+          "name": "llvm.switch",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1216"
+        },
+        {
+          "name": "llvm.alloca",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L243"
+        },
+        {
+          "name": "llvm.load",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L375"
+        },
+        {
+          "name": "llvm.store",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L465"
+        },
+        {
+          "name": "llvm.getelementptr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L287"
+        },
+        {
+          "name": "llvm.insertelement",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L972"
+        },
+        {
+          "name": "llvm.insertvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1004"
+        },
+        {
+          "name": "llvm.extractvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L938"
+        },
+        {
+          "name": "llvm.call",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L804"
+        },
+        {
+          "name": "llvm.call_intrinsic",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2578"
+        },
+        {
+          "name": "llvm.return",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1168"
+        },
+        {
+          "name": "llvm.sitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L710"
+        },
+        {
+          "name": "llvm.uitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L713"
+        },
+        {
+          "name": "llvm.fptosi",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L716"
+        },
+        {
+          "name": "llvm.fptoui",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L719"
+        },
+        {
+          "name": "llvm.freeze",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1093"
+        },
+        {
+          "name": "llvm.bitcast",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L634"
+        },
+        {
+          "name": "llvm.inttoptr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L646"
+        },
+        {
+          "name": "llvm.ptrtoint",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L649"
+        },
+        {
+          "name": "llvm.intr.smax",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L186"
+        },
+        {
+          "name": "llvm.intr.smin",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L187"
+        },
+        {
+          "name": "llvm.intr.umax",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L188"
+        },
+        {
+          "name": "llvm.intr.umin",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L189"
+        },
+        {
+          "name": "llvm.intr.abs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L96"
+        },
+        {
+          "name": "llvm.intr.sadd.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L624"
+        },
+        {
+          "name": "llvm.intr.uadd.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L625"
+        },
+        {
+          "name": "llvm.intr.ssub.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L626"
+        },
+        {
+          "name": "llvm.intr.usub.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L627"
+        },
+        {
+          "name": "llvm.intr.sshl.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L628"
+        },
+        {
+          "name": "llvm.intr.ushl.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L629"
+        }
+      ]
+    },
+    {
+      "id": "MF-S02",
+      "title": "Missing vector forms",
+      "description": "Veir restricts these operations to scalar forms accepted alongside vectors in MLIR. For `llvm.select`, this restriction concerns the condition.",
+      "operations": [
+        {
+          "name": "llvm.and",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L163"
+        },
+        {
+          "name": "llvm.or",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L164"
+        },
+        {
+          "name": "llvm.xor",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L167"
+        },
+        {
+          "name": "llvm.add",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L152"
+        },
+        {
+          "name": "llvm.sub",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L154"
+        },
+        {
+          "name": "llvm.shl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L168"
+        },
+        {
+          "name": "llvm.lshr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L171"
+        },
+        {
+          "name": "llvm.ashr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L172"
+        },
+        {
+          "name": "llvm.intr.ctlz",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L177"
+        },
+        {
+          "name": "llvm.intr.cttz",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L178"
+        },
+        {
+          "name": "llvm.intr.ctpop",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L179"
+        },
+        {
+          "name": "llvm.intr.bswap",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L176"
+        },
+        {
+          "name": "llvm.intr.bitreverse",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L175"
+        },
+        {
+          "name": "llvm.intr.fshl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L180"
+        },
+        {
+          "name": "llvm.intr.fshr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L181"
+        },
+        {
+          "name": "llvm.mul",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L155"
+        },
+        {
+          "name": "llvm.sdiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L159"
+        },
+        {
+          "name": "llvm.udiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L157"
+        },
+        {
+          "name": "llvm.srem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L162"
+        },
+        {
+          "name": "llvm.urem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L161"
+        },
+        {
+          "name": "llvm.icmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L185"
+        },
+        {
+          "name": "llvm.select",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1072"
+        },
+        {
+          "name": "llvm.trunc",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L707"
+        },
+        {
+          "name": "llvm.sext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L696"
+        },
+        {
+          "name": "llvm.zext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L701"
+        },
+        {
+          "name": "llvm.fadd",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L234"
+        },
+        {
+          "name": "llvm.fsub",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L235"
+        },
+        {
+          "name": "llvm.fmul",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L236"
+        },
+        {
+          "name": "llvm.fdiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L237"
+        },
+        {
+          "name": "llvm.frem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L238"
+        },
+        {
+          "name": "llvm.fneg",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L239"
+        },
+        {
+          "name": "llvm.fcmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L209"
+        },
+        {
+          "name": "llvm.sitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L710"
+        },
+        {
+          "name": "llvm.uitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L713"
+        },
+        {
+          "name": "llvm.fptosi",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L716"
+        },
+        {
+          "name": "llvm.fptoui",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L719"
+        },
+        {
+          "name": "llvm.fpext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L722"
+        },
+        {
+          "name": "llvm.intr.fmuladd",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L144"
+        },
+        {
+          "name": "llvm.intr.fabs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L140"
+        },
+        {
+          "name": "llvm.inttoptr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L646"
+        },
+        {
+          "name": "llvm.ptrtoint",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L649"
+        },
+        {
+          "name": "llvm.intr.smax",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L186"
+        },
+        {
+          "name": "llvm.intr.smin",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L187"
+        },
+        {
+          "name": "llvm.intr.umax",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L188"
+        },
+        {
+          "name": "llvm.intr.umin",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L189"
+        },
+        {
+          "name": "llvm.intr.abs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L96"
+        },
+        {
+          "name": "llvm.intr.sadd.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L624"
+        },
+        {
+          "name": "llvm.intr.uadd.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L625"
+        },
+        {
+          "name": "llvm.intr.ssub.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L626"
+        },
+        {
+          "name": "llvm.intr.usub.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L627"
+        },
+        {
+          "name": "llvm.intr.sshl.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L628"
+        },
+        {
+          "name": "llvm.intr.ushl.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L629"
+        }
+      ]
+    },
+    {
+      "id": "MF-S03",
+      "title": "Scalable vectors are not represented",
+      "description": "Veir cannot represent MLIR scalable vectors for these otherwise vector-capable operations.",
+      "operations": [
+        {
+          "name": "llvm.mlir.constant",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2237"
+        },
+        {
+          "name": "llvm.intr.vector.reduce.or",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L962"
+        },
+        {
+          "name": "llvm.insertelement",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L972"
+        },
+        {
+          "name": "llvm.freeze",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1093"
+        }
+      ]
+    },
+    {
+      "id": "MF-S04",
+      "title": "Different floating-point type support",
+      "description": "Veir accepts scalar float8 arithmetic/conversions rejected by MLIR, while its native float representation lacks f80/f128/ppc_fp128 forms accepted by MLIR.",
+      "operations": [
+        {
+          "name": "llvm.fadd",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L234"
+        },
+        {
+          "name": "llvm.fsub",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L235"
+        },
+        {
+          "name": "llvm.fmul",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L236"
+        },
+        {
+          "name": "llvm.fdiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L237"
+        },
+        {
+          "name": "llvm.frem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L238"
+        },
+        {
+          "name": "llvm.fneg",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L239"
+        },
+        {
+          "name": "llvm.fcmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L209"
+        },
+        {
+          "name": "llvm.sitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L710"
+        },
+        {
+          "name": "llvm.uitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L713"
+        },
+        {
+          "name": "llvm.fptosi",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L716"
+        },
+        {
+          "name": "llvm.fptoui",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L719"
+        },
+        {
+          "name": "llvm.fpext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L722"
+        },
+        {
+          "name": "llvm.intr.fmuladd",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L144"
+        },
+        {
+          "name": "llvm.intr.fabs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L140"
+        }
+      ]
+    },
+    {
+      "id": "MF-S05",
+      "title": "Different LLVM-compatible type predicate",
+      "description": "Veir accepts multidimensional vectors, scalar float8, and arbitrary opaque `!llvm.*` spellings, but rejects modeled LLVM byte/function types. Its recursive array check also differs from MLIR\u2019s outer-type predicate.",
+      "operations": [
+        {
+          "name": "llvm.va_arg",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L784"
+        },
+        {
+          "name": "llvm.call_intrinsic",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2578"
+        }
+      ]
+    },
+    {
+      "id": "MF-S06",
+      "title": "Missing LLVM-compatible value-type checks",
+      "description": "Veir accepts non-LLVM value types that MLIR rejects, such as `index`: results of poison/undef/zero/freeze, selected values of select, and bundle operands of assume.",
+      "operations": [
+        {
+          "name": "llvm.mlir.poison",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2188"
+        },
+        {
+          "name": "llvm.mlir.undef",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2166"
+        },
+        {
+          "name": "llvm.mlir.zero",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2211"
+        },
+        {
+          "name": "llvm.intr.assume",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L640"
+        },
+        {
+          "name": "llvm.select",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1072"
+        },
+        {
+          "name": "llvm.freeze",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1093"
+        }
+      ]
+    },
+    {
+      "id": "MF-S07",
+      "title": "Properties accepted on operations that declare none",
+      "description": "Veir accepts and discards supplied `<{...}>` properties; MLIR rejects them on these operations.",
+      "operations": [
+        {
+          "name": "llvm.mlir.poison",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2188"
+        },
+        {
+          "name": "llvm.mlir.undef",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2166"
+        },
+        {
+          "name": "llvm.mlir.zero",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2211"
+        },
+        {
+          "name": "llvm.and",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L163"
+        },
+        {
+          "name": "llvm.xor",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L167"
+        },
+        {
+          "name": "llvm.intr.lifetime.start",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L386"
+        },
+        {
+          "name": "llvm.intr.lifetime.end",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L387"
+        },
+        {
+          "name": "llvm.intr.vastart",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L877"
+        },
+        {
+          "name": "llvm.intr.vaend",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L889"
+        },
+        {
+          "name": "llvm.va_arg",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L784"
+        },
+        {
+          "name": "llvm.intr.ctpop",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L179"
+        },
+        {
+          "name": "llvm.intr.bswap",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L176"
+        },
+        {
+          "name": "llvm.intr.bitreverse",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L175"
+        },
+        {
+          "name": "llvm.intr.fshl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L180"
+        },
+        {
+          "name": "llvm.intr.fshr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L181"
+        },
+        {
+          "name": "llvm.intr.vector.reduce.or",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L962"
+        },
+        {
+          "name": "llvm.srem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L162"
+        },
+        {
+          "name": "llvm.urem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L161"
+        },
+        {
+          "name": "llvm.sext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L696"
+        },
+        {
+          "name": "llvm.unreachable",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1207"
+        },
+        {
+          "name": "llvm.insertelement",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L972"
+        },
+        {
+          "name": "llvm.return",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1168"
+        },
+        {
+          "name": "llvm.sitofp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L710"
+        },
+        {
+          "name": "llvm.fptosi",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L716"
+        },
+        {
+          "name": "llvm.fptoui",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L719"
+        },
+        {
+          "name": "llvm.freeze",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1093"
+        },
+        {
+          "name": "llvm.bitcast",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L634"
+        },
+        {
+          "name": "llvm.ptrtoint",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L649"
+        },
+        {
+          "name": "llvm.intr.smax",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L186"
+        },
+        {
+          "name": "llvm.intr.smin",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L187"
+        },
+        {
+          "name": "llvm.intr.umax",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L188"
+        },
+        {
+          "name": "llvm.intr.umin",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L189"
+        },
+        {
+          "name": "llvm.intr.sadd.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L624"
+        },
+        {
+          "name": "llvm.intr.uadd.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L625"
+        },
+        {
+          "name": "llvm.intr.ssub.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L626"
+        },
+        {
+          "name": "llvm.intr.usub.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L627"
+        },
+        {
+          "name": "llvm.intr.sshl.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L628"
+        },
+        {
+          "name": "llvm.intr.ushl.sat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L629"
+        }
+      ]
+    },
+    {
+      "id": "MF-S08",
+      "title": "Unknown property keys rejected",
+      "description": "Veir rejects unknown `<{...}>` keys that MLIR\u2019s generated property conversion ignores. Memory intrinsics make exceptions for their explicitly tolerated bundle keys.",
+      "operations": [
+        {
+          "name": "llvm.mlir.constant",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2237"
+        },
+        {
+          "name": "llvm.intr.ctlz",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L177"
+        },
+        {
+          "name": "llvm.intr.cttz",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L178"
+        },
+        {
+          "name": "llvm.intr.memset",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L286"
+        },
+        {
+          "name": "llvm.intr.memcpy",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L254"
+        },
+        {
+          "name": "llvm.intr.memmove",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L255"
+        },
+        {
+          "name": "llvm.intr.assume",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L640"
+        },
+        {
+          "name": "llvm.icmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L185"
+        },
+        {
+          "name": "llvm.br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1106"
+        },
+        {
+          "name": "llvm.cond_br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1126"
+        },
+        {
+          "name": "llvm.switch",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1216"
+        },
+        {
+          "name": "llvm.fence",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2440"
+        },
+        {
+          "name": "llvm.insertvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1004"
+        },
+        {
+          "name": "llvm.extractvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L938"
+        },
+        {
+          "name": "llvm.call_intrinsic",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2578"
+        },
+        {
+          "name": "llvm.comdat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1963"
+        },
+        {
+          "name": "llvm.comdat_selector",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1941"
+        },
+        {
+          "name": "llvm.fcmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L209"
+        },
+        {
+          "name": "llvm.intr.abs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L96"
+        }
+      ]
+    },
+    {
+      "id": "MF-S09",
+      "title": "Overflow-flag decoding",
+      "description": "Veir accepts invalid overflow-flag bits, but rejects MLIR\u2019s custom attribute form and non-i32 integer storage.",
+      "operations": [
+        {
+          "name": "llvm.add",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L152"
+        },
+        {
+          "name": "llvm.sub",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L154"
+        },
+        {
+          "name": "llvm.shl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L168"
+        },
+        {
+          "name": "llvm.mul",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L155"
+        },
+        {
+          "name": "llvm.trunc",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L707"
+        }
+      ]
+    },
+    {
+      "id": "MF-S10",
+      "title": "Incomplete fast-math flag representation",
+      "description": "Veir represents only `nnan`, `ninf`, and `nsz`; other MLIR fast-math flags are unsupported or lost.",
+      "operations": [
+        {
+          "name": "llvm.call_intrinsic",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2578"
+        },
+        {
+          "name": "llvm.fadd",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L234"
+        },
+        {
+          "name": "llvm.fsub",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L235"
+        },
+        {
+          "name": "llvm.fmul",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L236"
+        },
+        {
+          "name": "llvm.fdiv",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L237"
+        },
+        {
+          "name": "llvm.frem",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L238"
+        },
+        {
+          "name": "llvm.fneg",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L239"
+        },
+        {
+          "name": "llvm.fcmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L209"
+        },
+        {
+          "name": "llvm.intr.fmuladd",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L144"
+        },
+        {
+          "name": "llvm.intr.fabs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L140"
+        }
+      ]
+    },
+    {
+      "id": "MF-S11",
+      "title": "Fast-math properties ignored entirely",
+      "description": "Veir ignores malformed `fastmathFlags` rejected by MLIR and drops valid flags.",
+      "operations": [
+        {
+          "name": "llvm.select",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1072"
+        },
+        {
+          "name": "llvm.fpext",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L722"
+        }
+      ]
+    },
+    {
+      "id": "MF-S12",
+      "title": "Missing access-group, alias-scope, and TBAA checks",
+      "description": "Veir misses metadata element-kind checks performed by MLIR\u2019s AccessGroupOpInterface/AliasAnalysisOpInterface and ODS constraints.",
+      "operations": [
+        {
+          "name": "llvm.intr.memset",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L286"
+        },
+        {
+          "name": "llvm.intr.memcpy",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L254"
+        },
+        {
+          "name": "llvm.intr.memmove",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L255"
+        },
+        {
+          "name": "llvm.load",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L375"
+        },
+        {
+          "name": "llvm.store",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L465"
+        },
+        {
+          "name": "llvm.call",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L804"
+        }
+      ]
+    },
+    {
+      "id": "MF-S13",
+      "title": "Missing atomic memory checks",
+      "description": "Veir discards ordering and misses MLIR\u2019s atomic ordering, type, explicit-alignment, and syncscope rules.",
+      "operations": [
+        {
+          "name": "llvm.load",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L375"
+        },
+        {
+          "name": "llvm.store",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L465"
+        }
+      ]
+    },
+    {
+      "id": "MF-S14",
+      "title": "Missing dereferenceable metadata checks",
+      "description": "Veir ignores malformed dereferenceable metadata rejected by MLIR. On load, it also misses DereferenceableOpInterface\u2019s pointer-result restriction.",
+      "operations": [
+        {
+          "name": "llvm.load",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L375"
+        },
+        {
+          "name": "llvm.inttoptr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L646"
+        }
+      ]
+    },
+    {
+      "id": "MF-S15",
+      "title": "Overly strict argument/result attribute lengths",
+      "description": "Veir requires exactly three `arg_attrs` entries and zero `res_attrs` entries; MLIR does not verify these lengths.",
+      "operations": [
+        {
+          "name": "llvm.intr.memset",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L286"
+        },
+        {
+          "name": "llvm.intr.memcpy",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L254"
+        },
+        {
+          "name": "llvm.intr.memmove",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L255"
+        }
+      ]
+    },
+    {
+      "id": "MF-S16",
+      "title": "Relaxed shift operand types",
+      "description": "Veir accepts unequal operand widths and byte-type left operands rejected by MLIR\u2019s operand constraints and type-matching trait.",
+      "operations": [
+        {
+          "name": "llvm.shl",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L168"
+        },
+        {
+          "name": "llvm.lshr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L171"
+        }
+      ]
+    },
+    {
+      "id": "MF-S17",
+      "title": "Aggregate verification stops at structs",
+      "description": "Veir skips the remaining path, bounds, and value/result-type checks once traversal reaches a struct, including opaque structs MLIR cannot index. It also lacks full LLVM-container compatibility checks; insertvalue additionally lacks the primitive-value restriction, and extractvalue can produce non-LLVM results.",
+      "operations": [
+        {
+          "name": "llvm.insertvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1004"
+        },
+        {
+          "name": "llvm.extractvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L938"
+        }
+      ]
+    },
+    {
+      "id": "MF-S18",
+      "title": "Different handling of oversized aggregate indices",
+      "description": "Veir rejects large indices that MLIR\u2019s unsigned bounds comparison can wrap, such as 4294967296 for an array of length one. This is a source-observed edge case.",
+      "operations": [
+        {
+          "name": "llvm.insertvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1004"
+        },
+        {
+          "name": "llvm.extractvalue",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L938"
+        }
+      ]
+    },
+    {
+      "id": "MF-S19",
+      "title": "Symbol resolution and uniqueness ignore scopes",
+      "description": "Veir uses context-wide lookup instead of MLIR symbol-table scopes. This can resolve unrelated symbols or reject legal repeated names. Its global/comdat/function checks also miss some containing-table cross-kind collisions and symbol visibility constraints.",
+      "operations": [
+        {
+          "name": "llvm.mlir.global",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1380"
+        },
+        {
+          "name": "llvm.mlir.addressof",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1288"
+        },
+        {
+          "name": "llvm.func",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1990"
+        },
+        {
+          "name": "llvm.comdat",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1963"
+        },
+        {
+          "name": "llvm.comdat_selector",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1941"
+        }
+      ]
+    },
+    {
+      "id": "MF-S20",
+      "title": "Register compatibility used instead of exact type equality",
+      "description": "Veir can accept register-compatible types where MLIR requires exact equality for forwarded or returned values.",
+      "operations": [
+        {
+          "name": "llvm.br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1106"
+        },
+        {
+          "name": "llvm.cond_br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1126"
+        },
+        {
+          "name": "llvm.switch",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1216"
+        },
+        {
+          "name": "llvm.return",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1168"
+        }
+      ]
+    },
+    {
+      "id": "MF-S21",
+      "title": "Missing branch-weight validation",
+      "description": "Veir misses MLIR\u2019s prohibition on all-zero weights. For switch, it also misses the requirement that nonempty weights match the successor count.",
+      "operations": [
+        {
+          "name": "llvm.cond_br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1126"
+        },
+        {
+          "name": "llvm.switch",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1216"
+        }
+      ]
+    },
+    {
+      "id": "MF-O01",
+      "title": "llvm.mlir.constant",
+      "description": "Veir compares float widths instead of semantics, accepting a bf16 value with an f16 result. Veir misses dense payload/count validation, scalable-splat requirements, nested-array element checks, and general LLVM result-type restrictions. Veir rejects dense integer width changes, float-to-integer dense reinterpretation, struct/array attribute constants, and non-dense ElementsAttr forms accepted by MLIR. Its scalar float-constant result restriction is also narrower.",
+      "operations": [
+        {
+          "name": "llvm.mlir.constant",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2237"
+        }
+      ]
+    },
+    {
+      "id": "MF-O02",
+      "title": "llvm.mlir.zero",
+      "description": "Veir misses target-extension `HasZeroInit` checks and rejects void/function results accepted by MLIR verification.",
+      "operations": [
+        {
+          "name": "llvm.mlir.zero",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2211"
+        }
+      ]
+    },
+    {
+      "id": "MF-O03",
+      "title": "llvm.mlir.global",
+      "description": "Veir misses global-type/placement rules, nonnegative address spaces, string initializer type/length, target-extension restrictions, and the array requirement for appending linkage. Veir misses single-block/return-terminator and initializer side-effect checks, plus most additional property constraints, including unit-valued `thread_local_`. Veir accepts unrecognized nonzero common-linkage initializers, but rejects negative floating zero accepted by MLIR.",
+      "operations": [
+        {
+          "name": "llvm.mlir.global",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1380"
+        }
+      ]
+    },
+    {
+      "id": "MF-O04",
+      "title": "llvm.mlir.addressof",
+      "description": "Veir misses address-space agreement and rejects alias/ifunc targets accepted by MLIR.",
+      "operations": [
+        {
+          "name": "llvm.mlir.addressof",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1288"
+        }
+      ]
+    },
+    {
+      "id": "MF-O05",
+      "title": "llvm.intr.bswap",
+      "description": "Veir restricts widths to 16, 32, or 64; MLIR verification accepts others, such as i128.",
+      "operations": [
+        {
+          "name": "llvm.intr.bswap",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L176"
+        }
+      ]
+    },
+    {
+      "id": "MF-O06",
+      "title": "llvm.intr.vector.reduce.or",
+      "description": "Veir requires a scalar result; MLIR\u2019s element-type trait also accepts vector results.",
+      "operations": [
+        {
+          "name": "llvm.intr.vector.reduce.or",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L962"
+        }
+      ]
+    },
+    {
+      "id": "MF-O07",
+      "title": "llvm.icmp",
+      "description": "Veir accepts non-i64 predicate attributes rejected by MLIR.",
+      "operations": [
+        {
+          "name": "llvm.icmp",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L185"
+        }
+      ]
+    },
+    {
+      "id": "MF-O08",
+      "title": "llvm.trunc",
+      "description": "Veir requires narrowing, rejecting same-width/widening casts accepted by MLIR; it also accepts byte-to-byte casts rejected by MLIR.",
+      "operations": [
+        {
+          "name": "llvm.trunc",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L707"
+        }
+      ]
+    },
+    {
+      "id": "MF-O09",
+      "title": "llvm.br",
+      "description": "Veir misses the ODS LLVM-type restriction on forwarded operands.",
+      "operations": [
+        {
+          "name": "llvm.br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1106"
+        }
+      ]
+    },
+    {
+      "id": "MF-O10",
+      "title": "llvm.cond_br",
+      "description": "Veir misses the i1 condition check, LLVM-type restriction on forwarded operands, and i32 segment/weight storage checks.",
+      "operations": [
+        {
+          "name": "llvm.cond_br",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1126"
+        }
+      ]
+    },
+    {
+      "id": "MF-O11",
+      "title": "llvm.switch",
+      "description": "Veir misses the integer selector, case count/type agreement, integer case elements, and i32 case-segment/weight checks.",
+      "operations": [
+        {
+          "name": "llvm.switch",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1216"
+        }
+      ]
+    },
+    {
+      "id": "MF-O12",
+      "title": "llvm.alloca",
+      "description": "Veir misses integer allocation-size, pointer-result, and target-extension memory-support checks.",
+      "operations": [
+        {
+          "name": "llvm.alloca",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L243"
+        }
+      ]
+    },
+    {
+      "id": "MF-O13",
+      "title": "llvm.load",
+      "description": "Veir misses pointer-address and loadable-result constraints.",
+      "operations": [
+        {
+          "name": "llvm.load",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L375"
+        }
+      ]
+    },
+    {
+      "id": "MF-O14",
+      "title": "llvm.store",
+      "description": "Veir misses pointer-address and loadable-value constraints.",
+      "operations": [
+        {
+          "name": "llvm.store",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L465"
+        }
+      ]
+    },
+    {
+      "id": "MF-O15",
+      "title": "llvm.getelementptr",
+      "description": "Veir misses pointer/integer type constraints, i32 raw indices, valid GEP flag bits, and rejection of bare `inboundsFlag`. Veir misses aggregate traversal and constant/in-bounds struct-index checks.",
+      "operations": [
+        {
+          "name": "llvm.getelementptr",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L287"
+        }
+      ]
+    },
+    {
+      "id": "MF-O16",
+      "title": "llvm.insertelement",
+      "description": "Veir rejects f80/f128 and non-native pointer-interface vector elements accepted by MLIR.",
+      "operations": [
+        {
+          "name": "llvm.insertelement",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L972"
+        }
+      ]
+    },
+    {
+      "id": "MF-O17",
+      "title": "llvm.call",
+      "description": "Veir misses direct symbol resolution/signatures, the requirement for a callee symbol or operand, indirect pointer checks, variadic rules, and LLVM operand/result types. Veir misses operand segmentation, bundle metadata, property types/enums, and the debug-location requirement.",
+      "operations": [
+        {
+          "name": "llvm.call",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L804"
+        }
+      ]
+    },
+    {
+      "id": "MF-O18",
+      "title": "llvm.return",
+      "description": "Veir requires an immediate llvm.func/global parent; MLIR permits other placement, including nested regions under an LLVM function. Veir misses the universal LLVM-type and at-most-one-operand restrictions.",
+      "operations": [
+        {
+          "name": "llvm.return",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1168"
+        }
+      ]
+    },
+    {
+      "id": "MF-O19",
+      "title": "llvm.func",
+      "description": "Veir misses FunctionOpInterface entry-signature, argument/result attribute, and dialect callback checks, plus LLVM-compatible definition entry types. Veir misses linkage rules, conflicting definition attributes, exception-type consistency, and block-tag uniqueness. Veir permits signature components/multiple results rejected by LLVMFunctionType and leaves most additional property constraints unchecked.",
+      "operations": [
+        {
+          "name": "llvm.func",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1990"
+        }
+      ]
+    },
+    {
+      "id": "MF-O20",
+      "title": "llvm.module_flags",
+      "description": "Veir misses module placement, ModuleFlagAttrInterface requirements, key/value schemas, and duplicate non-Require keys.",
+      "operations": [
+        {
+          "name": "llvm.module_flags",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L2646"
+        }
+      ]
+    },
+    {
+      "id": "MF-O21",
+      "title": "llvm.freeze",
+      "description": "Veir requires exact type equality; MLIR\u2019s type trait does not compare vector scalability flags.",
+      "operations": [
+        {
+          "name": "llvm.freeze",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L1093"
+        }
+      ]
+    },
+    {
+      "id": "MF-O22",
+      "title": "llvm.bitcast",
+      "description": "Veir enforces equal computed widths, rejecting nonpointer width changes accepted by MLIR. Veir accepts pointer/integer, cross-address-space pointer, and pointer-to-single-element-pointer-vector casts rejected by MLIR; its pointer width is hardcoded to 64. Veir accepts aggregate/unsupported-type pairs when both widths are unknown.",
+      "operations": [
+        {
+          "name": "llvm.bitcast",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMOps.td#L634"
+        }
+      ]
+    },
+    {
+      "id": "MF-O23",
+      "title": "llvm.intr.abs",
+      "description": "Veir requires the result type to equal the operand type; MLIR does not.",
+      "operations": [
+        {
+          "name": "llvm.intr.abs",
+          "url": "https://github.com/llvm/llvm-project/blob/6dfe1677ab8dffbc6ec13d53a1e0215d75147689/mlir/include/mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td#L96"
+        }
+      ]
+    }
+  ]
+}

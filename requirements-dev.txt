@@ -1,0 +1,4 @@
+# Native VeIR lit integration. The tracker and its unit tests use only stdlib.
+lit==18.1.8
+filecheck==1.0.3
+psutil==7.0.0

@@ -1,0 +1,148 @@
+name: Measure VeIR progress on demand
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: veir-progress-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - run: python -m unittest discover -s tests_harness -v
+      - run: node --test tests_harness/web_model.test.cjs
+      - run: python scripts/generate_cases.py && git diff --exit-code -- cases requirements/registry.json
+      - run: python -m veir_suite validate
+      - run: python -m veir_suite site --history evidence --out site-output
+
+  measure:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    outputs:
+      site_ready: ${{ steps.site.outputs.ready }}
+    permissions:
+      contents: read
+      actions: read
+    env:
+      LEAN_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Restore trusted measurement history
+        id: history
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HISTORY_BRANCH: ${{ github.event.repository.default_branch }}
+        run: python scripts/fetch_history.py --out evidence
+      - name: Install build tools and lit dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld cmake ninja-build elan
+          python -m pip install -r requirements-dev.txt
+      - name: Identify the pinned reference
+        id: reference
+        run: python -c 'import json, os; print("revision=" + json.load(open("profiles/ci.json"))["llvm_revision"], file=open(os.environ["GITHUB_OUTPUT"], "a"))'
+      - name: Cache the pinned reference binaries
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            .artifacts/reference/bin
+            .artifacts/reference/revision
+          key: llvm-reference-${{ runner.os }}-${{ runner.arch }}-${{ steps.reference.outputs.revision }}-${{ hashFiles('scripts/build_reference.sh') }}
+      - name: Build the independent reference
+        run: bash scripts/build_reference.sh .artifacts/reference
+      - name: Prepare the pinned VeIR source
+        run: |
+          bash scripts/prepare_veir.sh .artifacts/veir
+          elan toolchain install "$(cat .artifacts/veir/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          echo "$GITHUB_WORKSPACE/.artifacts/reference/bin" >> "$GITHUB_PATH"
+      - name: Cache VeIR build products
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            .artifacts/veir/.lake
+            .artifacts/veir/ExArray/.lake
+            .artifacts/veir/lean-ctrees/.lake
+          key: veir-build-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('profiles/ci.json', 'integrations/veir-test-instrumentation.patch') }}
+      - name: Build and measure existing native tests
+        id: native
+        shell: bash
+        run: |
+          set +e
+          python -u -m veir_suite native --veir .artifacts/veir --lake "$(command -v lake)" --lit "$(command -v lit)"
+          result=$?
+          set -e
+          echo "exit_code=$result" >> "$GITHUB_OUTPUT"
+          test "$result" -le 1
+      - name: Check unavailable-reference behavior
+        run: python scripts/check_reference_visibility.py --veir .artifacts/veir --lit "$(command -v lit)"
+      - name: Measure the proposed contract
+        id: contract
+        shell: bash
+        run: |
+          revision=$(python -c 'import json; print(json.load(open("profiles/ci.json"))["llvm_revision"])')
+          set +e
+          python -u -m veir_suite run --veir .artifacts/veir --profile linux-x86_64-llvm-6a2d309c --reference-revision "$revision"
+          result=$?
+          set -e
+          echo "exit_code=$result" >> "$GITHUB_OUTPUT"
+          # The following steps preserve both complete and incomplete receipts.
+      - name: Preserve every finished receipt and build the site
+        id: site
+        if: ${{ !cancelled() && steps.history.outcome == 'success' }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from veir_suite.history import record_receipt
+          for folder, filename in [('runs', 'report.json'), ('native', 'native.json')]:
+              for source in Path('.artifacts', folder).glob('*/' + filename):
+                  record_receipt(source, Path('evidence'))
+          PY
+          python -m veir_suite site --history evidence --out site-output
+          echo 'ready=true' >> "$GITHUB_OUTPUT"
+      - name: Keep cumulative history
+        if: ${{ !cancelled() && steps.site.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: veir-progress-history
+          path: evidence
+          if-no-files-found: error
+          retention-days: 90
+      - name: Keep the reviewable site
+        if: ${{ !cancelled() && steps.site.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: veir-measured-site
+          path: site-output
+          if-no-files-found: error
+      - name: Gate measurement health and regressions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          reports = sorted(Path('.artifacts/runs').glob('*/report.json'))
+          if len(reports) != 1:
+              raise SystemExit('Expected exactly one current contract receipt')
+          subprocess.run(['python', 'scripts/measurement_gate.py', '--history', 'evidence', '--report', str(reports[0])], check=True)
+          native = sorted(Path('.artifacts/native').glob('*/native.json'))
+          if len(native) != 1:
+              raise SystemExit('Expected exactly one current native receipt')
+          subprocess.run(['python', 'scripts/native_gate.py', '--history', 'evidence', '--report', str(native[0])], check=True)
+          PY

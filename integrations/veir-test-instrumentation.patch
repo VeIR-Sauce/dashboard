@@ -1,0 +1,266 @@
+diff --git a/.gitignore b/.gitignore
+index 3494d7df0..c8429ac05 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -34,3 +34,5 @@ lakefile.olean
+ Test/**/Output/**
+ 
+ **/.ruff_cache
++**/__pycache__/
++.artifacts/
+diff --git a/Test/Interpreter/check-json.py b/Test/Interpreter/check-json.py
+new file mode 100644
+index 000000000..299f0e546
+--- /dev/null
++++ b/Test/Interpreter/check-json.py
+@@ -0,0 +1,11 @@
++"""Compare a complete JSON result, without depending on object key order."""
++import json
++from pathlib import Path
++import sys
++
++prefix = "// EXPECT-JSON: "
++lines = [line[len(prefix):] for line in Path(sys.argv[1]).read_text().splitlines() if line.startswith(prefix)]
++assert len(lines) == 1, "Exactly one complete expected JSON result is required"
++expected = json.loads(lines[0])
++actual = json.load(sys.stdin)
++assert actual == expected, f"Expected {expected!r}, got {actual!r}"
+diff --git a/Test/Interpreter/json_undefined_behavior.mlir b/Test/Interpreter/json_undefined_behavior.mlir
+new file mode 100644
+index 000000000..77f2f1589
+--- /dev/null
++++ b/Test/Interpreter/json_undefined_behavior.mlir
+@@ -0,0 +1,12 @@
++// RUN: veir-interpret --json %s | python3 %S/check-json.py %s
++
++"builtin.module"() ({
++  "func.func"() <{sym_name = "main", function_type = () -> i32}> ({
++    %one = "llvm.mlir.constant"() <{value = 1 : i32}> : () -> i32
++    %zero = "llvm.mlir.constant"() <{value = 0 : i32}> : () -> i32
++    %result = "llvm.udiv"(%one, %zero) : (i32, i32) -> i32
++    "func.return"(%result) : (i32) -> ()
++  }) : () -> ()
++}) : () -> ()
++
++// EXPECT-JSON: {"schema_version":1,"outcome":"undefined_behavior","results":[]}
+diff --git a/Test/Interpreter/json_unsupported.mlir b/Test/Interpreter/json_unsupported.mlir
+new file mode 100644
+index 000000000..dc0f85cfe
+--- /dev/null
++++ b/Test/Interpreter/json_unsupported.mlir
+@@ -0,0 +1,10 @@
++// RUN: not veir-interpret --json %s | python3 %S/check-json.py %s
++
++"builtin.module"() ({
++  "func.func"() <{sym_name = "main", function_type = () -> i32}> ({
++    %result = "opaque.missing_interpretation"() : () -> i32
++    "func.return"(%result) : (i32) -> ()
++  }) : () -> ()
++}) : () -> ()
++
++// EXPECT-JSON: {"schema_version":1,"outcome":"unsupported_interpretation","results":[]}
+diff --git a/Test/Interpreter/json_values.mlir b/Test/Interpreter/json_values.mlir
+new file mode 100644
+index 000000000..c147cf276
+--- /dev/null
++++ b/Test/Interpreter/json_values.mlir
+@@ -0,0 +1,19 @@
++// RUN: veir-interpret --json %s | python3 %S/check-json.py %s
++// RUN: veir-interpret %s | filecheck %s
++
++"builtin.module"() ({
++  "func.func"() <{sym_name = "main", function_type = () -> (i128, i8, !llvm.byte<16>, f32, !llvm.ptr, !riscv.reg, !felt.type<"babybear">)}> ({
++    %wide = "llvm.mlir.constant"() <{value = 1267650600228229401496703205633 : i128}> : () -> i128
++    %poison = "llvm.mlir.poison"() : () -> i8
++    %poison16 = "llvm.mlir.poison"() : () -> i16
++    %bytes = "llvm.bitcast"(%poison16) : (i16) -> !llvm.byte<16>
++    %float = "llvm.mlir.constant"() <{value = 1.000000e+00 : f32}> : () -> f32
++    %ptr = "llvm.mlir.zero"() : () -> !llvm.ptr
++    %reg = "riscv.li"() <{value = -2 : i64}> : () -> !riscv.reg
++    %felt = "felt.const"() <{value = #felt<const 42 : <"babybear">> : !felt.type<"babybear">}> : () -> !felt.type<"babybear">
++    "func.return"(%wide, %poison, %bytes, %float, %ptr, %reg, %felt) : (i128, i8, !llvm.byte<16>, f32, !llvm.ptr, !riscv.reg, !felt.type<"babybear">) -> ()
++  }) : () -> ()
++}) : () -> ()
++
++// CHECK: Program output: #[0x00000010000000000000000000000101#128, poison,
++// EXPECT-JSON: {"schema_version":1,"outcome":"ok","results":[{"kind":"int","width":128,"value":"1267650600228229401496703205633"},{"kind":"int","width":8,"poison":true},{"kind":"byte","width":16,"value":"0","poison_mask":"65535"},{"kind":"float","type":"f32","width":32,"bits":"1065353216"},{"kind":"address","width":64,"value":"0"},{"kind":"register","width":64,"value":"18446744073709551614"},{"kind":"felt","type":"!felt.type<\"babybear\">","value":"42"}]}
+diff --git a/Test/lit.cfg b/Test/lit.cfg
+index d2141cbe6..4f7dbf739 100644
+--- a/Test/lit.cfg
++++ b/Test/lit.cfg
+@@ -1,8 +1,11 @@
+ import lit.formats
++import lit.Test
+ import subprocess
+ import lit.util
+ import os
+ import re
++import shlex
++import sys
+ from pathlib import Path
+ 
+ config.test_source_root = os.path.dirname(__file__)
+@@ -20,7 +23,10 @@ for tool in ('clang', 'opt', 'mlir-translate', 'mlir-opt'):
+         config.available_features.add(tool)
+ 
+ veir_root = Path(config.test_source_root).parent
+-config.test_format = lit.formats.ShTest(preamble_commands=[f"cd {veir_root}"])
++# An importable class is required for lit's multiprocessing workers.
++sys.path.insert(0, str(veir_root / "Tools"))
++from veir_lit import VeirShTest
++config.test_format = VeirShTest(preamble_commands=[f"cd {shlex.quote(str(veir_root))}"])
+ exe_suffix = ".exe" if os.name == "nt" else ""
+ config.substitutions.append(('veir-opt', f".lake/build/bin/veir-opt{exe_suffix}"))
+ config.substitutions.append(('veir-interpret', f".lake/build/bin/veir-interpret{exe_suffix}"))
+@@ -32,18 +38,22 @@ config.substitutions.append(("VEIR_UNREGISTERED_ROUNDTRIP", f".lake/build/bin/ve
+ mlir_opt = lit.util.which('mlir-opt')
+ mlir_versions_supported = ['22', '23', '24']
+ 
+-result = subprocess.run(['lake', 'build'], cwd =veir_root)
++# Build explicitly before running lit (as `make tests` already does). Test
++# discovery must not start an unbounded build or ignore a failed build's status.
++mlir_compatible = False
++mlir_unavailable_reason = "MLIR reference checks require mlir-opt version 22, 23 or 24"
+ 
+ if mlir_opt:
+   result = subprocess.run([mlir_opt, '--version'], capture_output=True, text=True)
+   version = "unknown"
+   version_short = "unknown"
+-  match = re.search(r'version\s+([a-zA-Z0-9\.]+)', str(result))
++  match = re.search(r'version\s+(\d+)([^\s]*)', result.stdout + result.stderr)
+   if match:
+-    version = match.group(1)
+-    version_short = version[0:2]
++    version = match.group(1) + match.group(2)
++    version_short = match.group(1)
+ 
+-  if version_short in mlir_versions_supported:
++  if result.returncode == 0 and version_short in mlir_versions_supported:
++    mlir_compatible = True
+     print(f"'mlir-opt' version {version_short} ({version}) detected. Running MLIR compatibility tests")
+     # Ops that only exist in newer `mlir-opt` can gate their MLIR round-trip on
+     # a minimum version, e.g. `// RUN: %if mlir-min-23 %{ MLIR_ROUNDTRIP %}`.
+@@ -68,13 +78,12 @@ if mlir_opt:
+     config.substitutions.append(("MLIR_UNREGISTERED_INVALID",
+      "not mlir-opt --mlir-print-op-generic --mlir-print-local-scope --allow-unregistered-dialect %s"))
+   else:
+-    print(f"'mlir-opt' version {version_short} ({version}) detected, but only {mlir_versions_supported} supported. Skipping MLIR compatibility tests")
+-    config.substitutions.append(("MLIR_ROUNDTRIP", "true"))
+-    config.substitutions.append(("MLIR_UNREGISTERED_ROUNDTRIP", "true"))
+-    config.substitutions.append(("MLIR_INVALID", "true"))
+-    config.substitutions.append(("MLIR_UNREGISTERED_INVALID", "true"))
+-else:
+-  config.substitutions.append(("MLIR_ROUNDTRIP", "true"))
+-  config.substitutions.append(("MLIR_UNREGISTERED_ROUNDTRIP", "true"))
+-  config.substitutions.append(("MLIR_INVALID", "true"))
+-  config.substitutions.append(("MLIR_UNREGISTERED_INVALID", "true"))
++    mlir_unavailable_reason = f"mlir-opt {version} is unavailable or unsupported; supported majors: {mlir_versions_supported}"
++
++if not mlir_compatible:
++  if os.environ.get("VEIR_REQUIRE_MLIR") == "1":
++    lit_config.fatal(mlir_unavailable_reason)
++  lit_config.warning(mlir_unavailable_reason + "; affected test files will be UNSUPPORTED")
++
++config.veir_mlir_compatible = mlir_compatible
++config.veir_mlir_unavailable_reason = mlir_unavailable_reason
+diff --git a/Tools/veir_lit.py b/Tools/veir_lit.py
+new file mode 100644
+index 000000000..d539cf6df
+--- /dev/null
++++ b/Tools/veir_lit.py
+@@ -0,0 +1,18 @@
++"""Reference checks must be observable when their required tool is unavailable."""
++from pathlib import Path
++import re
++
++import lit.formats
++import lit.Test
++
++
++class VeirShTest(lit.formats.ShTest):
++    def execute(self, test, lit_config):
++        if not test.config.veir_mlir_compatible:
++            # Skip the whole file explicitly rather than report a passing
++            # compatibility assertion which did not run.
++            source = Path(test.getSourcePath()).read_text()
++            if re.search(r"RUN:.*\bMLIR_(?:UNREGISTERED_)?(?:ROUNDTRIP|INVALID)\b", source):
++                return lit.Test.Result(lit.Test.UNSUPPORTED,
++                                       test.config.veir_mlir_unavailable_reason)
++        return super().execute(test, lit_config)
+diff --git a/VeirInterpret.lean b/VeirInterpret.lean
+index 2b8abfcea..994f2284c 100644
+--- a/VeirInterpret.lean
++++ b/VeirInterpret.lean
+@@ -3,6 +3,7 @@ import Veir.Verifier
+ import Veir.Interpreter.Basic
+ import Veir.Input
+ import Veir.Panic
++import Lean.Data.Json
+ 
+ /-!
+   # Veir Interpreter CLI Tool
+@@ -16,6 +17,31 @@ import Veir.Panic
+ open Veir.Parser
+ open Veir.Input
+ open Veir
++open Lean (toJson)
++
++/-- Lossless machine-readable results. Integer payloads use decimal strings so
++    consumers do not lose bits through a JSON number implementation. -/
++private def runtimeValueJson : RuntimeValue → Lean.Json
++  | .int width (.val value) => Lean.Json.mkObj
++      [("kind", "int"), ("width", toJson width), ("value", toJson (toString value.toNat))]
++  | .int width .poison => Lean.Json.mkObj
++      [("kind", "int"), ("width", toJson width), ("poison", toJson true)]
++  | .byte width value => Lean.Json.mkObj
++      [("kind", "byte"), ("width", toJson width), ("value", toJson (toString value.val.toNat)),
++       ("poison_mask", toJson (toString value.poison.toNat))]
++  | .float type value => Lean.Json.mkObj
++      [("kind", "float"), ("type", toJson (toString type)),
++       ("width", toJson type.format.bitwidth), ("bits", toJson (toString value.toBits.toNat))]
++  | .addr value => Lean.Json.mkObj
++      [("kind", "address"), ("width", toJson (64 : Nat)), ("value", toJson (toString value.toNat))]
++  | .reg value => Lean.Json.mkObj
++      [("kind", "register"), ("width", toJson (64 : Nat)), ("value", toJson (toString value.val.toNat))]
++  | .felt fieldType value => Lean.Json.mkObj
++      [("kind", "felt"), ("type", toJson (toString fieldType)), ("value", toJson (toString value))]
++
++private def resultJson (outcome : String) (results : Array RuntimeValue := #[]) : Lean.Json :=
++  Lean.Json.mkObj [("schema_version", toJson (1 : Nat)), ("outcome", toJson outcome),
++    ("results", Lean.Json.arr (results.map runtimeValueJson))]
+ 
+ /-- Returns true if `op` is a viable zero-argument `@main` function. -/
+ private def isZeroArgMainFunc (ctx : IRContext OpCode) (op : OperationPtr) : Bool :=
+@@ -62,12 +88,14 @@ def resolveEntryPoint (ctx : IRContext OpCode) (moduleOp : OperationPtr) : IO Op
+ set_option warn.sorry false in
+ def main (args : List String) : IO Unit := do
+   enableExitOnPanic
++  let jsonOutput := args.contains "--json"
++  let args := args.filter (· != "--json")
+   let filename ←
+     match inputSourceOfArgs args with
+     | .ok filename => pure filename
+     | .error errMsg =>
+       IO.eprintln errMsg
+-      IO.eprintln "Usage: veir-interpret [filename]"
++      IO.eprintln "Usage: veir-interpret [--json] [filename]"
+       IO.eprintln "  Reads the program from standard input if no filename is given."
+       IO.Process.exit 2
+   match ← parseOperation filename (allowUnregisteredDialect := true) with
+@@ -79,9 +107,14 @@ def main (args : List String) : IO Unit := do
+       let result := bind (interpretFunction (ctx := ctx) mainOp #[] MemoryState.empty (by sorry))
+                          (fun (_, r) => pure r)
+       match result with
+-      | .ok results => IO.println s!"Program output: {results}"
+-      | .ub => IO.println "Undefined behavior"
++      | .ok results =>
++        if jsonOutput then IO.println (resultJson "ok" results).compress
++        else IO.println s!"Program output: {results}"
++      | .ub =>
++        if jsonOutput then IO.println (resultJson "undefined_behavior").compress
++        else IO.println "Undefined behavior"
+       | .fail =>
++        if jsonOutput then IO.println (resultJson "unsupported_interpretation").compress
+         IO.eprintln "Error while interpreting module"
+         IO.Process.exit 1
+     | .error errMsg =>

@@ -1,0 +1,39 @@
+{
+  "name": "VeIR capability and correctness tracker",
+  "contract_status": "proposed",
+  "scope_note": "A concrete initial test contract plus visible roadmap obligations. Not an agreement to implement all MLIR, and not an assertion that passing samples proves a feature.",
+  "scopes": [
+    {
+      "id": "llvm-compat",
+      "title": "LLVM dialect compatibility"
+    },
+    {
+      "id": "llvm-execution",
+      "title": "LLVM execution"
+    },
+    {
+      "id": "veir-model",
+      "title": "VeIR semantic model"
+    },
+    {
+      "id": "transformations",
+      "title": "Transformations and proofs"
+    },
+    {
+      "id": "core",
+      "title": "Core IR and other dialects"
+    },
+    {
+      "id": "programs",
+      "title": "End-to-end programs"
+    },
+    {
+      "id": "project",
+      "title": "Human contract decisions"
+    },
+    {
+      "id": "mathieu-audit",
+      "title": "Mathieu's source observations"
+    }
+  ]
+}
