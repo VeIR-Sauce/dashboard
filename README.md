@@ -32,6 +32,12 @@ Share [LLVM compatibility](https://veir-sauce.github.io/dashboard/#llvm),
 stage, status and search are retained in the URL as you change filters.
 **Link to this contract** opens the selected contract and its evidence directly.
 
+[LLVM parsing](https://veir-sauce.github.io/dashboard/#llvm-parse) is a separate
+operation-by-operation page. **Yes · observed** requires a successful VeIR verifier
+or printer invocation on a mapped positive example. Unknown operations have no
+such recorded evidence; registration and rejected negative tests are not treated
+as successful parsing. The linked examples define the syntax and types covered.
+
 ## What is the goal?
 
 VeIR describes MLIR-style infrastructure and interoperability. A commitment to all MLIR dialects, passes, execution models and APIs has **not** been assumed. The project decision queue asks humans to choose required programs and dialects, observable behavior, equality/refinement, the compatibility-version policy, and the trusted boundary.

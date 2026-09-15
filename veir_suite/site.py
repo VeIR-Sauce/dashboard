@@ -11,6 +11,35 @@ from .model import InvalidData, load_registry, read_json
 from .history import read_all_history, read_history
 
 
+def parsing_evidence(report: dict) -> list[dict]:
+    """Positive examples whose successful VeIR invocation establishes parsing.
+
+    A rejected negative case, registered name, or failed verifier invocation
+    does not establish whether the parser accepts a positive input.
+    """
+    tests = {t["id"]: t for t in report["registry"].get("tests", [])}
+    results = {r["id"]: r for r in report["results"]}
+    observed = {}
+    for requirement in report["registry"]["requirements"]:
+        for test_id in requirement["test_ids"]:
+            test, result = tests.get(test_id, {}), results.get(test_id, {})
+            positive = test.get("kind") == "roundtrip" or (
+                test.get("kind") == "verify" and test.get("expect") == "accept")
+            parsed = positive and any(
+                step.get("phase") in {"veir.verification", "veir.roundtrip"}
+                and step.get("kind") == "exit" and step.get("exit_code") == 0
+                for step in result.get("steps", []))
+            if not parsed:
+                continue
+            for operation in requirement.get("operations", []):
+                observed[(operation, test_id)] = {
+                    "operation": operation, "test_id": test_id,
+                    "requirement": requirement["id"], "input": test.get("input"),
+                    "input_sha256": result.get("input_sha256"),
+                }
+    return [observed[key] for key in sorted(observed)]
+
+
 def build_site(root: Path, history: Path, out: Path) -> None:
     root, history, out = root.resolve(), history.resolve(), out.resolve()
     if out == root or root.is_relative_to(out) or out == history or history.is_relative_to(out):
@@ -39,6 +68,7 @@ def build_site(root: Path, history: Path, out: Path) -> None:
                                               "conformance_remaining": sum(not r["satisfied"] for r in rows)}
         if detailed:
             item["summary"] = report["summary"]
+            item["parsing"] = parsing_evidence(report)
             item["results"] = [{key: value for key, value in r.items() if key != "steps"} for r in report["results"]]
             for result, original in zip(item["results"], report["results"]):
                 if result["status"] in {"FAIL", "MISSING_CAPABILITY"}:

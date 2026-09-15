@@ -108,6 +108,23 @@ async function main() {
       assert.equal(await evaluate('document.querySelectorAll(".chart svg").length'), 2);
     }
     await screenshot("desktop");
+    await evaluate('document.querySelector("a[data-view=llvm-parse]").click()');
+    await until('!document.getElementById("parsing-page").hidden');
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-operations tr").length'), data.catalog.operations.length);
+    assert.match(await text("parsing-note"), /successful recorded example/);
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".action-panel")).display'), "none");
+    await choose("parse-status", "observed"); await choose("parse-search", "llvm.add");
+    assert.ok(await evaluate('document.querySelectorAll("#parsing-operations tr").length > 0'));
+    await send("Page.reload");
+    await until('document.getElementById("parse-search")?.value === "llvm.add"');
+    assert.equal(await evaluate('document.getElementById("parse-status").value'), "observed");
+    await screenshot("parsing");
+    await evaluate('document.querySelector("#parsing-operations details").open = true');
+    await evaluate('document.querySelector("#parsing-operations td:last-child a").click()');
+    await until('document.getElementById("requirement-details").open && document.querySelector("#rows details")?.open');
+    assert.equal(await evaluate('document.body.classList.contains("parsing-view")'), false);
+    await evaluate('document.querySelector("a[data-view=overview]").click()');
+    await until('location.hash === "#overview"');
     assert.equal(await evaluate('document.getElementById("catalog-details").open'), false);
     assert.ok(await evaluate('document.querySelectorAll("#actions article").length > 0'));
     await evaluate('document.querySelector("a[data-view=llvm]").click()');
@@ -180,7 +197,7 @@ async function main() {
     console.log(JSON.stringify({browser: (await send("Browser.getVersion", {}, null)).product,
       requirements: data.registry.requirements.length, decisions, operations: data.catalog.operations.length,
       mobile: await evaluate('({viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth})'),
-      checks: ["baseline", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout"],
+      checks: ["baseline", "LLVM parsing", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout"],
       screenshots: screenshots || null}));
   } catch (error) {
     error.message += "\nChromium stderr (tail):\n" + stderr;

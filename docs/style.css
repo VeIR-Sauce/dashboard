@@ -112,6 +112,10 @@ h2 {
 .requirement .diagnostic>summary {padding:7px 0; font-size:12px; display:list-item; list-style:revert;}
 .requirement .diagnostic>summary:before {content:none;}
 .req-body>a {display:block; margin:9px 0; overflow-wrap:anywhere;}
+.parsing-view .action-panel,.parsing-view .disclosure,.parsing-view #notice,.parsing-view #contract-state {display:none;}
+.parsing-table {max-height:none;}
+.parse-examples summary {cursor:pointer; color:var(--teal);}
+.parse-examples a {display:block; overflow-wrap:anywhere; margin:8px 0;}
 .diagnostic pre {white-space:pre-wrap; overflow-wrap:anywhere; padding:12px; background:#faf4f4; border-radius:6px; font-size:12px;}
 .pill {
   display:inline-block;

@@ -71,9 +71,11 @@
     const cohort = requestedCohort === CURRENT_PLAN || cohorts.includes(requestedCohort) ? requestedCohort : defaultCohort;
     const full = name === "all" || params.get("layout") === "full";
     const status = params.get("status") || (name === "plan" ? "decision" : full ? "all" : "open");
-    return {scope, cohort, full, status: statuses.includes(status) ? status : "all",
+    return {scope, cohort, full, parsing: name === "llvm-parse", status: statuses.includes(status) ? status : "all",
       stage: stages.includes(params.get("stage")) ? params.get("stage") : "all",
       search: params.get("q") || "", requirement: params.get("req") || "",
+      parsingSearch: params.get("op") || "",
+      parsingStatus: ["observed", "unknown"].includes(params.get("evidence")) ? params.get("evidence") : "all",
       warning: requestedCohort !== cohort ? "The linked measurement is unavailable; showing the latest available view." : ""};
   }
 
@@ -86,7 +88,9 @@
     }
     // Preserve an explicit all-status filter instead of reverting to open.
     if (selection.status === "all") params.set("status", "all");
-    return "#view?" + params.toString();
+    if (selection.parsing && selection.parsingSearch) params.set("op", selection.parsingSearch);
+    if (selection.parsing && ["observed", "unknown"].includes(selection.parsingStatus)) params.set("evidence", selection.parsingStatus);
+    return (selection.parsing ? "#llvm-parse?" : "#view?") + params.toString();
   }
 
   function actionItems(state) {

@@ -84,7 +84,7 @@ test("view links preserve filters, explicit all status, cohort and contract acro
   const selection = {scope: "llvm", cohort: "old", search: 'vector<4xi32> & poison',
     stage: "verification", status: "all", requirement: "a", full: true};
   const restored = route(fixture(), viewHash(selection));
-  assert.deepEqual(restored, {...selection, warning: ""});
+  assert.deepEqual(restored, {...selection, parsing: false, parsingSearch: "", parsingStatus: "all", warning: ""});
 });
 
 test("invalid links fall back safely and report an unavailable measurement", () => {
@@ -105,4 +105,9 @@ test("action queue prioritizes measured failures and does not present passing co
   assert.equal(items.length, 1);
   assert.equal(items[0].failures[0].id, "case");
   assert.equal(actionItems(view(data, CURRENT_PLAN))[0].status, "decision");
+});
+
+test("parsing page links retain operation and evidence filters", () => {
+  const selection = {...route(fixture(), "#llvm-parse"), parsingSearch: "llvm.add", parsingStatus: "observed"};
+  assert.deepEqual(route(fixture(), viewHash(selection)), selection);
 });

@@ -17,18 +17,19 @@ $("cohort").value = groups[0] || progress.CURRENT_PLAN;
 const scopes = new Map(data.registry.scopes.map(s => [s.id, s]));
 for (const registry of Object.values(data.cohorts)) for (const scope of registry.scopes) if (!scopes.has(scope.id)) scopes.set(scope.id, scope);
 for (const scope of scopes.values()) { const option = node("option", scope.title); option.value = scope.id; $("scope").append(option); }
-let state = {}, showAllOperations = false, fullView = false, routeWarning = "";
+let state = {}, showAllOperations = false, fullView = false, parsingView = false, routeWarning = "";
 const disclosures = ["measurement-controls", "progress-details", "context-details", "requirement-details", "catalog-details", "ledger-details"];
 function selection(extra = {}) {
   return {scope: $("scope").value, cohort: $("cohort").value, stage: $("stage").value,
-    status: $("status").value, search: $("search").value, full: fullView, ...extra};
+    status: $("status").value, search: $("search").value, full: fullView, parsing: parsingView,
+    parsingSearch: $("parse-search").value, parsingStatus: $("parse-status").value, ...extra};
 }
 function syncLink() {
   const hash = progress.viewHash(selection());
   history.replaceState(null, "", hash); $("share-view").href = hash;
 }
 function requirementLink(req, label) {
-  return link(label || req.title, progress.viewHash(selection({requirement: req.id, search: "", stage: "all", status: "all"})));
+  return link(label || req.title, progress.viewHash(selection({requirement: req.id, search: "", stage: "all", status: "all", parsing: false})));
 }
 function applyRoute() {
   const route = progress.route(data, location.hash);
@@ -38,10 +39,13 @@ function applyRoute() {
     $(section).scrollIntoView();
     return;
   }
-  fullView = route.full; routeWarning = route.warning;
+  fullView = route.full; parsingView = route.parsing; routeWarning = route.warning;
+  document.body.classList.toggle("parsing-view", parsingView);
+  $("parsing-page").hidden = !parsingView;
   $("scope").value = route.scope; $("cohort").value = route.cohort;
   $("stage").value = route.stage; $("status").value = route.status;
   $("search").value = route.requirement || route.search;
+  $("parse-search").value = route.parsingSearch; $("parse-status").value = route.parsingStatus;
   for (const id of disclosures) $(id).open = fullView;
   render();
   $("share-view").href = progress.viewHash(selection({requirement: route.requirement}));
@@ -91,7 +95,7 @@ function render() {
   $("view-intro").textContent = state.currentPlan ? "Agree the open contracts, then define the examples and evidence needed to close them." : "Pick an open contract, inspect its failing examples, then use the receipt to reproduce the result.";
   $("selection-label").textContent = `${scopeTitle} · ${state.currentPlan ? "current proposed plan" : "recorded measurement"} · change selection`;
   document.querySelectorAll("[data-view]").forEach(a => {
-    const activeView = fullView ? "all" : state.currentPlan ? "plan" : $("scope").value === "llvm-compat" ? "llvm" : "overview";
+    const activeView = parsingView ? "llvm-parse" : fullView ? "all" : state.currentPlan ? "plan" : $("scope").value === "llvm-compat" ? "llvm" : "overview";
     if (a.dataset.view === activeView) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
   });
   $("remaining").textContent = scopeAvailable ? remaining.conformance_remaining : "—"; $("denominator").textContent = scopeAvailable ? `of ${requirements.length} tracked requirements` : "Scope outside this measurement";
@@ -125,7 +129,43 @@ function render() {
   }
   if (!decisions.length) $("attention").append(node("p", scopeAvailable ? "No unresolved contract decisions in this selection. The Current plan view includes the wider decision queue." : "Select Current plan to inspect this scope.", "muted"));
   if (decisions.length > 5) $("attention").append(node("p", `${decisions.length - 5} more decisions are visible with the tracker’s “Needs decision” filter.`, "muted"));
-  renderActions(); renderRequirements(); renderCatalog(); renderLedger();
+  if (parsingView) {
+    $("view-title").textContent = "LLVM dialect: parsing";
+    $("view-intro").textContent = "Find an operation and inspect an example that VeIR has successfully parsed.";
+  }
+  renderParsing(); renderActions(); renderRequirements(); renderCatalog(); renderLedger();
+}
+
+function renderParsing() {
+  const report = state.active, observations = report?.parsing || [];
+  const byOperation = new Map();
+  for (const example of observations) {
+    if (!byOperation.has(example.operation)) byOperation.set(example.operation, []);
+    byOperation.get(example.operation).push(example);
+  }
+  const observed = data.catalog.operations.filter(op => byOperation.has(op.name)).length;
+  $("parsing-note").textContent = report ? `${observed} of ${data.catalog.operations.length} operation names have a successful recorded example. Measured ${report.finished_at.replace("T", " ").replace("Z", " UTC")} with VeIR ${report.sources.veir.commit.slice(0, 12)}${report.sources.veir.dirty ? " + local changes" : ""}.` : "No complete measurement is available for this selection.";
+  if (routeWarning) $("parsing-note").textContent += " " + routeWarning;
+  const query = $("parse-search").value.toLowerCase(), filter = $("parse-status").value;
+  const operations = data.catalog.operations.filter(op => op.name.includes(query) &&
+    (filter === "all" || (filter === "observed") === byOperation.has(op.name)));
+  $("parsing-count").textContent = `${operations.length} operation${operations.length === 1 ? "" : "s"} shown · ${observed} observed · ${data.catalog.operations.length - observed} unknown`;
+  $("parsing-operations").replaceChildren();
+  for (const op of operations) {
+    const examples = byOperation.get(op.name) || [], row = node("tr"), name = node("td"), evidence = node("td");
+    name.append(link(op.name, op.url));
+    row.append(name, node("td", examples.length ? "Yes · observed" : "Unknown", examples.length ? "yes" : "unknown"));
+    if (examples.length) {
+      const details = node("details", undefined, "parse-examples");
+      details.append(node("summary", `${examples.length} positive example${examples.length === 1 ? "" : "s"}`));
+      for (const example of examples) {
+        const req = state.requirements.find(r => r.id === example.requirement);
+        if (req) details.append(requirementLink(req, example.test_id + " ↗"));
+      }
+      evidence.append(details);
+    } else evidence.append(node("span", "No successful positive example recorded", "muted"));
+    row.append(evidence); $("parsing-operations").append(row);
+  }
 }
 
 function renderActions() {
@@ -225,6 +265,7 @@ $("all-actions").addEventListener("click", event => {
   renderRequirements(); syncLink(); $("requirement-details").open = true; $("requirements").scrollIntoView();
 });
 $("op-search").addEventListener("input", renderCatalog);
+for (const id of ["parse-search", "parse-status"]) $(id).addEventListener("input", () => { renderParsing(); syncLink(); });
 $("more-ops").addEventListener("click", () => { showAllOperations = true; renderCatalog(); });
 window.addEventListener("hashchange", applyRoute);
 // Render once before following an old section-only URL.
