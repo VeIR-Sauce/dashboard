@@ -54,6 +54,11 @@
 
   const statuses = ["all", "open", "satisfied", "uncovered", "decision", "failed"];
   const stages = ["all", "verification", "roundtrip", "execution", "transformation", "regression", "proof"];
+  const parsingStatuses = ["parsed", "rejected", "blocked", "error", "not_tested"];
+  const parsingCategories = {core: "Core operations", intrinsics: "Intrinsics", experimental: "Experimental intrinsics"};
+  function parsingCategory(name) {
+    return name.startsWith("llvm.intr.experimental.") ? "experimental" : name.startsWith("llvm.intr.") ? "intrinsics" : "core";
+  }
 
   function route(data, hash = "") {
     const [name, query = ""] = hash.replace(/^#/, "").split("?", 2);
@@ -75,7 +80,10 @@
       stage: stages.includes(params.get("stage")) ? params.get("stage") : "all",
       search: params.get("q") || "", requirement: params.get("req") || "",
       parsingSearch: params.get("op") || "",
-      parsingStatus: ["observed", "unknown"].includes(params.get("evidence")) ? params.get("evidence") : "all",
+      parsingStatus: params.get("evidence") === "observed" ? "parsed" : params.get("evidence") === "unknown" ? "not_tested" : parsingStatuses.includes(params.get("evidence")) ? params.get("evidence") : "all",
+      parsingMode: params.get("mode") === "permissive" ? "permissive" : "strict",
+      parsingRun: params.get("run") || "",
+      parsingCategory: Object.hasOwn(parsingCategories, params.get("category")) ? params.get("category") : "all",
       warning: requestedCohort !== cohort ? "The linked measurement is unavailable; showing the latest available view." : ""};
   }
 
@@ -89,7 +97,10 @@
     // Preserve an explicit all-status filter instead of reverting to open.
     if (selection.status === "all") params.set("status", "all");
     if (selection.parsing && selection.parsingSearch) params.set("op", selection.parsingSearch);
-    if (selection.parsing && ["observed", "unknown"].includes(selection.parsingStatus)) params.set("evidence", selection.parsingStatus);
+    if (selection.parsing && parsingStatuses.includes(selection.parsingStatus)) params.set("evidence", selection.parsingStatus);
+    if (selection.parsing && selection.parsingMode === "permissive") params.set("mode", "permissive");
+    if (selection.parsing && selection.parsingRun) params.set("run", selection.parsingRun);
+    if (selection.parsing && Object.hasOwn(parsingCategories, selection.parsingCategory)) params.set("category", selection.parsingCategory);
     return (selection.parsing ? "#llvm-parse?" : "#view?") + params.toString();
   }
 
@@ -105,5 +116,23 @@
     });
   }
 
-  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems};
+  function parsingView(data, runId = "", mode = "strict", status = "all", query = "", category = "all") {
+    const reports = data.parsing || [];
+    const report = reports.find(r => r.id === runId) || reports.findLast(r => r.complete) || reports.at(-1);
+    const byName = new Map((report?.results || []).map(row => [row.operation, row]));
+    const operations = report?.operations || data.catalog.operations;
+    const rows = operations.map(op => ({...op, ...(byName.get(op.name) || {
+      operation: op.name, strict: {status: "not_tested"}, permissive: {status: "not_tested"}})}));
+    const categories = Object.entries(parsingCategories).map(([id, title]) => {
+      const selected = rows.filter(row => parsingCategory(row.operation) === id);
+      const count = mode => Object.fromEntries(parsingStatuses.map(status => [status, selected.filter(row => row[mode].status === status).length]));
+      return {id, title, total: selected.length, strict: count("strict"), permissive: count("permissive")};
+    });
+    return {report, total: operations.length, categories,
+      warning: runId && runId !== report?.id ? "The linked parser run is unavailable; showing the latest available run." : "",
+      rows: rows.filter(row => row.operation.includes(query.toLowerCase()) && (status === "all" || row[mode].status === status) &&
+        (category === "all" || parsingCategory(row.operation) === category))};
+  }
+
+  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems, parsingView, parsingCategory};
 });

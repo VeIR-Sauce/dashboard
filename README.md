@@ -32,11 +32,19 @@ Share [LLVM compatibility](https://veir-sauce.github.io/dashboard/#llvm),
 stage, status and search are retained in the URL as you change filters.
 **Link to this contract** opens the selected contract and its evidence directly.
 
-[LLVM parsing](https://veir-sauce.github.io/dashboard/#llvm-parse) is a separate
-operation-by-operation page. **Yes · observed** requires a successful VeIR verifier
-or printer invocation on a mapped positive example. Unknown operations have no
-such recorded evidence; registration and rejected negative tests are not treated
-as successful parsing. The linked examples define the syntax and types covered.
+[LLVM parsing](https://veir-sauce.github.io/dashboard/#llvm-parse) measures a
+dedicated parser-only matrix of **344 reference-verified examples**. It shows
+strict parsing and parsing with unregistered operations allowed separately,
+with the exact input and first diagnostic for every operation. Core operations,
+intrinsics and experimental intrinsics have separate counts and shareable filters.
+See [the parsing measurement contract](docs/parsing.md) to reproduce or extend it.
+
+The September 15 baseline records **90 parsed / 244 rejected / 10 blocked** in
+strict mode, and **331 parsed / 5 rejected / 8 blocked** with unregistered operations
+allowed. There are no untested operation names in this matrix. Blocked examples
+encounter an error in surrounding input before a result can be attributed to the
+target operation. Parsing an opaque unregistered operation does not establish
+verification or execution support. Each example covers its stated syntax and types.
 
 ## What is the goal?
 

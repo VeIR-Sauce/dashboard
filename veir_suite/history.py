@@ -7,13 +7,18 @@ import re
 from .model import InvalidData, read_json
 from .runner import validate_report
 from .native import validate_native
+from .parsing import validate_parsing
 
 
 def validate_receipt(report: dict) -> dict:
+    if report.get("kind") == "veir-parsing":
+        return validate_parsing(report)
     return (validate_native if report.get("kind") == "veir-native" else validate_report)(report)
 
 
 def receipt_filename(report: dict) -> str:
+    if report.get("kind") == "veir-parsing":
+        return "parsing.json"
     return "native.json" if report.get("kind") == "veir-native" else "report.json"
 
 
@@ -44,6 +49,10 @@ def read_native_history(path: Path) -> list[dict]:
     return _read(path, "native.json", validate_native)
 
 
+def read_parsing_history(path: Path) -> list[dict]:
+    return _read(path, "parsing.json", validate_parsing)
+
+
 def read_all_history(path: Path) -> tuple[list[dict], list[dict]]:
     reports, native = read_history(path), read_native_history(path)
     if {r["id"] for r in reports} & {r["id"] for r in native}:
@@ -64,14 +73,13 @@ def record_receipt(source: Path, history: Path) -> Path:
     identifier = check_receipt_id(report)
     filename = receipt_filename(report)
     directory = history / identifier
-    other = directory / ("report.json" if filename == "native.json" else "native.json")
-    if other.exists():
+    if any((directory / name).exists() for name in ["report.json", "native.json", "parsing.json"] if name != filename):
         raise InvalidData("Receipt ID already belongs to a different kind of measurement")
     target = directory / filename
     if not target.resolve().is_relative_to(history.resolve()):
         raise InvalidData("Receipt destination escapes through a symlink")
     contract, native = read_all_history(history)
-    if not target.exists() and any(item['id'] == identifier for item in contract + native):
+    if not target.exists() and any(item['id'] == identifier for item in contract + native + read_parsing_history(history)):
         raise InvalidData("Receipt ID already exists at a different history path")
     payload = source.read_bytes()
     if target.exists():

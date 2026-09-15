@@ -111,22 +111,42 @@ async function main() {
     await evaluate('document.querySelector("a[data-view=llvm-parse]").click()');
     await until('!document.getElementById("parsing-page").hidden');
     assert.equal(await evaluate('document.querySelectorAll("#parsing-operations tr").length'), data.catalog.operations.length);
-    assert.match(await text("parsing-note"), /successful recorded example/);
+    assert.match(await text("parsing-note"), /examples parse strictly/);
+    await evaluate('document.querySelector("#parsing-categories a").click()');
+    await until('document.getElementById("parse-category").value === "core"');
+    assert.ok(await evaluate('[...document.querySelectorAll("#parsing-operations td:first-child")].every(cell => !cell.textContent.startsWith("llvm.intr."))'));
+    await send("Page.reload");
+    await until('document.getElementById("parse-category")?.value === "core"');
+    await choose("parse-category", "all");
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".action-panel")).display'), "none");
-    await choose("parse-status", "observed"); await choose("parse-search", "llvm.add");
+    await choose("parse-status", "parsed"); await choose("parse-search", "llvm.add");
     assert.ok(await evaluate('document.querySelectorAll("#parsing-operations tr").length > 0'));
     await send("Page.reload");
     await until('document.getElementById("parse-search")?.value === "llvm.add"');
-    assert.equal(await evaluate('document.getElementById("parse-status").value'), "observed");
+    assert.equal(await evaluate('document.getElementById("parse-status").value'), "parsed");
     await screenshot("parsing");
     await evaluate('document.querySelector("nav a[href=\\"#catalog\\"]").click()');
     await until('document.getElementById("catalog-details").open && !document.body.classList.contains("parsing-view")');
     await evaluate('history.back()');
     await until('document.body.classList.contains("parsing-view") && document.getElementById("parse-search").value === "llvm.add"');
     await evaluate('document.querySelector("#parsing-operations details").open = true');
-    await evaluate('document.querySelector("#parsing-operations td:last-child a").click()');
-    await until('document.getElementById("requirement-details").open && document.querySelector("#rows details")?.open');
-    assert.equal(await evaluate('document.body.classList.contains("parsing-view")'), false);
+    assert.match(await evaluate('document.querySelector(".parse-input").textContent'), /"llvm.add"/);
+    const inputLink = await evaluate('document.querySelector(".parse-links a").getAttribute("href")');
+    assert.ok(fs.existsSync(path.join(site, inputLink)), "Parser input download is missing");
+    await evaluate('document.querySelector(".parse-links a:nth-child(2)").click()');
+    await until('document.getElementById("parse-run").value !== ""');
+    const parserRun = await evaluate('document.getElementById("parse-run").value');
+    await send("Page.reload");
+    await until(`document.getElementById("parse-run")?.value === ${JSON.stringify(parserRun)}`);
+    await choose("parse-search", "llvm.intr.ceil"); await choose("parse-status", "rejected");
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-operations tr").length'), 1);
+    await choose("parse-mode", "permissive");
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-operations tr").length'), 0);
+    await choose("parse-status", "parsed");
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-operations tr").length'), 1);
+    await evaluate('document.querySelector("#parsing-operations details").open = true');
+    assert.match(await evaluate('document.querySelector(".parse-diagnostic").textContent'), /not registered/);
+    await screenshot("parsing-evidence");
     await evaluate('document.querySelector("a[data-view=overview]").click()');
     await until('location.hash === "#overview"');
     assert.equal(await evaluate('document.getElementById("catalog-details").open'), false);
@@ -197,11 +217,17 @@ async function main() {
     await evaluate('window.scrollTo(0, 0)');
     assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile page overflows horizontally");
     await screenshot("mobile");
+    await evaluate('document.querySelector("a[data-view=llvm-parse]").click()');
+    await until('!document.getElementById("parsing-page").hidden');
+    await choose("parse-search", "llvm.intr.ceil");
+    await evaluate('document.querySelector("#parsing-operations details").open = true');
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile parsing page overflows horizontally");
+    await screenshot("parsing-mobile");
     assert.deepEqual(errors, [], "Browser exceptions");
     console.log(JSON.stringify({browser: (await send("Browser.getVersion", {}, null)).product,
       requirements: data.registry.requirements.length, decisions, operations: data.catalog.operations.length,
       mobile: await evaluate('({viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth})'),
-      checks: ["baseline", "LLVM parsing", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout"],
+      checks: ["baseline", "LLVM parsing", "parser modes", "category counts and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence"],
       screenshots: screenshots || null}));
   } catch (error) {
     error.message += "\nChromium stderr (tail):\n" + stderr;

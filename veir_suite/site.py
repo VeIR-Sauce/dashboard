@@ -4,11 +4,12 @@ import csv
 import io
 import gzip
 import json
+import re
 from pathlib import Path
 import shutil
 
 from .model import InvalidData, load_registry, read_json
-from .history import read_all_history, read_history
+from .history import read_all_history, read_history, read_parsing_history
 
 
 def parsing_evidence(report: dict) -> list[dict]:
@@ -96,8 +97,40 @@ def build_site(root: Path, history: Path, out: Path) -> None:
                     lean_module_count=len(report["manifest"]["lean_modules"]),
                     download="data/" + target.name)
         native_entries.append(item)
+    parsing_entries = []
+    parsing_reports = read_parsing_history(history)
+    identifiers = [r['id'] for r in reports + native + parsing_reports]
+    if len(set(identifiers)) != len(identifiers):
+        raise InvalidData('Different measurement kinds reuse the same receipt ID')
+    for report in parsing_reports:
+        target = downloads / (report['id'] + '.json')
+        target.write_text(json.dumps(report, indent=2) + '\n')
+        cases = {case['operation']: case for case in report['manifest']['cases']}
+        rows = []
+        inputs = downloads / report['id']; inputs.mkdir(exist_ok=True)
+        for result in report['results']:
+            if not re.fullmatch(r'llvm\.[a-z0-9_.]+', result['operation']):
+                raise InvalidData('Invalid parsing operation name')
+            row = {'operation': result['operation']}
+            case = cases.get(result['operation'])
+            if case:
+                filename = result['operation'] + '.mlir'
+                (inputs / filename).write_text(case['text'])
+                row['input'] = {'download': f'data/{report["id"]}/{filename}',
+                    'text': case['text'], 'sha256': case['input_sha256'],
+                    'method': case['method'], 'source': case['source']}
+            for mode in ['strict', 'permissive']:
+                value = result[mode]
+                row[mode] = {'status': value['status'],
+                    'diagnostic': value.get('step', {}).get('stderr', '')[:2000]}
+            if result.get('reference', {}).get('exit_code') != 0:
+                row['reference_diagnostic'] = result.get('reference', {}).get('stderr', 'No validated example recorded')[:2000]
+            rows.append(row)
+        parsing_entries.append({key: report[key] for key in ['id', 'finished_at', 'complete', 'counts', 'source']} |
+            {'download': 'data/' + target.name, 'llvm_revision': report['manifest']['llvm_revision'],
+             'operations': report['manifest']['catalog']['operations'], 'results': rows})
     data = {"registry": registry, "catalog": catalog, "sources": sources, "reports": compact,
-            "cohorts": cohorts, "native": native_entries}
+            "cohorts": cohorts, "native": native_entries, "parsing": parsing_entries}
     # Safe even if a diagnostic, title or source contains </script> or HTML.
     embedded = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
     template = (root / "web/index.html").read_text()

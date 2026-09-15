@@ -20,6 +20,11 @@ def main():
     p.add_argument("--timeout", type=float, default=15.0)
     p.add_argument("--profile", default="local")
     p.add_argument("--reference-revision", default="unknown")
+    p = commands.add_parser("parse", help="Measure reference-validated LLVM examples without VeIR verification")
+    p.add_argument("--veir", type=Path, required=True)
+    p.add_argument("--mlir-opt", type=Path, required=True)
+    p.add_argument("--out", type=Path, default=Path(".artifacts/parsing"))
+    p.add_argument("--timeout", type=float, default=10.0)
     p = commands.add_parser("report-check", help="Reject incomplete, altered or inconsistent receipts")
     p.add_argument("report", type=Path)
     p = commands.add_parser("compare", help="Gate regressions within one fixed cohort")
@@ -48,9 +53,14 @@ def main():
             _, code = run(args.root.resolve(), args.veir.resolve(), args.out, scopes=args.scope,
                           timeout=args.timeout, profile=args.profile, reference_revision=args.reference_revision)
             return code
+        elif args.command == "parse":
+            from .parsing import run_parsing
+            _, code = run_parsing(args.root, args.veir, args.mlir_opt, args.out, args.timeout)
+            return code
         elif args.command == "report-check":
-            report = validate_report(read_json(args.report))
-            print(json.dumps({"id": report["id"], "complete": report["complete"], "cohort": report["cohort"]}))
+            from .history import validate_receipt
+            report = validate_receipt(read_json(args.report))
+            print(json.dumps({"id": report["id"], "complete": report["complete"], "cohort": report.get("cohort")}))
             return 0 if report["complete"] else 2
         elif args.command == "compare":
             failures = regressions(read_json(args.before), read_json(args.after))
