@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           export CHROMIUM
-          CHROMIUM=$(command -v chromium || command -v google-chrome)
+          CHROMIUM=$(command -v google-chrome || command -v chromium)
           node scripts/check_browser.cjs docs
       - name: Keep the reviewable site
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

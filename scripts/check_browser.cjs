@@ -22,10 +22,21 @@ async function main() {
     "--incognito", "--user-data-dir=" + profile, "about:blank"
   ], {stdio: ["ignore", "ignore", "pipe", "pipe", "pipe"]});
   const pending = new Map(), errors = [];
-  let sequence = 0, buffered = Buffer.alloc(0), stderr = "", session;
+  let sequence = 0, buffered = Buffer.alloc(0), stderr = "", session, transportError, closing = false;
   const closed = new Promise(resolve => browser.once("close", resolve));
   browser.stderr.on("data", chunk => { stderr = (stderr + chunk.toString()).slice(-16384); });
   browser.on("error", error => errors.push(error.message));
+  function transportFailed(error) {
+    transportError = error;
+    if (!closing) errors.push("DevTools transport: " + error.message);
+    for (const job of pending.values()) { clearTimeout(job.timer); job.reject(error); }
+    pending.clear();
+  }
+  // Native Chrome may reset these pipes during shutdown. Handle the reset so
+  // cleanup cannot replace an assertion failure with an unhandled Socket error.
+  browser.stdio[3].on("error", transportFailed);
+  browser.stdio[4].on("error", transportFailed);
+  browser.once("close", () => transportFailed(new Error("Chromium closed its DevTools connection")));
   browser.stdio[4].on("data", chunk => {
     buffered = Buffer.concat([buffered, chunk]);
     let end;
@@ -41,6 +52,7 @@ async function main() {
     }
   });
   function send(method, params = {}, target = session) {
+    if (transportError) return Promise.reject(transportError);
     return new Promise((resolve, reject) => {
       const id = ++sequence;
       const timer = setTimeout(() => { pending.delete(id); reject(new Error("CDP timed out: " + method)); }, 15000);
@@ -72,12 +84,14 @@ async function main() {
     session = (await send("Target.attachToTarget", {targetId: target.targetId, flatten: true}, null)).sessionId;
     await send("Page.enable"); await send("Runtime.enable");
     await send("Emulation.setDeviceMetricsOverride", {width: 1365, height: 960, deviceScaleFactor: 1, mobile: false});
-    await send("Page.navigate", {url: pathToFileURL(path.join(site, "index.html")).href});
+    const navigation = await send("Page.navigate", {url: pathToFileURL(path.join(site, "index.html")).href});
+    assert.ok(!navigation.errorText, "Page navigation failed: " + navigation.errorText);
     for (let attempt = 0; attempt < 100; attempt++) {
       if (await evaluate('document.getElementById("rows")?.children.length > 0')) break;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    assert.ok(await evaluate('document.getElementById("rows")?.children.length > 0'), "Page did not render");
+    assert.ok(await evaluate('document.getElementById("rows")?.children.length > 0'),
+      "Page did not render: " + JSON.stringify(await evaluate('({url: location.href, text: document.body?.innerText.slice(0, 500)})')));
     const data = await evaluate('JSON.parse(document.getElementById("data").textContent)');
     const cohort = await evaluate('document.getElementById("cohort").value');
     const complete = data.reports.filter(r => r.cohort === cohort && r.complete).at(-1);
@@ -135,7 +149,8 @@ async function main() {
     throw error;
   } finally {
     // This process owns this child; never inspect or signal other browser sessions.
-    try { await send("Browser.close", {}, null); } catch {}
+    closing = true;
+    if (!transportError) { try { await send("Browser.close", {}, null); } catch {} }
     const timer = setTimeout(() => browser.kill("SIGKILL"), 5000);
     await closed; clearTimeout(timer);
     for (const job of pending.values()) clearTimeout(job.timer);
