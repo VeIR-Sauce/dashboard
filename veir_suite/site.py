@@ -40,6 +40,14 @@ def build_site(root: Path, history: Path, out: Path) -> None:
         if detailed:
             item["summary"] = report["summary"]
             item["results"] = [{key: value for key, value in r.items() if key != "steps"} for r in report["results"]]
+            for result, original in zip(item["results"], report["results"]):
+                if result["status"] in {"FAIL", "MISSING_CAPABILITY"}:
+                    failed_steps = [s for s in original.get("steps", []) if s.get("exit_code") not in (None, 0)]
+                    if failed_steps:
+                        step = failed_steps[-1]
+                        diagnostic = step.get("stderr") or step.get("stdout") or ""
+                        result["diagnostic"] = diagnostic[:1200]
+                        result["diagnostic_phase"] = step.get("phase", "")
         # Per-case steps are available without exposing local file:// links.
         item["download"] = "data/" + target.name
         compact.append(item)

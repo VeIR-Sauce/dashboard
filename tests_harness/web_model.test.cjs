@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const {CURRENT_PLAN, cohortIds, view, requirementState} = require("../web/model.js");
+const {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems} = require("../web/model.js");
 
 function fixture() {
   const requirement = {id: "a", scope: "llvm", stage: "verification", state: "specified", test_ids: ["case"]};
@@ -66,4 +66,43 @@ test("missing evidence counts and unknown cohorts fail explicitly", () => {
   delete data.reports[0].counts_by_scope.llvm;
   assert.throws(() => view(data, "old", "llvm"), /Missing recorded counts/);
   assert.throws(() => view(data, "absent"), /Unknown measurement cohort/);
+});
+
+test("focused links select a relevant measurement or the unmeasured plan", () => {
+  const data = fixture();
+  data.registry.scopes.push({id: "llvm-compat"});
+  data.cohorts.old.scopes.push({id: "llvm-compat"});
+  assert.equal(route(data, "#llvm").scope, "llvm-compat");
+  assert.equal(route(data, "#llvm").cohort, "old");
+  assert.equal(route(data, "#core").cohort, CURRENT_PLAN);
+  assert.equal(route(data, "#plan").status, "decision");
+  assert.equal(route(data, "#all").full, true);
+  assert.equal(route(data, "#requirements"), null);
+});
+
+test("view links preserve filters, explicit all status, cohort and contract across reloads", () => {
+  const selection = {scope: "llvm", cohort: "old", search: 'vector<4xi32> & poison',
+    stage: "verification", status: "all", requirement: "a", full: true};
+  const restored = route(fixture(), viewHash(selection));
+  assert.deepEqual(restored, {...selection, warning: ""});
+});
+
+test("invalid links fall back safely and report an unavailable measurement", () => {
+  const restored = route(fixture(), "#view?scope=absent&cohort=gone&stage=bogus&status=bogus");
+  assert.equal(restored.scope, "all");
+  assert.equal(restored.cohort, "old");
+  assert.equal(restored.stage, "all");
+  assert.match(restored.warning, /unavailable/);
+  assert.equal(route(fixture(), "#view?cohort=old&scope=core").cohort, "old");
+});
+
+test("action queue prioritizes measured failures and does not present passing contracts as work", () => {
+  const data = fixture();
+  assert.deepEqual(actionItems(view(data, "old")), []);
+  data.reports[0].summary.rows[0].satisfied = false;
+  data.reports[0].results[0].status = "MISSING_CAPABILITY";
+  const items = actionItems(view(data, "old"));
+  assert.equal(items.length, 1);
+  assert.equal(items[0].failures[0].id, "case");
+  assert.equal(actionItems(view(data, CURRENT_PLAN))[0].status, "decision");
 });

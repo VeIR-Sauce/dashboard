@@ -52,5 +52,54 @@
     return ["open", "Open"];
   }
 
-  return {CURRENT_PLAN, cohortIds, view, requirementState};
+  const statuses = ["all", "open", "satisfied", "uncovered", "decision", "failed"];
+  const stages = ["all", "verification", "roundtrip", "execution", "transformation", "regression", "proof"];
+
+  function route(data, hash = "") {
+    const [name, query = ""] = hash.replace(/^#/, "").split("?", 2);
+    if (["requirements", "catalog"].includes(name)) return null; // Existing section links.
+    const params = new URLSearchParams(query);
+    const scopeIds = new Set(["all", ...data.registry.scopes.map(s => s.id),
+      ...Object.values(data.cohorts).flatMap(r => r.scopes.map(s => s.id))]);
+    const preset = name === "llvm" ? "llvm-compat" : scopeIds.has(name) ? name : "all";
+    const requestedScope = params.get("scope") || preset;
+    const scope = scopeIds.has(requestedScope) ? requestedScope : "all";
+    const cohorts = cohortIds(data);
+    const defaultCohort = name === "plan" ? CURRENT_PLAN :
+      cohorts.find(id => scope === "all" || data.cohorts[id].scopes.some(s => s.id === scope)) || CURRENT_PLAN;
+    const requestedCohort = params.get("cohort") || defaultCohort;
+    const cohort = requestedCohort === CURRENT_PLAN || cohorts.includes(requestedCohort) ? requestedCohort : defaultCohort;
+    const full = name === "all" || params.get("layout") === "full";
+    const status = params.get("status") || (name === "plan" ? "decision" : full ? "all" : "open");
+    return {scope, cohort, full, status: statuses.includes(status) ? status : "all",
+      stage: stages.includes(params.get("stage")) ? params.get("stage") : "all",
+      search: params.get("q") || "", requirement: params.get("req") || "",
+      warning: requestedCohort !== cohort ? "The linked measurement is unavailable; showing the latest available view." : ""};
+  }
+
+  function viewHash(selection) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries({scope: selection.scope, cohort: selection.cohort,
+      stage: selection.stage, status: selection.status, q: selection.search,
+      req: selection.requirement, layout: selection.full ? "full" : ""})) {
+      if (value && value !== "all") params.set(key, value);
+    }
+    // Preserve an explicit all-status filter instead of reverting to open.
+    if (selection.status === "all") params.set("status", "all");
+    return "#view?" + params.toString();
+  }
+
+  function actionItems(state) {
+    return state.requirements.map(requirement => {
+      const failures = requirement.test_ids.map(id => state.tests[id])
+        .filter(test => test && ["FAIL", "MISSING_CAPABILITY"].includes(test.status));
+      return {requirement, failures, status: requirementState(requirement, state)[0]};
+    }).filter(item => item.status !== "satisfied").sort((a, b) => {
+      const rank = {failed: 0, decision: 1, uncovered: 2, open: 3};
+      return rank[a.status] - rank[b.status] || b.failures.length - a.failures.length ||
+        a.requirement.id.localeCompare(b.requirement.id);
+    });
+  }
+
+  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems};
 });

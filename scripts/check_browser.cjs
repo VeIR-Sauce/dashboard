@@ -71,6 +71,13 @@ async function main() {
       JSON.stringify(["scope", "cohort"].includes(id) ? "change" : "input") + ")); return element.value;})()");
   }
   const text = id => evaluate("document.getElementById(" + JSON.stringify(id) + ").textContent");
+  async function until(expression) {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      if (await evaluate(expression)) return;
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    throw new Error("Browser condition was not reached: " + expression);
+  }
   async function screenshot(name) {
     if (!screenshots) return;
     const {data} = await send("Page.captureScreenshot", {format: "png", captureBeyondViewport: false});
@@ -101,6 +108,35 @@ async function main() {
       assert.equal(await evaluate('document.querySelectorAll(".chart svg").length'), 2);
     }
     await screenshot("desktop");
+    assert.equal(await evaluate('document.getElementById("catalog-details").open'), false);
+    assert.ok(await evaluate('document.querySelectorAll("#actions article").length > 0'));
+    await evaluate('document.querySelector("a[data-view=llvm]").click()');
+    await until('document.getElementById("scope").value === "llvm-compat"');
+    assert.match(await text("view-title"), /LLVM dialect compatibility/);
+    await choose("stage", "verification"); await choose("status", "failed");
+    await choose("search", "vector");
+    const filterLink = await evaluate('location.href');
+    await send("Page.reload");
+    await until('document.getElementById("search")?.value === "vector"');
+    assert.equal(await evaluate('location.href'), filterLink);
+    assert.equal(await evaluate('document.getElementById("status").value'), "failed");
+    assert.equal(await evaluate('document.getElementById("stage").value'), "verification");
+    assert.ok(await evaluate('document.querySelectorAll("#rows details").length > 0'));
+    assert.ok(await evaluate('document.querySelectorAll("#rows .diagnostic pre").length > 0'));
+    const targetId = await evaluate('document.querySelector("#actions a").getAttribute("href")');
+    await evaluate('document.querySelector("#actions a").click()');
+    await until('document.getElementById("requirement-details").open && document.querySelector("#rows details")?.open');
+    assert.ok(targetId.includes("req="));
+    await send("Page.reload");
+    await until('document.getElementById("requirement-details")?.open && document.querySelector("#rows details")?.open');
+    await screenshot("contract");
+    await evaluate('document.querySelector("a[data-view=all]").click()');
+    await until('document.getElementById("catalog-details").open && location.hash === "#all"');
+    await evaluate('history.back()');
+    await until('document.querySelector("#rows details")?.open && location.hash.includes("req=" )');
+    await evaluate('history.forward()');
+    await until('location.hash === "#all" && document.getElementById("catalog-details").open');
+    await screenshot("full");
     const missingScope = data.registry.scopes.find(scope => complete &&
       !data.cohorts[cohort].scopes.some(item => item.id === scope.id));
     if (missingScope) {
@@ -117,6 +153,7 @@ async function main() {
     assert.equal(await evaluate('document.querySelectorAll("#rows details").length'), decisions);
     if (decisions) {
       await evaluate('document.querySelector("#attention a").click()');
+      await until('document.querySelector("#rows details")?.open');
       assert.equal(await evaluate('document.querySelector("#rows details").open'), true);
     }
     await choose("search", ""); await choose("status", "all"); await choose("cohort", cohort);
@@ -133,7 +170,8 @@ async function main() {
     assert.equal(await evaluate('document.querySelectorAll("#operations tr").length'), data.catalog.operations.length);
     const downloads = await evaluate('[...document.querySelectorAll("a[href^=\\"data/\\"]")].map(a => a.getAttribute("href"))');
     for (const file of downloads) assert.ok(fs.statSync(path.join(site, file)).isFile(), "Missing download: " + file);
-    await choose("status", "all");
+    await evaluate('document.querySelector("a[data-view=llvm]").click()');
+    await until('location.hash === "#llvm" && document.getElementById("scope").value === "llvm-compat"');
     await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
     await evaluate('window.scrollTo(0, 0)');
     assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile page overflows horizontally");
@@ -142,7 +180,7 @@ async function main() {
     console.log(JSON.stringify({browser: (await send("Browser.getVersion", {}, null)).product,
       requirements: data.registry.requirements.length, decisions, operations: data.catalog.operations.length,
       mobile: await evaluate('({viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth})'),
-      checks: ["baseline", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout"],
+      checks: ["baseline", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout"],
       screenshots: screenshots || null}));
   } catch (error) {
     error.message += "\nChromium stderr (tail):\n" + stderr;

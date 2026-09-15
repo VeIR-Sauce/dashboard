@@ -20,6 +20,18 @@ python3 -m veir_suite site --history evidence --out site-output
 
 Open `site-output/index.html`. Select **Current plan** for the full roadmap and decision queue, or a recorded measurement for its exact scope and evidence. Filter by scope, stage or status, expand requirements, inspect the operation matrix and download the receipts. A scope absent from a measurement is marked unavailable. Each chart point comes from an actual complete measurement. A first baseline is a point, not an invented trend or completion forecast.
 
+Start with an open contract on the landing page, follow **Inspect examples and
+diagnostics**, and use the linked test inputs and receipt to reproduce the result.
+The list orders measured failures by failing check count; it does not estimate
+impact on real programs. Expand **Progress and burndown** for the measurement
+history. A single measurement is a baseline point; an unmeasured plan has no chart.
+
+Share [LLVM compatibility](https://veir-sauce.github.io/dashboard/#llvm),
+[decisions and roadmap](https://veir-sauce.github.io/dashboard/#plan), or the
+[full dashboard](https://veir-sauce.github.io/dashboard/#all). Scope, measurement,
+stage, status and search are retained in the URL as you change filters.
+**Link to this contract** opens the selected contract and its evidence directly.
+
 ## What is the goal?
 
 VeIR describes MLIR-style infrastructure and interoperability. A commitment to all MLIR dialects, passes, execution models and APIs has **not** been assumed. The project decision queue asks humans to choose required programs and dialects, observable behavior, equality/refinement, the compatibility-version policy, and the trusted boundary.

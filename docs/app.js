@@ -17,11 +17,46 @@ $("cohort").value = groups[0] || progress.CURRENT_PLAN;
 const scopes = new Map(data.registry.scopes.map(s => [s.id, s]));
 for (const registry of Object.values(data.cohorts)) for (const scope of registry.scopes) if (!scopes.has(scope.id)) scopes.set(scope.id, scope);
 for (const scope of scopes.values()) { const option = node("option", scope.title); option.value = scope.id; $("scope").append(option); }
-let state = {}, showAllOperations = false;
+let state = {}, showAllOperations = false, fullView = false, routeWarning = "";
+const disclosures = ["measurement-controls", "progress-details", "context-details", "requirement-details", "catalog-details", "ledger-details"];
+function selection(extra = {}) {
+  return {scope: $("scope").value, cohort: $("cohort").value, stage: $("stage").value,
+    status: $("status").value, search: $("search").value, full: fullView, ...extra};
+}
+function syncLink() {
+  const hash = progress.viewHash(selection());
+  history.replaceState(null, "", hash); $("share-view").href = hash;
+}
+function requirementLink(req, label) {
+  return link(label || req.title, progress.viewHash(selection({requirement: req.id, search: "", stage: "all", status: "all"})));
+}
+function applyRoute() {
+  const route = progress.route(data, location.hash);
+  if (!route) {
+    const section = location.hash.slice(1);
+    $(section === "catalog" ? "catalog-details" : "requirement-details").open = true;
+    $(section).scrollIntoView();
+    return;
+  }
+  fullView = route.full; routeWarning = route.warning;
+  $("scope").value = route.scope; $("cohort").value = route.cohort;
+  $("stage").value = route.stage; $("status").value = route.status;
+  $("search").value = route.requirement || route.search;
+  for (const id of disclosures) $(id).open = fullView;
+  render();
+  $("share-view").href = progress.viewHash(selection({requirement: route.requirement}));
+  if (route.requirement) {
+    $("requirement-details").open = true;
+    const detail = $("req-" + route.requirement);
+    if (detail) { detail.open = true; detail.scrollIntoView({block: "start"}); }
+    else $("row-count").textContent = "This requirement is not present in the linked measurement. Try the Current plan view.";
+  } else window.scrollTo(0, 0);
+}
 
 function chart(id, runs, field, color, total) {
   const container = $(id); container.replaceChildren();
-  if (!runs.length) { container.append(node("div", "No complete measurement in this cohort yet.", "empty")); return; }
+  if (!runs.length) { container.append(node("div", state.currentPlan ? "This is a plan. Choose a recorded measurement to see a burndown." : "No complete measurement for this scope yet.", "empty")); return; }
+  if (runs.length === 1) container.append(node("p", `Baseline: ${runs[0].value[field]} of ${total} requirements ${field === "coverage_remaining" ? "lack complete evidence" : "remain open"}. A second measurement is needed to show change.`, "baseline"));
   const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", "0 0 560 245"); svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `${field === "coverage_remaining" ? "Coverage" : "Conformance"} remaining: ${runs.map(r => r.value[field]).join(", ")} across ${runs.length} complete measurements.`);
@@ -51,6 +86,14 @@ function render() {
   const remaining = totals(rows), ids = new Set(requirements.flatMap(r => r.test_ids));
   $("contract-state").textContent = (registry.contract_status || "proposed") + " contract";
   const results = (active?.results || []).filter(r => ids.has(r.id));
+  const scopeTitle = $("scope").value === "all" ? "VeIR" : scopes.get($("scope").value)?.title || "VeIR";
+  $("view-title").textContent = state.currentPlan ? "Decide what VeIR should support." : scopeTitle + ": what needs work?";
+  $("view-intro").textContent = state.currentPlan ? "Agree the open contracts, then define the examples and evidence needed to close them." : "Pick an open contract, inspect its failing examples, then use the receipt to reproduce the result.";
+  $("selection-label").textContent = `${scopeTitle} · ${state.currentPlan ? "current proposed plan" : "recorded measurement"} · change selection`;
+  document.querySelectorAll("[data-view]").forEach(a => {
+    const activeView = fullView ? "all" : state.currentPlan ? "plan" : $("scope").value === "llvm-compat" ? "llvm" : "overview";
+    if (a.dataset.view === activeView) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
   $("remaining").textContent = scopeAvailable ? remaining.conformance_remaining : "—"; $("denominator").textContent = scopeAvailable ? `of ${requirements.length} tracked requirements` : "Scope outside this measurement";
   $("coverage").textContent = scopeAvailable ? remaining.coverage_remaining : "—";
   $("decisions").textContent = scopeAvailable ? requirements.filter(r => r.state === "needs_decision").length : "—";
@@ -61,10 +104,12 @@ function render() {
     state.currentPlan ? "Current proposed plan. Its requirements are visible together; choose a recorded measurement to inspect evidence and burndown history." :
     !attempted.complete ? "The latest attempt is incomplete. The charts retain the last complete measurement, when available; the ledger links the recorded observations." :
     "Measured against one explicit reference profile. Select Current plan for the full roadmap and its human decisions.";
+  if (routeWarning) $("notice").textContent = routeWarning + " " + $("notice").textContent;
   const values = state.points;
   chart("conformance-chart", values, "conformance_remaining", "#117d75", requirements.length);
   chart("coverage-chart", values, "coverage_remaining", "#466bc3", requirements.length);
   $("history-note").textContent = !scopeAvailable ? "No measurement covers this scope in the selected cohort." : state.currentPlan ? "The current plan is an inventory, not a measurement. Recorded cohorts retain their original contracts and evidence." : complete.length === 1 ? "First complete measurement. This is a real baseline point; no earlier progress or forecast has been invented." : `${complete.length} complete measurements in this fixed cohort. Scope or oracle changes start a new cohort; lines never join incompatible baselines.`;
+  $("progress-details").querySelector("summary").textContent = `Progress and burndown · ${state.currentPlan || !scopeAvailable ? "no measurement for this selection" : `${remaining.conformance_remaining} open · ${complete.length} measurement${complete.length === 1 ? "" : "s"}`}`;
   $("stages").replaceChildren();
   for (const [stage, name] of Object.entries(stageNames)) {
     const subset = rows.filter(r => r.stage === stage), done = subset.filter(r => r.satisfied).length;
@@ -75,13 +120,32 @@ function render() {
   $("attention").replaceChildren();
   const decisions = requirements.filter(r => r.state === "needs_decision");
   for (const req of decisions.slice(0, 5)) {
-    const item = link(req.title, "#req-" + req.id); item.className = "attention-item"; item.append(node("span", req.scope + " · " + req.stage));
-    item.addEventListener("click", () => { $("search").value = req.id; $("status").value = "all"; $("stage").value = "all"; renderRequirements(); const detail = $("req-" + req.id); if (detail) detail.open = true; });
+    const item = requirementLink(req); item.className = "attention-item"; item.append(node("span", req.scope + " · " + req.stage));
     $("attention").append(item);
   }
   if (!decisions.length) $("attention").append(node("p", scopeAvailable ? "No unresolved contract decisions in this selection. The Current plan view includes the wider decision queue." : "Select Current plan to inspect this scope.", "muted"));
   if (decisions.length > 5) $("attention").append(node("p", `${decisions.length - 5} more decisions are visible with the tracker’s “Needs decision” filter.`, "muted"));
-  renderRequirements(); renderCatalog(); renderLedger();
+  renderActions(); renderRequirements(); renderCatalog(); renderLedger();
+}
+
+function renderActions() {
+  const items = progress.actionItems(state), failing = items.filter(x => x.status === "failed");
+  $("actions").replaceChildren();
+  $("actions-title").textContent = state.currentPlan ? "Decisions and missing tests" : "Open contracts to investigate";
+  $("action-note").textContent = !state.scopeAvailable ? "This scope has no recorded evidence in the selected measurement. Choose Current plan to see its proposed work." :
+    failing.length ? `${failing.length} contracts have failing checks or missing capabilities. Showing ${Math.min(5, items.length)} open contracts, with the most failing examples first. Check counts do not measure workload impact.` :
+    state.currentPlan ? "Proposed work, without a passing measurement. Decisions come first; expand a contract to read its acceptance criteria." :
+    items.length ? "Open work in this measurement. Expand a contract to inspect the missing evidence." : "All stated contracts pass in this measurement.";
+  for (const {requirement: req, failures, status} of items.slice(0, 5)) {
+    const item = node("article", undefined, "action-item"), heading = node("h3");
+    heading.append(requirementLink(req)); item.append(heading);
+    item.append(node("p", failures.length ? `${failures.length} failing or unsupported checks · ${stageNames[req.stage]}` : displayState(req)[1], "state " + status));
+    item.append(node("p", req.next_action || req.contract));
+    if (failures.length) item.append(node("code", failures[0].message, "action-diagnostic"));
+    item.append(requirementLink(req, failures.length ? "Inspect examples and diagnostics →" : "Read contract →"));
+    $("actions").append(item);
+  }
+  $("all-actions").textContent = `Browse ${items.length} open contracts ↓`;
 }
 
 function renderRequirements() {
@@ -104,6 +168,7 @@ function renderRequirements() {
     const title = node("span", req.title, "req-title"); title.append(node("span", `${req.id} · ${req.stage}`, "req-meta"));
     summary.append(title, node("span", label, "state " + status)); detail.append(summary);
     const body = node("div", undefined, "req-body"); body.append(node("p", req.contract));
+    body.append(requirementLink(req, "Link to this contract ↗"));
     if (req.owner || req.priority) body.append(node("p", `Owner: ${req.owner || "unassigned"} · Priority: ${req.priority || "unprioritised"}`, "muted"));
     if (req.next_action) body.append(node("p", "Next action: " + req.next_action));
     if (req.decision_record) body.append(node("p", "Decision record: " + req.decision_record, "muted"));
@@ -113,6 +178,12 @@ function renderRequirements() {
     for (const id of req.test_ids) {
       const result = state.tests[id], line = node("div", undefined, "test-line");
       line.append(node("code", id), node("span", result?.status || "NOT_RUN", result?.status === "PASS" ? "yes" : "no"), node("span", result?.message || "No completed measurement")); body.append(line);
+      if (result?.diagnostic) {
+        const diagnostic = node("details", undefined, "diagnostic"); diagnostic.append(node("summary", `${result.diagnostic_phase || "Failure"} diagnostic`), node("pre", result.diagnostic)); body.append(diagnostic);
+      }
+      const fixture = state.registry.tests?.find(test => test.id === id);
+      if (fixture?.input) body.append(link("Test input: " + fixture.input,
+        "https://github.com/VeIR-Sauce/dashboard/blob/codex%2Fveir-progress/" + fixture.input.split("/").map(encodeURIComponent).join("/")));
     }
     if (state.detailReport && req.test_ids.length) body.append(link("Full commands, diagnostics and typed results ↗", state.detailReport.download));
     detail.append(body); $("rows").append(detail);
@@ -147,11 +218,17 @@ function renderLedger() {
     evidence.append(link("Receipt JSON ↗", report.download)); row.append(evidence); $("ledger").append(row);
   }
 }
-for (const id of ["scope", "cohort"]) $(id).addEventListener("change", render);
-for (const id of ["search", "stage", "status"]) $(id).addEventListener("input", renderRequirements);
+for (const id of ["scope", "cohort"]) $(id).addEventListener("change", () => { routeWarning = ""; render(); syncLink(); });
+for (const id of ["search", "stage", "status"]) $(id).addEventListener("input", () => { renderRequirements(); syncLink(); });
+$("all-actions").addEventListener("click", event => {
+  event.preventDefault(); $("search").value = ""; $("stage").value = "all"; $("status").value = "open";
+  renderRequirements(); syncLink(); $("requirement-details").open = true; $("requirements").scrollIntoView();
+});
 $("op-search").addEventListener("input", renderCatalog);
 $("more-ops").addEventListener("click", () => { showAllOperations = true; renderCatalog(); });
-render();
+window.addEventListener("hashchange", applyRoute);
+// Render once before following an old section-only URL.
+render(); applyRoute();
 const native = data.native.at(-1);
 if (native) {
   $("native").append(node("p", `${native.lit_file_count} lit files · ${native.lean_module_count} Lean source modules · ${native.complete ? "complete accounting" : "incomplete attempt"}`));
