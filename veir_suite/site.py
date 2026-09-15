@@ -10,6 +10,7 @@ import shutil
 
 from .model import InvalidData, load_registry, read_json
 from .history import read_all_history, read_history, read_parsing_history
+from .parsing import case_id, case_counts, counts, operation_results
 
 
 def parsing_evidence(report: dict) -> list[dict]:
@@ -105,29 +106,33 @@ def build_site(root: Path, history: Path, out: Path) -> None:
     for report in parsing_reports:
         target = downloads / (report['id'] + '.json')
         target.write_text(json.dumps(report, indent=2) + '\n')
-        cases = {case['operation']: case for case in report['manifest']['cases']}
+        cases = {case_id(case): case for case in report['manifest']['cases']}
         rows = []
         inputs = downloads / report['id']; inputs.mkdir(exist_ok=True)
-        for result in report['results']:
+        operations = operation_results(report)
+        for result in operations:
             if not re.fullmatch(r'llvm\.[a-z0-9_.]+', result['operation']):
                 raise InvalidData('Invalid parsing operation name')
-            row = {'operation': result['operation']}
-            case = cases.get(result['operation'])
-            if case:
-                filename = result['operation'] + '.mlir'
+            row = {'operation': result['operation'], 'cases': [], **{mode: result[mode] for mode in ['strict', 'permissive']}}
+            for observation in result['cases']:
+                case = cases[observation['id']]
+                filename = (case['operation'] if report['schema_version'] == 1 else case['id']) + '.mlir'
                 (inputs / filename).write_text(case['text'])
-                row['input'] = {'download': f'data/{report["id"]}/{filename}',
+                example = {'id': observation['id'], 'label': case.get('label', 'Baseline example')}
+                example['input'] = {'download': f'data/{report["id"]}/{filename}',
                     'text': case['text'], 'sha256': case['input_sha256'],
                     'method': case['method'], 'source': case['source']}
-            for mode in ['strict', 'permissive']:
-                value = result[mode]
-                row[mode] = {'status': value['status'],
-                    'diagnostic': value.get('step', {}).get('stderr', '')[:2000]}
-            if result.get('reference', {}).get('exit_code') != 0:
-                row['reference_diagnostic'] = result.get('reference', {}).get('stderr', 'No validated example recorded')[:2000]
+                for mode in ['strict', 'permissive']:
+                    value = observation[mode]
+                    example[mode] = {'status': value['status'],
+                        'diagnostic': value.get('step', {}).get('stderr', '')[:2000]}
+                if observation.get('reference', {}).get('exit_code') != 0:
+                    example['reference_diagnostic'] = observation.get('reference', {}).get('stderr', 'No validated example recorded')[:2000]
+                row['cases'].append(example)
             rows.append(row)
         parsing_entries.append({key: report[key] for key in ['id', 'finished_at', 'complete', 'counts', 'source']} |
             {'download': 'data/' + target.name, 'llvm_revision': report['manifest']['llvm_revision'],
+             'counts': counts(operations), 'case_counts': case_counts(operations), 'case_total': len(cases),
              'operations': report['manifest']['catalog']['operations'], 'results': rows})
     data = {"registry": registry, "catalog": catalog, "sources": sources, "reports": compact,
             "cohorts": cohorts, "native": native_entries, "parsing": parsing_entries}

@@ -84,7 +84,7 @@ test("view links preserve filters, explicit all status, cohort and contract acro
   const selection = {scope: "llvm", cohort: "old", search: 'vector<4xi32> & poison',
     stage: "verification", status: "all", requirement: "a", full: true};
   const restored = route(fixture(), viewHash(selection));
-  assert.deepEqual(restored, {...selection, parsing: false, parsingSearch: "", parsingStatus: "all", parsingMode: "strict", parsingRun: "", parsingCategory: "all", warning: ""});
+  assert.deepEqual(restored, {...selection, parsing: false, parsingSearch: "", parsingStatus: "all", parsingMode: "strict", parsingRun: "", parsingCategory: "all", parsingCase: "", warning: ""});
 });
 
 test("invalid links fall back safely and report an unavailable measurement", () => {
@@ -108,7 +108,7 @@ test("action queue prioritizes measured failures and does not present passing co
 });
 
 test("parsing page links retain operation and evidence filters", () => {
-  const selection = {...route(fixture(), "#llvm-parse"), parsingSearch: "llvm.add", parsingStatus: "parsed", parsingMode: "permissive", parsingRun: "parser-baseline", parsingCategory: "core"};
+  const selection = {...route(fixture(), "#llvm-parse"), parsingSearch: "llvm.add", parsingStatus: "partial", parsingMode: "permissive", parsingRun: "parser-baseline", parsingCategory: "core", parsingCase: "llvm.add.scalable"};
   assert.deepEqual(route(fixture(), viewHash(selection)), selection);
   assert.equal(route(fixture(), "#llvm-parse?evidence=observed").parsingStatus, "parsed");
 });
@@ -133,6 +133,23 @@ test("parser view uses its own measured catalog and keeps strict and permissive 
   assert.equal(parsingView(data).report.id, "parse-one");
   assert.equal(parsingView(data, "incomplete").report.id, "incomplete");
   assert.equal(parsingView({...data, parsing: []}).rows[0].strict.status, "not_tested");
+});
+
+test("adding cases cannot inflate category operation counts and partial support stays visible", () => {
+  const {parsingView} = require("../web/model.js");
+  const data = {...fixture(), catalog: {operations: [{name: "llvm.add"}]}, parsing: [{
+    id: "expanded", complete: true, operations: [{name: "llvm.add"}],
+    results: [{operation: "llvm.add", cases: Array(8).fill({}),
+      strict: {status: "partial", parsed: 7, total: 8}, permissive: {status: "parsed", parsed: 8, total: 8}}]
+  }]};
+  const state = parsingView(data, "", "strict", "partial");
+  assert.equal(state.total, 1);
+  assert.equal(state.categories[0].total, 1);
+  assert.equal(state.categories[0].strict.partial, 1);
+  assert.equal(state.rows[0].strict.parsed, 7);
+  assert.equal(parsingView(data, "", "strict", "parsed").rows.length, 0);
+  data.parsing[0].results[0].cases.push(...Array(20).fill({}));
+  assert.equal(parsingView(data).categories[0].total, 1);
 });
 
 test("experimental intrinsics form a disjoint category", () => {

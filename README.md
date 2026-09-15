@@ -33,7 +33,7 @@ stage, status and search are retained in the URL as you change filters.
 **Link to this contract** opens the selected contract and its evidence directly.
 
 [LLVM parsing](https://veir-sauce.github.io/dashboard/#llvm-parse) measures a
-dedicated parser-only matrix of **344 reference-verified examples**. It shows
+dedicated parser-only matrix of **645 reference-verified cases across 344 operations**. It shows
 strict parsing and parsing with unregistered operations allowed separately,
 with the exact input and first diagnostic for every operation. Core operations,
 intrinsics and experimental intrinsics have separate counts and shareable filters.
@@ -45,6 +45,16 @@ allowed. There are no untested operation names in this matrix. Blocked examples
 encounter an error in surrounding input before a result can be attributed to the
 target operation. Parsing an opaque unregistered operation does not establish
 verification or execution support. Each example covers its stated syntax and types.
+
+The expanded run adds **301 cases to 47 core operations**, covering scalar widths,
+fixed and scalable vectors, floating-point types, flags, memory and function
+attributes, type aliases and source locations. **19 operations have partial
+results** across their cases. Each operation retains one row with a count such as
+**12/14 cases parse**; individual cases and diagnostics stay collapsed underneath.
+The expanded run records **371/645 cases parsing strictly** and **612/645** with
+unregistered operations allowed. Operation counts remain separate: 90 operations
+have a strict parsing example, and 331 have one with unregistered operations allowed.
+The original 344-case measurement and all its evidence links remain available.
 
 ## What is the goal?
 

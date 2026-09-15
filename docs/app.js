@@ -21,13 +21,13 @@ for (const report of [...(data.parsing || [])].reverse()) {
 const scopes = new Map(data.registry.scopes.map(s => [s.id, s]));
 for (const registry of Object.values(data.cohorts)) for (const scope of registry.scopes) if (!scopes.has(scope.id)) scopes.set(scope.id, scope);
 for (const scope of scopes.values()) { const option = node("option", scope.title); option.value = scope.id; $("scope").append(option); }
-let state = {}, showAllOperations = false, fullView = false, parsingView = false, routeWarning = "";
+let state = {}, showAllOperations = false, fullView = false, parsingView = false, parsingCase = "", routeWarning = "";
 const disclosures = ["measurement-controls", "progress-details", "context-details", "requirement-details", "catalog-details", "ledger-details"];
 function selection(extra = {}) {
   return {scope: $("scope").value, cohort: $("cohort").value, stage: $("stage").value,
     status: $("status").value, search: $("search").value, full: fullView, parsing: parsingView,
     parsingSearch: $("parse-search").value, parsingStatus: $("parse-status").value,
-    parsingMode: $("parse-mode").value, parsingRun: $("parse-run").value, parsingCategory: $("parse-category").value, ...extra};
+    parsingMode: $("parse-mode").value, parsingRun: $("parse-run").value, parsingCategory: $("parse-category").value, parsingCase, ...extra};
 }
 function syncLink() {
   const hash = progress.viewHash(selection());
@@ -48,6 +48,7 @@ function applyRoute() {
     return;
   }
   fullView = route.full; parsingView = route.parsing; routeWarning = route.warning;
+  parsingCase = route.parsingCase;
   document.body.classList.toggle("parsing-view", parsingView);
   $("parsing-page").hidden = !parsingView;
   $("scope").value = route.scope; $("cohort").value = route.cohort;
@@ -151,46 +152,66 @@ function render() {
 function renderParsing() {
   const parsed = progress.parsingView(data, $("parse-run").value, $("parse-mode").value, $("parse-status").value, $("parse-search").value, $("parse-category").value);
   const {report, rows, total} = parsed;
-  $("parsing-note").textContent = report ? `${report.counts.strict.parsed || 0} of ${total} examples parse strictly; ${report.counts.permissive.parsed || 0} parse with unregistered operations allowed. Measured ${report.finished_at.replace("T", " ").replace("Z", " UTC")} with VeIR ${report.source.commit.slice(0, 12)}${report.source.dirty ? " + local changes" : ""}, MLIR ${report.llvm_revision.slice(0, 12)}.${report.complete ? "" : " This attempt is incomplete."}` : "No parser-only measurement has been recorded yet.";
+  $("parsing-note").textContent = report ? `${report.case_total} cases across ${total} operations. ${report.case_counts.strict.parsed || 0} / ${report.case_total} cases parse strictly; ${report.case_counts.permissive.parsed || 0} / ${report.case_total} with unregistered operations allowed. Measured ${report.finished_at.replace("T", " ").replace("Z", " UTC")} with VeIR ${report.source.commit.slice(0, 12)}${report.source.dirty ? " + local changes" : ""}, MLIR ${report.llvm_revision.slice(0, 12)}.${report.complete ? "" : " This attempt is incomplete."}` : "No parser-only measurement has been recorded yet.";
   if (routeWarning) $("parsing-note").textContent += " " + routeWarning;
   $("parsing-receipt").hidden = !report;
   if (report) $("parsing-receipt").href = report.download;
   $("parsing-categories").replaceChildren();
   for (const category of parsed.categories) {
-    const card = link("", progress.viewHash(selection({parsing: true, parsingCategory: category.id, parsingSearch: "", parsingStatus: "all"})));
+    const card = link("", progress.viewHash(selection({parsing: true, parsingCategory: category.id, parsingSearch: "", parsingStatus: "all", parsingCase: ""})));
     card.className = "parse-category";
     if ($("parse-category").value === category.id) card.setAttribute("aria-current", "true");
-    card.append(node("strong", category.title), node("span", `${category.strict.parsed} / ${category.total} parsed strictly`));
-    card.append(node("small", `${category.permissive.parsed} / ${category.total} with unregistered allowed`));
+    card.append(node("strong", category.title), node("span", `${category.strict.parsed + category.strict.partial} / ${category.total} have a strict parsing example`));
+    card.append(node("small", `${category.permissive.parsed + category.permissive.partial} / ${category.total} with unregistered allowed`));
     $("parsing-categories").append(card);
   }
   $("parsing-count").textContent = `${rows.length} of ${total} operations shown`;
   $("parsing-operations").replaceChildren();
-  const labels = {parsed: "Parsed", rejected: "Rejected", blocked: "Blocked", not_tested: "Not tested", error: "Error"};
+  const labels = {parsed: "Parsed", partial: "Partial", rejected: "Rejected", blocked: "Blocked", not_tested: "Not tested", error: "Error"};
   for (const op of rows) {
     const row = node("tr"), name = node("td"), evidence = node("td");
     name.append(link(op.operation, op.url)); row.append(name);
-    for (const mode of ["strict", "permissive"]) row.append(node("td", labels[op[mode].status], "parse-" + op[mode].status));
-    if (op.input) {
+    for (const mode of ["strict", "permissive"]) {
+      const cell = node("td", labels[op[mode].status], "parse-" + op[mode].status);
+      if (op[mode].total) cell.append(node("small", `${op[mode].parsed}/${op[mode].total} cases parse`, "parse-case-count"));
+      row.append(cell);
+    }
+    if (op.cases?.length) {
       const details = node("details", undefined, "parse-examples");
-      details.append(node("summary", "Inspect example"));
+      details.append(node("summary", op.cases.length === 1 ? "Inspect example" : `Inspect ${op.cases.length} cases`));
       const links = node("p", undefined, "parse-links");
-      links.append(link("Download input", op.input.download));
-      links.append(link("Link to this result", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id}))));
-      const source = op.input.source;
-      if (source.repository === "llvm/llvm-project") links.append(link("LLVM source", `https://github.com/llvm/llvm-project/blob/${source.revision}/${source.path}`));
-      details.append(links, node("pre", op.input.text, "parse-input"));
-      for (const mode of ["strict", "permissive"]) {
-        if (op[mode].diagnostic) {
-          details.append(node("p", (mode === "strict" ? "Strict" : "Allow unregistered") + " diagnostic", "diagnostic-label"));
-          details.append(node("pre", op[mode].diagnostic, "parse-diagnostic"));
+      links.append(link("Link to this result", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id, parsingCase: ""}))));
+      details.append(links);
+      const cases = [...op.cases].sort((a, b) => Number(b[$("parse-mode").value].status !== "parsed") - Number(a[$("parse-mode").value].status !== "parsed") || a.id.localeCompare(b.id));
+      for (const example of cases) {
+        const detail = node("details", undefined, "parse-case");
+        detail.id = "parse-case-" + example.id;
+        detail.append(node("summary", `${example.label} · ${labels[example.strict.status]} / ${labels[example.permissive.status]}`));
+        if (op.cases.length === 1) detail.open = true;
+        const links = node("p", undefined, "parse-links");
+        links.append(link("Download input", example.input.download));
+        links.append(link("Link to this case", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id, parsingCase: example.id}))));
+        const source = example.input.source;
+        if (source.repository === "llvm/llvm-project") links.append(link("LLVM source", `https://github.com/llvm/llvm-project/blob/${source.revision}/${source.path}`));
+        detail.append(links, node("pre", example.input.text, "parse-input"));
+        for (const mode of ["strict", "permissive"]) {
+          if (example[mode].diagnostic) {
+            detail.append(node("p", (mode === "strict" ? "Strict" : "Allow unregistered") + " diagnostic", "diagnostic-label"));
+            detail.append(node("pre", example[mode].diagnostic, "parse-diagnostic"));
+          }
         }
+        if (example.reference_diagnostic) detail.append(node("pre", example.reference_diagnostic, "parse-diagnostic"));
+        detail.append(node("p", `Input SHA-256: ${example.input.sha256}`, "input-hash"));
+        details.append(detail);
       }
-      if (op.reference_diagnostic) details.append(node("pre", op.reference_diagnostic, "parse-diagnostic"));
-      details.append(node("p", `Input SHA-256: ${op.input.sha256}`, "input-hash"));
       evidence.append(details);
     } else evidence.append(node("span", "No reference-validated input recorded", "muted"));
     row.append(evidence); $("parsing-operations").append(row);
+  }
+  if (parsingCase) {
+    const detail = $("parse-case-" + parsingCase);
+    if (detail) { detail.open = true; detail.closest(".parse-examples").open = true; }
+    else $("parsing-count").textContent += " · The linked case is unavailable in this view.";
   }
 }
 
@@ -291,7 +312,7 @@ $("all-actions").addEventListener("click", event => {
   renderRequirements(); syncLink(); $("requirement-details").open = true; $("requirements").scrollIntoView();
 });
 $("op-search").addEventListener("input", renderCatalog);
-for (const id of ["parse-search", "parse-status", "parse-mode", "parse-run", "parse-category"]) $(id).addEventListener("input", () => { renderParsing(); syncLink(); });
+for (const id of ["parse-search", "parse-status", "parse-mode", "parse-run", "parse-category"]) $(id).addEventListener("input", () => { parsingCase = ""; renderParsing(); syncLink(); });
 $("more-ops").addEventListener("click", () => { showAllOperations = true; renderCatalog(); });
 window.addEventListener("hashchange", applyRoute);
 // Render once before following an old section-only URL.

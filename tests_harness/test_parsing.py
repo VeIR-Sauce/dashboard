@@ -2,7 +2,7 @@ import unittest
 import copy
 
 from veir_suite.site import parsing_evidence
-from veir_suite.parsing import MODES, classify, controls_ok, counts, digest_text, validate_parsing
+from veir_suite.parsing import MODES, aggregate_operation, case_counts, case_id, classify, controls_ok, counts, digest_text, operation_results, validate_parsing
 from veir_suite.model import InvalidData, digest
 from scripts.import_parsing_cases import split_types, leaf_example
 
@@ -104,3 +104,63 @@ class ParserOnlyTests(unittest.TestCase):
         example = leaf_example('  %4 = "llvm.extractvalue"(%3) <{position = array<i64: 1>}> : (!llvm.struct<(i32, i64)>) -> i64', '')
         self.assertIn('llvm.func @sample(%arg0: !llvm.struct<(i32, i64)>)', example)
         self.assertIn('"llvm.extractvalue"(%arg0)', example)
+
+
+class ParserVariantTests(unittest.TestCase):
+    def fixture(self):
+        report = copy.deepcopy(parser_receipt())
+        report['schema_version'] = 2
+        first = report['manifest']['cases'][0]
+        first['id'] = case_id(first)
+        second = {**first, 'id': 'llvm.add.scalable', 'label': 'Scalable vector',
+                  'text': '"llvm.add"() : () -> vector<[4]xi32>\n'}
+        second['input_sha256'] = digest_text(second['text'])
+        report['manifest']['cases'].append(second)
+        report['manifest_sha256'] = digest(report['manifest'])
+        a = {**report['results'][0], 'id': first['id']}
+        b = copy.deepcopy(a); b.update(id=second['id'], input_sha256=second['input_sha256'])
+        for mode in MODES:
+            b[mode] = {'status': 'rejected', 'step': {**b[mode]['step'], 'exit_code': 1,
+                'stdout': '', 'stderr': 'case.mlir:1:24: error: vector type expected'}}
+        report['results'] = [aggregate_operation('llvm.add', [a, b])]
+        report['counts'] = counts(report['results'])
+        report['case_counts'] = case_counts(report['results'])
+        return report
+
+    def test_partial_counts_do_not_turn_one_pass_into_complete_operation_support(self):
+        report = self.fixture(); validate_parsing(report)
+        self.assertEqual(report['results'][0]['strict']['status'], 'partial')
+        self.assertEqual(report['results'][0]['strict']['parsed'], 1)
+        self.assertEqual(report['results'][0]['strict']['total'], 2)
+        self.assertEqual(report['counts']['strict'], {'partial': 1})
+        self.assertEqual(report['case_counts']['strict'], {'parsed': 1, 'rejected': 1})
+
+    def test_missing_duplicate_and_cross_operation_cases_fail_closed(self):
+        for change in [
+            lambda r: r['results'][0]['cases'].pop(),
+            lambda r: r['results'][0]['cases'].append(r['results'][0]['cases'][0]),
+            lambda r: r['results'][0]['cases'][0].update(operation='llvm.sub'),
+            lambda r: r['results'][0]['strict'].update(parsed=2),
+            lambda r: r['case_counts']['strict'].update(parsed=2),
+        ]:
+            report = self.fixture(); change(report)
+            with self.assertRaises(InvalidData):
+                validate_parsing(report)
+
+    def test_error_in_one_variant_makes_measurement_incomplete_even_with_another_pass(self):
+        report = self.fixture()
+        cases = report['results'][0]['cases']
+        cases[1]['strict']['step']['kind'] = 'timeout'; cases[1]['strict']['status'] = 'error'
+        report['results'] = [aggregate_operation('llvm.add', cases)]
+        report['counts'] = counts(report['results']); report['case_counts'] = case_counts(report['results'])
+        with self.assertRaisesRegex(InvalidData, 'completion'):
+            validate_parsing(report)
+        report['complete'] = False; validate_parsing(report)
+
+    def test_legacy_receipts_display_as_single_cases_without_mutation(self):
+        report = parser_receipt(); original = copy.deepcopy(report)
+        rows = operation_results(report)
+        self.assertEqual(len(rows[0]['cases']), 1)
+        self.assertEqual(rows[0]['strict']['total'], 1)
+        self.assertEqual(rows[0]['cases'][0]['id'], 'llvm.add.baseline')
+        self.assertEqual(report, original)

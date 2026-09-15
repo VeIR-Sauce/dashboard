@@ -54,7 +54,7 @@
 
   const statuses = ["all", "open", "satisfied", "uncovered", "decision", "failed"];
   const stages = ["all", "verification", "roundtrip", "execution", "transformation", "regression", "proof"];
-  const parsingStatuses = ["parsed", "rejected", "blocked", "error", "not_tested"];
+  const parsingStatuses = ["parsed", "partial", "rejected", "blocked", "error", "not_tested"];
   const parsingCategories = {core: "Core operations", intrinsics: "Intrinsics", experimental: "Experimental intrinsics"};
   function parsingCategory(name) {
     return name.startsWith("llvm.intr.experimental.") ? "experimental" : name.startsWith("llvm.intr.") ? "intrinsics" : "core";
@@ -84,6 +84,7 @@
       parsingMode: params.get("mode") === "permissive" ? "permissive" : "strict",
       parsingRun: params.get("run") || "",
       parsingCategory: Object.hasOwn(parsingCategories, params.get("category")) ? params.get("category") : "all",
+      parsingCase: params.get("case") || "",
       warning: requestedCohort !== cohort ? "The linked measurement is unavailable; showing the latest available view." : ""};
   }
 
@@ -101,6 +102,7 @@
     if (selection.parsing && selection.parsingMode === "permissive") params.set("mode", "permissive");
     if (selection.parsing && selection.parsingRun) params.set("run", selection.parsingRun);
     if (selection.parsing && Object.hasOwn(parsingCategories, selection.parsingCategory)) params.set("category", selection.parsingCategory);
+    if (selection.parsing && selection.parsingCase) params.set("case", selection.parsingCase);
     return (selection.parsing ? "#llvm-parse?" : "#view?") + params.toString();
   }
 

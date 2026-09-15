@@ -113,7 +113,7 @@ h2 {
 .requirement .diagnostic>summary:before {content:none;}
 .req-body>a {display:block; margin:9px 0; overflow-wrap:anywhere;}
 .parsing-view .action-panel,.parsing-view .disclosure,.parsing-view #notice,.parsing-view #contract-state {display:none;}
-.parsing-table {max-height:none;}
+.table-scroll.parsing-table {max-height:none;}
 .parsing-table table {table-layout:fixed; width:100%;}
 .parsing-table th:first-child {width:32%;}
 .parsing-table th:nth-child(2),.parsing-table th:nth-child(3) {width:15%;}
@@ -546,3 +546,7 @@ svg .value {
     max-width:94px;
   }
 }
+
+.parse-partial {color:#996016; font-weight:650;}
+.parse-case-count {display:block; font-size:10px; color:#647581; font-weight:400; margin-top:4px;}
+.parse-case {border-top:1px solid #e7edf0; padding:9px 0; font-size:11px;}

@@ -1,0 +1,31 @@
+{
+  "cases": [
+    {
+      "id": "regression.named-location",
+      "label": "Named source location",
+      "input": "cases/parsing-regressions/llvm.add.named-location.mlir",
+      "operations": [
+        "llvm.add"
+      ],
+      "normalize": false
+    },
+    {
+      "id": "regression.type-alias",
+      "label": "Integer type alias",
+      "input": "cases/parsing-regressions/llvm.add.type-alias.mlir",
+      "operations": [
+        "llvm.add"
+      ],
+      "normalize": false
+    },
+    {
+      "id": "regression.index-value",
+      "label": "Index-typed numeric attribute",
+      "input": "cases/parsing-regressions/llvm.mlir.constant.index-value.mlir",
+      "operations": [
+        "llvm.mlir.constant"
+      ],
+      "normalize": false
+    }
+  ]
+}
