@@ -108,48 +108,67 @@ test("action queue prioritizes measured failures and does not present passing co
 });
 
 test("parsing page links retain operation and evidence filters", () => {
-  const selection = {...route(fixture(), "#llvm-parse"), parsingSearch: "llvm.add", parsingStatus: "partial", parsingMode: "permissive", parsingRun: "parser-baseline", parsingCategory: "core", parsingCase: "llvm.add.scalable"};
+  const selection = {...route(fixture(), "#llvm-parse"), parsingSearch: "llvm.add", parsingStatus: "gaps", parsingMode: "permissive", parsingRun: "parser-baseline", parsingCategory: "core", parsingCase: "llvm.add.scalable"};
   assert.deepEqual(route(fixture(), viewHash(selection)), selection);
   assert.equal(route(fixture(), "#llvm-parse?evidence=observed").parsingStatus, "parsed");
 });
 
-test("parser view uses its own measured catalog and keeps strict and permissive outcomes separate", () => {
-  const {parsingView} = require("../web/model.js");
-  const data = {...fixture(), catalog: {operations: [{name: "llvm.future"}]}, parsing: [{
+function parsingFixture() {
+  const example = (id, form, strict, permissive = "parsed") => ({id, form, strict: {status: strict}, permissive: {status: permissive}});
+  return {...fixture(), catalog: {operations: [{name: "llvm.future"}]}, parsing: [{
     id: "parse-one", complete: true, operations: [{name: "llvm.add"}, {name: "llvm.intr.ceil"}],
-    results: [{operation: "llvm.add", strict: {status: "parsed"}, permissive: {status: "parsed"}},
-      {operation: "llvm.intr.ceil", strict: {status: "rejected"}, permissive: {status: "parsed"}}]
+    results: [{operation: "llvm.add", cases: [example("a", "scalar", "parsed"), example("b", "vector", "blocked")]},
+      {operation: "llvm.intr.ceil", cases: [example("c", "scalar", "rejected")]}]
   }]};
-  assert.equal(parsingView(data, "", "strict", "parsed").rows.length, 1);
+}
+
+test("scalar and vector counts use disjoint cases and the selected parsing mode", () => {
+  const {parsingView} = require("../web/model.js");
+  const data = parsingFixture();
+  const view = parsingView(data);
+  assert.equal(view.total, 2);
+  assert.equal(view.rows[0].scalar.parsed, 1);
+  assert.equal(view.rows[0].scalar.total, 1);
+  assert.equal(view.rows[0].vector.parsed, 0);
+  assert.equal(view.rows[0].vector.total, 1);
+  assert.equal(view.rows[0].vector.counts.blocked, 1);
+  assert.equal(view.rows[1].vector.total, 0);
+  assert.equal(parsingView(data, "", "permissive").rows[0].vector.parsed, 1);
+  assert.equal(parsingView(data, "", "strict", "parsed").rows.length, 0);
   assert.equal(parsingView(data, "", "permissive", "parsed").rows.length, 2);
-  assert.equal(parsingView(data, "", "permissive", "parsed", "CEIL").rows[0].operation, "llvm.intr.ceil");
-  assert.equal(parsingView(data, "", "strict", "all", "", "core").rows.length, 1);
-  const categories = parsingView(data).categories;
-  assert.equal(categories.find(c => c.id === "core").strict.parsed, 1);
-  assert.equal(categories.find(c => c.id === "intrinsics").strict.rejected, 1);
-  assert.equal(categories.reduce((total, c) => total + c.total, 0), 2);
+  assert.equal(parsingView(data, "", "strict", "gaps").rows.length, 2);
+  assert.equal(parsingView(data, "", "strict", "blocked").rows.length, 1);
+  assert.equal(parsingView(data, "", "strict", "not_tested").rows[0].operation, "llvm.intr.ceil");
+  assert.equal(parsingView(data, "", "strict", "all", "CEIL").rows[0].operation, "llvm.intr.ceil");
+});
+
+test("categories are consecutive sections and operation totals do not grow with cases", () => {
+  const {parsingView} = require("../web/model.js");
+  const data = parsingFixture();
+  let view = parsingView(data);
+  assert.deepEqual(view.categories.map(c => c.id), ["core", "intrinsics", "experimental"]);
+  assert.equal(view.categories[0].rows[0].operation, "llvm.add");
+  assert.equal(view.categories[1].rows[0].operation, "llvm.intr.ceil");
+  assert.equal(view.categories.reduce((sum, c) => sum + c.rows.length, 0), view.rows.length);
+  data.parsing[0].results[0].cases.push(...Array(20).fill(data.parsing[0].results[0].cases[0]));
+  view = parsingView(data);
+  assert.equal(view.total, 2);
+  assert.equal(view.categories[0].total, 1);
+  assert.equal(view.rows[0].scalar.total, 21);
+  assert.equal(route(data, "#llvm-parse?category=intrinsics").parsingCategory, "intrinsics");
+  assert.equal(route(data, "#llvm-parse?evidence=partial").parsingStatus, "gaps");
+});
+
+test("parser selection preserves old and incomplete runs without fabricating evidence", () => {
+  const {parsingView} = require("../web/model.js");
+  const data = parsingFixture();
   assert.match(parsingView(data, "gone").warning, /unavailable/);
   data.parsing.push({...data.parsing[0], id: "incomplete", complete: false});
   assert.equal(parsingView(data).report.id, "parse-one");
   assert.equal(parsingView(data, "incomplete").report.id, "incomplete");
-  assert.equal(parsingView({...data, parsing: []}).rows[0].strict.status, "not_tested");
-});
-
-test("adding cases cannot inflate category operation counts and partial support stays visible", () => {
-  const {parsingView} = require("../web/model.js");
-  const data = {...fixture(), catalog: {operations: [{name: "llvm.add"}]}, parsing: [{
-    id: "expanded", complete: true, operations: [{name: "llvm.add"}],
-    results: [{operation: "llvm.add", cases: Array(8).fill({}),
-      strict: {status: "partial", parsed: 7, total: 8}, permissive: {status: "parsed", parsed: 8, total: 8}}]
-  }]};
-  const state = parsingView(data, "", "strict", "partial");
-  assert.equal(state.total, 1);
-  assert.equal(state.categories[0].total, 1);
-  assert.equal(state.categories[0].strict.partial, 1);
-  assert.equal(state.rows[0].strict.parsed, 7);
-  assert.equal(parsingView(data, "", "strict", "parsed").rows.length, 0);
-  data.parsing[0].results[0].cases.push(...Array(20).fill({}));
-  assert.equal(parsingView(data).categories[0].total, 1);
+  const missing = parsingView({...data, parsing: []});
+  assert.equal(missing.rows[0].scalar.total, 0);
+  assert.equal(missing.rows[0].vector.total, 0);
 });
 
 test("experimental intrinsics form a disjoint category", () => {

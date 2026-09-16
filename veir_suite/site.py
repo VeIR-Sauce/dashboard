@@ -13,6 +13,16 @@ from .history import read_all_history, read_history, read_parsing_history
 from .parsing import case_id, case_counts, counts, operation_results
 
 
+def parsing_form(text: str) -> str:
+    """Partition exact fixtures by vector types, ignoring strings and comments.
+
+    A fixture mixing scalar and vector code belongs to the vector group. This
+    describes the recorded example, not every type supported by its operation.
+    """
+    code = re.sub(r'"(?:[^"\\]|\\.)*"|//[^\n]*|/\*[\s\S]*?\*/', ' ', text)
+    return 'vector' if re.search(r'(?<![\w.!#])vector\s*<', code) else 'scalar'
+
+
 def parsing_evidence(report: dict) -> list[dict]:
     """Positive examples whose successful VeIR invocation establishes parsing.
 
@@ -118,7 +128,8 @@ def build_site(root: Path, history: Path, out: Path) -> None:
                 case = cases[observation['id']]
                 filename = (case['operation'] if report['schema_version'] == 1 else case['id']) + '.mlir'
                 (inputs / filename).write_text(case['text'])
-                example = {'id': observation['id'], 'label': case.get('label', 'Baseline example')}
+                example = {'id': observation['id'], 'label': case.get('label', 'Baseline example'),
+                           'form': parsing_form(case['text'])}
                 example['input'] = {'download': f'data/{report["id"]}/{filename}',
                     'text': case['text'], 'sha256': case['input_sha256'],
                     'method': case['method'], 'source': case['source']}

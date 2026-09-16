@@ -7,23 +7,34 @@ It does not infer parsing from the compatibility suite or from registration.
 
 ## Read a result
 
-Choose a category, find an operation, and open **Inspect example**. The input is
+Scroll through **Core operations**, **Intrinsics**, and **Experimental intrinsics**,
+or use their jump links, then find an operation and open **Inspect example**. All
+three sections remain on the page; category links scroll without filtering.
+The input is
 the exact generic MLIR used in the receipt, downloadable from the static site.
-Each operation has one row, a cases-parsed count, and expandable individual cases.
-Cases that do not parse appear first within the selected mode. A case link pins
+Each operation has one row with separate **Scalar** and **Vector** case counts
+for the selected parsing mode. There is no combined support label. Cases that
+do not parse appear first within each form's expandable details. A case link pins
 both the run and the exact example and reopens its evidence on reload.
 The receipt includes its hash, upstream derivation, binary hashes, VeIR source
 identity, commands, stdout, stderr, timeouts and verification-mode controls.
-**Link to this result** pins the measurement ID; category and outcome filters
-also survive reloads. Parser runs are independent of compatibility cohorts.
+**Link to this result** pins the measurement ID; category jumps, mode and outcome
+filters also survive reloads. Parser runs are independent of compatibility cohorts.
+
+The grouping is derived from each receipt's exact input: scalar cases contain no
+vector type; vector cases contain a vector type, including mixed scalar/vector
+fixtures. Strings and comments are ignored when identifying types. This describes
+the whole example, not every possible form of the target operation. No example
+for a form is shown as **Not tested**, never a failure or an inapplicability claim.
+Case totals and the underlying measurements are unchanged by this presentation.
 
 Both modes pass `--disable-verifiers --print-op-generic` to `veir-opt`.
 The second also passes `--allow-unregistered-dialect`.
 
 | Outcome | Evidence |
 | --- | --- |
-| Parsed | Every recorded case for this operation parsed and printed successfully, including the target operation. |
-| Partial | At least one case parsed, but other cases were rejected, blocked, untested, or encountered an error. |
+| N/M parse | N of the M recorded cases in this scalar or vector column parsed and printed successfully. |
+| Parsed (individual case) | This input parsed and printed successfully, including the target operation. |
 | Rejected | Ordinary parser rejection names the target operation or points to its source line. |
 | Blocked | Another operation, enclosing type, attribute, or surrounding input failed first. |
 | Not tested | There is no example, the reference rejected it, or mode controls failed. |
@@ -47,9 +58,9 @@ These are navigation categories, not an agreed priority order or a promise of
 complete LLVM/MLIR parity. The catalogue remains the pinned `LLVMOps.td` and
 `LLVMIntrinsicOps.td` inventory of 344 names.
 
-Category totals count operations with at least one parsed example. The per-row
-fraction and Partial state expose incomplete case support. Extra cases never
-inflate the operation denominator. Runs with different case sets are different
+Category headings count operations in the inventory. Scalar/vector fractions
+count examples independently. Extra cases never inflate the operation denominator.
+Runs with different case sets are different
 measurements, not evidence of a compiler improvement or regression by themselves.
 
 ## Reproduce the matrix
@@ -92,7 +103,7 @@ during a run prevent a complete measurement.
 `parsing.json` is a separate append-only receipt kind. Every catalogue operation
 must have exactly one operation result, including operations lacking an example.
 Schema 2 groups independently identified case results under each operation and
-validates case counts, partial summaries and complete case accounting. Legacy
+validates case counts, aggregate summaries and complete case accounting. Legacy
 schema 1 receipts are adapted for display without changing their stored evidence
 or download paths. A complete
 run means every row produced a usable observation in both modes; rejected or

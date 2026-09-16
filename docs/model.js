@@ -54,7 +54,7 @@
 
   const statuses = ["all", "open", "satisfied", "uncovered", "decision", "failed"];
   const stages = ["all", "verification", "roundtrip", "execution", "transformation", "regression", "proof"];
-  const parsingStatuses = ["parsed", "partial", "rejected", "blocked", "error", "not_tested"];
+  const parsingStatuses = ["parsed", "gaps", "rejected", "blocked", "error", "not_tested"];
   const parsingCategories = {core: "Core operations", intrinsics: "Intrinsics", experimental: "Experimental intrinsics"};
   function parsingCategory(name) {
     return name.startsWith("llvm.intr.experimental.") ? "experimental" : name.startsWith("llvm.intr.") ? "intrinsics" : "core";
@@ -80,7 +80,7 @@
       stage: stages.includes(params.get("stage")) ? params.get("stage") : "all",
       search: params.get("q") || "", requirement: params.get("req") || "",
       parsingSearch: params.get("op") || "",
-      parsingStatus: params.get("evidence") === "observed" ? "parsed" : params.get("evidence") === "unknown" ? "not_tested" : parsingStatuses.includes(params.get("evidence")) ? params.get("evidence") : "all",
+      parsingStatus: params.get("evidence") === "observed" ? "parsed" : params.get("evidence") === "partial" ? "gaps" : params.get("evidence") === "unknown" ? "not_tested" : parsingStatuses.includes(params.get("evidence")) ? params.get("evidence") : "all",
       parsingMode: params.get("mode") === "permissive" ? "permissive" : "strict",
       parsingRun: params.get("run") || "",
       parsingCategory: Object.hasOwn(parsingCategories, params.get("category")) ? params.get("category") : "all",
@@ -118,23 +118,40 @@
     });
   }
 
-  function parsingView(data, runId = "", mode = "strict", status = "all", query = "", category = "all") {
+  function parsingCases(cases, mode, form) {
+    const selected = cases.filter(example => example.form === form);
+    const counts = Object.fromEntries(["parsed", "rejected", "blocked", "error", "not_tested"].map(
+      status => [status, selected.filter(example => example[mode].status === status).length]));
+    return {total: selected.length, parsed: counts.parsed, counts};
+  }
+
+  function parsingView(data, runId = "", mode = "strict", status = "all", query = "") {
     const reports = data.parsing || [];
     const report = reports.find(r => r.id === runId) || reports.findLast(r => r.complete) || reports.at(-1);
     const byName = new Map((report?.results || []).map(row => [row.operation, row]));
     const operations = report?.operations || data.catalog.operations;
-    const rows = operations.map(op => ({...op, ...(byName.get(op.name) || {
-      operation: op.name, strict: {status: "not_tested"}, permissive: {status: "not_tested"}})}));
-    const categories = Object.entries(parsingCategories).map(([id, title]) => {
-      const selected = rows.filter(row => parsingCategory(row.operation) === id);
-      const count = mode => Object.fromEntries(parsingStatuses.map(status => [status, selected.filter(row => row[mode].status === status).length]));
-      return {id, title, total: selected.length, strict: count("strict"), permissive: count("permissive")};
+    const allRows = operations.map(op => {
+      const result = byName.get(op.name) || {operation: op.name, cases: []};
+      return {...op, ...result, scalar: parsingCases(result.cases, mode, "scalar"),
+        vector: parsingCases(result.cases, mode, "vector")};
     });
-    return {report, total: operations.length, categories,
+    const rows = allRows.filter(row => {
+      const cases = row.cases;
+      const matches = status === "all" ||
+        (status === "parsed" ? cases.length && cases.every(c => c[mode].status === "parsed") :
+         status === "gaps" ? !cases.length || cases.some(c => c[mode].status !== "parsed") :
+         status === "not_tested" ? !row.scalar.total || !row.vector.total || cases.some(c => c[mode].status === "not_tested") :
+         cases.some(c => c[mode].status === status));
+      return row.operation.includes(query.toLowerCase()) && matches;
+    });
+    const categories = Object.entries(parsingCategories).map(([id, title]) => {
+      return {id, title, total: allRows.filter(row => parsingCategory(row.operation) === id).length,
+        rows: rows.filter(row => parsingCategory(row.operation) === id)};
+    });
+    return {report, total: operations.length, categories, rows,
       warning: runId && runId !== report?.id ? "The linked parser run is unavailable; showing the latest available run." : "",
-      rows: rows.filter(row => row.operation.includes(query.toLowerCase()) && (status === "all" || row[mode].status === status) &&
-        (category === "all" || parsingCategory(row.operation) === category))};
+    };
   }
 
-  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems, parsingView, parsingCategory};
+  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems, parsingView, parsingCategory, parsingCases};
 });

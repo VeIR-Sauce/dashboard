@@ -9,18 +9,17 @@
 <section id="parsing-page" class="panel" hidden>
 <div class="panel-head"><h2>Can VeIR parse these LLVM operations?</h2><a id="parsing-receipt" href="#">Full measurement ↗</a></div>
 <p id="parsing-note" class="muted"></p>
-<div id="parsing-categories" class="parsing-categories" aria-label="Parsing results by category"></div>
+<div id="parsing-categories" class="parsing-categories" aria-label="Jump to operation category"></div>
 <div class="filters">
 <label class="search">Operation <input id="parse-search" type="search" placeholder="llvm.add, load, call…"></label>
-<label>Category <select id="parse-category"><option value="all">All categories</option><option value="core">Core operations</option><option value="intrinsics">Intrinsics</option><option value="experimental">Experimental intrinsics</option></select></label>
-<label>Mode to filter <select id="parse-mode"><option value="strict">Strict</option><option value="permissive">Allow unregistered</option></select></label>
-<label>Outcome <select id="parse-status"><option value="all">All outcomes</option><option value="parsed">All cases parse</option><option value="partial">Some cases parse</option><option value="rejected">Rejected at this operation</option><option value="blocked">Blocked by surrounding input</option><option value="not_tested">Not tested</option><option value="error">Measurement error</option></select></label>
+<label>Parsing mode <select id="parse-mode"><option value="strict">Strict</option><option value="permissive">Allow unregistered</option></select></label>
+<label>Outcome <select id="parse-status"><option value="all">All outcomes</option><option value="parsed">All cases parse</option><option value="gaps">Has non-parsing cases</option><option value="rejected">Rejected at this operation</option><option value="blocked">Blocked by surrounding input</option><option value="not_tested">Missing scalar or vector tests</option><option value="error">Measurement error</option></select></label>
 <label>Parser run <select id="parse-run"><option value="">Latest complete run</option></select></label>
 </div>
 <p id="parsing-count" aria-live="polite" class="muted"></p>
-<div class="table-scroll parsing-table"><table><thead><tr><th>LLVM operation</th><th>Strict</th><th>Allow unregistered</th><th>Input &amp; diagnostics</th></tr></thead><tbody id="parsing-operations"></tbody></table></div>
-<p class="caption">Each row groups reference-verified cases in generic MLIR syntax, with VeIR verification disabled. <strong>Parsed</strong> means all recorded cases parsed and printed successfully. <strong>Partial</strong> means some cases parse and others do not; expand the row to see which. These samples do not cover every syntax or type variant. <strong>Rejected</strong> locates the first parser error at the named operation. <strong>Blocked</strong> means surrounding code, a type or an attribute failed first. Allowing unregistered operations can preserve them as opaque operations; it does not establish their verification or execution support.</p>
-<p class="caption">Category counts measure operations with at least one parsed example; case counts measure depth separately. Categories are disjoint: <code>llvm.intr.experimental.*</code> is experimental, other <code>llvm.intr.*</code> operations are intrinsics, and the remaining operations form the core group, including functions, globals and structural operations. This naming-based split is not a commitment to support every category.</p>
+<div id="parsing-operations"></div>
+<p class="caption">Each column counts recorded cases that parsed and printed successfully, with VeIR verification disabled. Scalar cases contain no vector types; vector cases contain a vector type anywhere in the input, including examples that mix scalar and vector code. Not tested means no example in that column, not a failure or a claim that the form is inapplicable. These samples do not cover every type or syntax variant.</p>
+<p class="caption">Rejected locates the first parser error at the named operation. Blocked means surrounding input failed first. Allowing unregistered operations can preserve them as opaque operations; it does not establish verification or execution support. The three sections group core operations, <code>llvm.intr.*</code> intrinsics and <code>llvm.intr.experimental.*</code> experimental intrinsics.</p>
 </section>
 <section class="panel action-panel" aria-labelledby="actions-title"><div class="panel-head"><h2 id="actions-title">What to work on next</h2><a id="all-actions" href="#requirements">Browse open contracts ↓</a></div><p id="action-note" class="muted"></p><div id="actions"></div></section>
 <details id="measurement-controls" class="disclosure"><summary id="selection-label">Choose scope and measurement</summary>

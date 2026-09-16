@@ -1,13 +1,26 @@
 import unittest
 import copy
 
-from veir_suite.site import parsing_evidence
+from veir_suite.site import parsing_evidence, parsing_form
 from veir_suite.parsing import MODES, aggregate_operation, case_counts, case_id, classify, controls_ok, counts, digest_text, operation_results, validate_parsing
 from veir_suite.model import InvalidData, digest
 from scripts.import_parsing_cases import split_types, leaf_example
 
 
 class ParsingEvidenceTests(unittest.TestCase):
+    def test_scalar_vector_partition_uses_input_types_not_labels_or_comments(self):
+        for text in ['"llvm.add"(%a, %b) : (i32, i32) -> i32',
+                     '// vector<4xi32> example\n"llvm.add"()',
+                     '"llvm.func"() <{sym_name = "vector<4xi32>"}>',
+                     '/* vector<4xi32> */ "llvm.mlir.global"()',
+                     '"name with \\" vector<4xi32>"']:
+            self.assertEqual(parsing_form(text), 'scalar', text)
+        for text in ['"llvm.add"(%a, %b) : (vector<4xi32>, vector<4xi32>) -> vector<4xi32>',
+                     '!v = vector<[4]xi32>\n"llvm.func"()',
+                     '"llvm.func"() <{function_type = !llvm.func<i32 (vector<4xi32>)>}>',
+                     '"llvm.mlir.constant"() <{value = dense<0> : vector<4xi32>}>']:
+            self.assertEqual(parsing_form(text), 'vector', text)
+
     def report(self, kind="verify", expect="accept", exit_code=0, status="PASS"):
         return {"registry": {
             "requirements": [{"id": "add", "operations": ["llvm.add"], "test_ids": ["sample"]}],

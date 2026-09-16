@@ -125,11 +125,11 @@ h2 {
 .parse-input,.parse-diagnostic {white-space:pre-wrap; overflow-wrap:anywhere; font-size:11px; line-height:1.5; padding:10px; background:#f4f7f8; border-radius:5px;}
 .parse-links {display:flex; flex-wrap:wrap; gap:8px 14px; font-size:11px;}
 .input-hash {font-size:10px; overflow-wrap:anywhere; color:#647581;}
-.parsing-categories {display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:18px 0;}
-.parse-category {display:flex; flex-direction:column; gap:5px; border:1px solid #dbe5e9; padding:14px; border-radius:7px;}
-.parse-category[aria-current] {border-color:#117d75; background:#f0f9f7;}
-.parse-category span {font-size:13px; color:#233d50;}
-.parse-category small {font-size:11px; color:#647581;}
+.parsing-categories {display:flex; flex-wrap:wrap; gap:10px 20px; margin:18px 0; font-size:13px;}
+.parse-category-section {margin-top:26px; scroll-margin-top:90px;}
+.parse-category-section>h3 {font-size:19px; border-bottom:2px solid #dbe5e9; padding-bottom:12px;}
+.parse-case-heading {font-size:12px; margin:16px 0 6px; color:#233d50;}
+.parse-case {scroll-margin-top:90px;}
 .parse-examples summary {cursor:pointer; color:var(--teal);}
 .parse-examples a {display:block; overflow-wrap:anywhere; margin:8px 0;}
 .diagnostic pre {white-space:pre-wrap; overflow-wrap:anywhere; padding:12px; background:#faf4f4; border-radius:6px; font-size:12px;}
@@ -547,6 +547,6 @@ svg .value {
   }
 }
 
-.parse-partial {color:#996016; font-weight:650;}
+.parse-gaps {color:#996016; font-weight:650;}
 .parse-case-count {display:block; font-size:10px; color:#647581; font-weight:400; margin-top:4px;}
 .parse-case {border-top:1px solid #e7edf0; padding:9px 0; font-size:11px;}
