@@ -158,6 +158,7 @@ async function main() {
     assert.equal(await evaluate('document.querySelector(".parse-examples").open'), true);
     assert.equal(await evaluate('document.querySelector(".parse-case").open'), true);
     assert.ok(await evaluate('location.hash.includes("case=")'));
+    assert.ok(await evaluate('location.hash.includes("category=core")'));
     const latestCaseTotal = data.parsing.find(r => r.id === parserRun).case_total;
     assert.ok(latestCaseTotal > data.catalog.operations.length);
     await choose("parse-run", data.parsing[0].id);

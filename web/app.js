@@ -196,7 +196,7 @@ function renderParsing() {
         const details = node("details", undefined, "parse-examples");
         details.append(node("summary", op.cases.length === 1 ? "Inspect example" : `Inspect ${op.cases.length} cases`));
         const links = node("p", undefined, "parse-links");
-        links.append(link("Link to this result", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id, parsingCase: ""}))));
+        links.append(link("Link to this result", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id, parsingCategory: progress.parsingCategory(op.operation), parsingCase: ""}))));
         details.append(links);
         for (const form of ["scalar", "vector"]) {
           const cases = op.cases.filter(example => example.form === form).sort((a, b) =>
@@ -210,7 +210,7 @@ function renderParsing() {
             if (op.cases.length === 1) detail.open = true;
             const links = node("p", undefined, "parse-links");
             links.append(link("Download input", example.input.download));
-            links.append(link("Link to this case", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id, parsingCase: example.id}))));
+            links.append(link("Link to this case", progress.viewHash(selection({parsing: true, parsingSearch: op.operation, parsingStatus: "all", parsingRun: report.id, parsingCategory: progress.parsingCategory(op.operation), parsingCase: example.id}))));
             const source = example.input.source;
             if (source.repository === "llvm/llvm-project") links.append(link("LLVM source", `https://github.com/llvm/llvm-project/blob/${source.revision}/${source.path}`));
             detail.append(links, node("pre", example.input.text, "parse-input"));
