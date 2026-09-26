@@ -125,6 +125,21 @@
     return {total: selected.length, parsed: counts.parsed, counts};
   }
 
+  function parsingTrend(data, report, mode = "strict", category = "core") {
+    if (!report?.cohort) return [];
+    return (data.parsing || []).filter(run => run.complete && run.cohort === report.cohort &&
+        run.finished_at <= report.finished_at)
+      .sort((a, b) => a.finished_at.localeCompare(b.finished_at) || a.id.localeCompare(b.id))
+      .map(run => {
+        const cases = run.results.filter(row => parsingCategory(row.operation) === category).flatMap(row => row.cases);
+        const forms = Object.fromEntries(["scalar", "vector"].map(form => {
+          const counts = parsingCases(cases, mode, form);
+          return [form, {...counts, remaining: counts.total - counts.parsed}];
+        }));
+        return {id: run.id, finished_at: run.finished_at, source: run.source, ...forms};
+      });
+  }
+
   function parsingView(data, runId = "", mode = "strict", status = "all", query = "") {
     const reports = data.parsing || [];
     const report = reports.find(r => r.id === runId) || reports.findLast(r => r.complete) || reports.at(-1);
@@ -153,5 +168,5 @@
     };
   }
 
-  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems, parsingView, parsingCategory, parsingCases};
+  return {CURRENT_PLAN, cohortIds, view, requirementState, route, viewHash, actionItems, parsingView, parsingCategory, parsingCases, parsingTrend};
 });

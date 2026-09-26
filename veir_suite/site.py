@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 import shutil
 
-from .model import InvalidData, load_registry, read_json
+from .model import InvalidData, digest, load_registry, read_json
 from .history import read_all_history, read_history, read_parsing_history
 from .parsing import case_id, case_counts, counts, operation_results
 
@@ -21,6 +21,24 @@ def parsing_form(text: str) -> str:
     """
     code = re.sub(r'"(?:[^"\\]|\\.)*"|//[^\n]*|/\*[\s\S]*?\*/', ' ', text)
     return 'vector' if re.search(r'(?<![\w.!#])vector\s*<', code) else 'scalar'
+
+
+def parsing_cohort(report: dict) -> str:
+    """Compare fixed inputs, parser policy, harness and actual reference binary.
+
+    VeIR revisions, run times, file paths and descriptive labels may change.
+    Input changes, newly added cases and reference rebuilds start a new series.
+    """
+    manifest = report['manifest']
+    return digest({
+        'operations': sorted(op['name'] for op in manifest['catalog']['operations']),
+        'cases': sorted((case_id(case), case['operation'], case['input_sha256'])
+                        for case in manifest['cases']),
+        'modes': manifest['modes'], 'arguments': manifest['veir_arguments'],
+        'timeout': manifest['timeout_seconds'], 'llvm_revision': manifest['llvm_revision'],
+        'reference': report['tools']['mlir_opt']['sha256'],
+        'harness': report['harness_sha256'],
+    })
 
 
 def parsing_evidence(report: dict) -> list[dict]:
@@ -143,6 +161,7 @@ def build_site(root: Path, history: Path, out: Path) -> None:
             rows.append(row)
         parsing_entries.append({key: report[key] for key in ['id', 'finished_at', 'complete', 'counts', 'source']} |
             {'download': 'data/' + target.name, 'llvm_revision': report['manifest']['llvm_revision'],
+             'cohort': parsing_cohort(report),
              'counts': counts(operations), 'case_counts': case_counts(operations), 'case_total': len(cases),
              'operations': report['manifest']['catalog']['operations'], 'results': rows})
     data = {"registry": registry, "catalog": catalog, "sources": sources, "reports": compact,

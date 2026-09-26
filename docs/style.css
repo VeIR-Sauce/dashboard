@@ -550,3 +550,13 @@ svg .value {
 .parse-gaps {color:#996016; font-weight:650;}
 .parse-case-count {display:block; font-size:10px; color:#647581; font-weight:400; margin-top:4px;}
 .parse-case {border-top:1px solid #e7edf0; padding:9px 0; font-size:11px;}
+
+#parsing-progress {margin:20px 0; border-top:1px solid #dbe5e9; padding-top:16px;}
+#parsing-progress>summary {font-size:17px; font-weight:650; cursor:pointer;}
+#parsing-trends {display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px;}
+.parsing-trend {min-width:0;}
+.parsing-trend h3 {font-size:15px;}
+.parsing-trend svg {width:100%; display:block;}
+.parsing-trend svg text {font-size:11px; fill:#526779;}
+.parsing-trend summary,.parsing-trend li {font-size:12px; overflow-wrap:anywhere;}
+.parsing-trend li {margin:8px 0;}

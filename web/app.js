@@ -153,12 +153,81 @@ function render() {
   renderParsing(); renderActions(); renderRequirements(); renderCatalog(); renderLedger();
 }
 
+function renderParsingTrends(report, mode) {
+  const container = $("parsing-trends"); container.replaceChildren();
+  const comparable = progress.parsingTrend(data, report, mode);
+  $("parsing-progress-note").textContent = !report ? "No parser measurement yet." :
+    `${comparable.length} complete measurement${comparable.length === 1 ? "" : "s"} of this fixed test set and reference. ` +
+    (comparable.length < 2 ? "A second comparable run is needed to show change. " : "") +
+    "Changed tests, reference binaries or measurement code start a separate baseline. Incomplete attempts never lower a line.";
+  for (const [category, title] of [["core", "Core operations"], ["intrinsics", "Intrinsics"], ["experimental", "Experimental intrinsics"]]) {
+    const runs = progress.parsingTrend(data, report, mode, category);
+    const panel = node("section", undefined, "parsing-trend"); panel.append(node("h3", title));
+    if (!runs.length) { panel.append(node("p", "No complete comparable measurement.", "muted")); container.append(panel); continue; }
+    const last = runs.at(-1), first = runs[0];
+    const forms = ["scalar", "vector"].filter(form => last[form].total);
+    panel.append(node("p", ["scalar", "vector"].map(form => {
+      if (!last[form].total) return `${form}: no cases tested`;
+      const delta = last[form].remaining - first[form].remaining;
+      return `${form}: ${last[form].remaining}/${last[form].total} remaining` +
+        (runs.length > 1 ? ` (${delta > 0 ? "+" : ""}${delta} since baseline)` : "");
+    }).join(" · "), "caption"));
+    const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 420 200"); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", `${title}, ${mode} parsing: ` + forms.map(form =>
+      `${form} remaining ${runs.map(run => run[form].remaining).join(", ")}`).join("; "));
+    function add(tag, attrs, text) {
+      const el = document.createElementNS(ns, tag);
+      for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+      if (text !== undefined) el.textContent = text;
+      svg.append(el); return el;
+    }
+    const maximum = Math.max(1, ...runs.flatMap(run => forms.map(form => run[form].remaining)));
+    const start = Date.parse(first.finished_at), end = Date.parse(last.finished_at);
+    const x = run => end === start ? 224 : 46 + (Date.parse(run.finished_at) - start) / (end - start) * 350;
+    const y = value => 159 - value / maximum * 139;
+    for (const tick of [...new Set([0, Math.round(maximum / 2), maximum])]) {
+      add("line", {x1: 46, x2: 396, y1: y(tick), y2: y(tick), stroke: "#e7edf0"});
+      add("text", {x: 37, y: y(tick) + 4, "text-anchor": "end"}, tick);
+    }
+    for (const form of forms) {
+      const color = form === "scalar" ? "#117d75" : "#407dc1";
+      if (runs.length > 1) add("path", {d: runs.map((run, i) => `${i ? "L" : "M"} ${x(run)} ${y(run[form].remaining)}`).join(" "), fill: "none", stroke: color, "stroke-width": 2.5, "stroke-dasharray": form === "vector" ? "5 3" : "none"});
+      for (const run of runs) {
+        const point = add("circle", {cx: x(run), cy: y(run[form].remaining), r: form === "scalar" ? 5 : 3, fill: color});
+        const tooltip = document.createElementNS(ns, "title");
+        tooltip.textContent = `${run.finished_at} · ${run.source.commit.slice(0, 12)} · ${form}: ${run[form].remaining}/${run[form].total} remaining (${run[form].counts.rejected} rejected, ${run[form].counts.blocked} blocked)`;
+        point.append(tooltip);
+      }
+    }
+    const date = run => run.finished_at.slice(5, 10) + " " + run.finished_at.slice(11, 16);
+    if (runs.length === 1) add("text", {x: x(last), y: 184, "text-anchor": "middle"}, date(last) + " UTC");
+    else { add("text", {x: 46, y: 184}, date(first)); add("text", {x: 396, y: 184, "text-anchor": "end"}, date(last) + " UTC"); }
+    panel.append(svg);
+    const details = node("details"), summary = node("summary", "Measurements and exact results"); details.append(summary);
+    const list = node("ul");
+    for (const run of runs) {
+      const item = node("li");
+      item.append(link(`${run.finished_at.replace("T", " ").replace("Z", " UTC")} · ${run.source.commit.slice(0, 12)} · ` + forms.map(form => `${form} ${run[form].remaining}/${run[form].total}`).join(" · "),
+        progress.viewHash(selection({parsing: true, parsingRun: run.id, parsingCategory: category, parsingSearch: "", parsingStatus: "all", parsingCase: ""}))));
+      list.append(item);
+    }
+    details.append(list); panel.append(details); container.append(panel);
+  }
+}
+
 function renderParsing() {
   const mode = $("parse-mode").value;
   const parsed = progress.parsingView(data, $("parse-run").value, mode, $("parse-status").value, $("parse-search").value);
   const {report, rows, total} = parsed;
   $("parsing-note").textContent = report ? `${report.case_total} cases across ${total} operations. Measured ${report.finished_at.replace("T", " ").replace("Z", " UTC")} with VeIR ${report.source.commit.slice(0, 12)}${report.source.dirty ? " + local changes" : ""}, MLIR ${report.llvm_revision.slice(0, 12)}.${report.complete ? "" : " This attempt is incomplete."}` : "No parser-only measurement has been recorded yet.";
-  if (routeWarning) $("parsing-note").textContent += " " + routeWarning;
+  const latestAttempt = (data.parsing || []).at(-1);
+  if (!$("parse-run").value && latestAttempt && !latestAttempt.complete && latestAttempt.id !== report?.id) {
+    $("parsing-note").append(node("span", ` A newer attempt at ${latestAttempt.finished_at} is incomplete. `),
+      link("Inspect incomplete attempt", progress.viewHash(selection({parsingRun: latestAttempt.id}))));
+  }
+  if (routeWarning) $("parsing-note").append(node("span", " " + routeWarning));
+  renderParsingTrends(report, mode);
   $("parsing-receipt").hidden = !report;
   if (report) $("parsing-receipt").href = report.download;
   $("parsing-categories").replaceChildren(node("span", "Jump to:", "muted"));

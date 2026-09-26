@@ -114,9 +114,21 @@ blocked inputs are still observations. Completeness never means all inputs pass.
 The static site copies inputs from the immutable receipt, not the current fixture
 directory. Later fixture edits therefore cannot change old evidence links.
 
-The parser lane deliberately does not lower either compatibility burndown.
-It has different acceptance criteria, and the initial parser measurement supplies
-one baseline rather than an invented trend.
+The parser lane has its own **Parsing burndown**, with separate scalar and vector
+lines for core operations, intrinsics and experimental intrinsics. Each point
+counts rejected or blocked cases from a complete measurement. Missing examples
+are not passing cases; an absent form is labelled “no cases tested”. Incomplete
+attempts remain inspectable, but cannot lower the line. A newer incomplete attempt
+is called out above the last complete result.
+
+A comparison fixes case IDs, target operations and input hashes, operation
+inventory, flags, timeout, measurement implementation, LLVM revision and the
+actual reference binary hash. VeIR itself may change. Added tests or rebuilt
+references start a separate baseline, even when their counts happen to agree.
+Selecting a historical run shows only history through that run. Table filters
+do not change chart totals. Expand “Measurements and exact results” to open each
+point's operation results and diagnostics. The parser chart does not lower either
+compatibility burndown.
 
 ## Add depth or a regression
 

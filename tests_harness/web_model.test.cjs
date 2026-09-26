@@ -178,3 +178,39 @@ test("experimental intrinsics form a disjoint category", () => {
   assert.equal(parsingCategory("llvm.call_intrinsic"), "core");
   assert.equal(route(fixture(), "#llvm-parse?category=toString").parsingCategory, "all");
 });
+
+test("parser burndown measures improvements and regressions separately by form and category", () => {
+  const {parsingTrend} = require("../web/model.js");
+  const data = parsingFixture();
+  Object.assign(data.parsing[0], {cohort: "fixed", finished_at: "2026-09-15T00:00:00Z", source: {commit: "old"}});
+  const fixed = structuredClone(data.parsing[0]);
+  Object.assign(fixed, {id: "parse-two", finished_at: "2026-09-16T00:00:00Z", source: {commit: "new"}});
+  fixed.results[0].cases[1].strict.status = "parsed";
+  fixed.results[0].cases[0].strict.status = "rejected";
+  data.parsing.push(fixed);
+  const points = parsingTrend(data, fixed);
+  assert.deepEqual(points.map(p => p.scalar.remaining), [0, 1]);
+  assert.deepEqual(points.map(p => p.vector.remaining), [1, 0]);
+  assert.equal(points[1].scalar.total, 1);
+  assert.deepEqual(parsingTrend(data, fixed, "permissive").map(p => p.vector.remaining), [0, 0]);
+  assert.equal(parsingTrend(data, fixed, "strict", "intrinsics")[1].scalar.remaining, 1);
+  assert.equal(parsingTrend(data, fixed, "strict", "intrinsics")[1].vector.total, 0);
+  assert.equal(parsingTrend(data, fixed, "strict", "experimental")[1].scalar.total, 0);
+});
+
+test("parser lines never cross test cohorts or incomplete attempts and honor historical selection", () => {
+  const {parsingTrend} = require("../web/model.js");
+  const data = parsingFixture();
+  const first = data.parsing[0];
+  Object.assign(first, {cohort: "fixed", finished_at: "2026-09-15T00:00:00Z"});
+  const changed = {...structuredClone(first), id: "changed", cohort: "added-tests", finished_at: "2026-09-16T00:00:00Z"};
+  const incomplete = {...structuredClone(first), id: "incomplete", complete: false, finished_at: "2026-09-17T00:00:00Z"};
+  const later = {...structuredClone(first), id: "later", finished_at: "2026-09-18T00:00:00Z"};
+  data.parsing.push(changed, incomplete, later);
+  assert.deepEqual(parsingTrend(data, later).map(p => p.id), [first.id, later.id]);
+  assert.deepEqual(parsingTrend(data, changed).map(p => p.id), [changed.id]);
+  assert.deepEqual(parsingTrend(data, incomplete).map(p => p.id), [first.id]);
+  assert.deepEqual(parsingTrend(data, first).map(p => p.id), [first.id]);
+  assert.deepEqual(parsingTrend({...data, parsing: [incomplete]}, incomplete), []);
+  assert.deepEqual(parsingTrend(data, undefined), []);
+});

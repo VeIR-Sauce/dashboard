@@ -17,6 +17,12 @@
 <label>Parser run <select id="parse-run"><option value="">Latest complete run</option></select></label>
 </div>
 <p id="parsing-count" aria-live="polite" class="muted"></p>
+<details id="parsing-progress" open>
+<summary>Parsing burndown</summary>
+<p id="parsing-progress-note" class="muted"></p>
+<p class="caption"><span class="dot teal"></span> Scalar · <span class="dot blue"></span> Vector · Cases still rejected or blocked; lower is better. Counts cover each whole category, independent of table filters.</p>
+<div id="parsing-trends"></div>
+</details>
 <div id="parsing-operations"></div>
 <p class="caption">Each column counts recorded cases that parsed and printed successfully, with VeIR verification disabled. Scalar cases contain no vector types; vector cases contain a vector type anywhere in the input, including examples that mix scalar and vector code. Not tested means no example in that column, not a failure or a claim that the form is inapplicable. These samples do not cover every type or syntax variant.</p>
 <p class="caption">Rejected locates the first parser error at the named operation. Blocked means surrounding input failed first. Allowing unregistered operations can preserve them as opaque operations; it does not establish verification or execution support. The three sections group core operations, <code>llvm.intr.*</code> intrinsics and <code>llvm.intr.experimental.*</code> experimental intrinsics.</p>

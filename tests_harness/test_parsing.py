@@ -177,3 +177,38 @@ class ParserVariantTests(unittest.TestCase):
         self.assertEqual(rows[0]['strict']['total'], 1)
         self.assertEqual(rows[0]['cases'][0]['id'], 'llvm.add.baseline')
         self.assertEqual(report, original)
+
+
+class ParsingCohortTests(unittest.TestCase):
+    def fixture(self):
+        report = parser_receipt()
+        report['manifest'].update(timeout_seconds=10, llvm_revision='llvm-reference')
+        report['tools']['mlir_opt'] = {'sha256': 'reference-binary', 'path': '/one/mlir-opt'}
+        report['harness_sha256'] = 'parser-harness'
+        report['source'] = {'commit': 'old-veir'}
+        return report
+
+    def test_veir_progress_and_presentation_changes_keep_comparison_identity(self):
+        from veir_suite.site import parsing_cohort
+        before = self.fixture(); after = copy.deepcopy(before)
+        after['source']['commit'] = 'new-veir'
+        after['finished_at'] = '2026-09-26T00:00:00Z'
+        after['tools']['mlir_opt']['path'] = '/another/mlir-opt'
+        after['manifest']['cases'][0]['label'] = 'A clearer title'
+        self.assertEqual(parsing_cohort(before), parsing_cohort(after))
+
+    def test_test_reference_and_policy_changes_start_separate_baselines(self):
+        from veir_suite.site import parsing_cohort
+        before = self.fixture()
+        changes = [
+            lambda r: r['manifest']['cases'][0].update(input_sha256='new-input'),
+            lambda r: r['manifest']['cases'].append({**r['manifest']['cases'][0], 'id': 'extra'}),
+            lambda r: r['manifest'].update(timeout_seconds=20),
+            lambda r: r['manifest']['veir_arguments'].append('--different-mode'),
+            lambda r: r['manifest'].update(llvm_revision='new-reference-source'),
+            lambda r: r['tools']['mlir_opt'].update(sha256='rebuilt-reference'),
+            lambda r: r.update(harness_sha256='new-measurement-code'),
+        ]
+        for change in changes:
+            after = copy.deepcopy(before); change(after)
+            self.assertNotEqual(parsing_cohort(before), parsing_cohort(after))

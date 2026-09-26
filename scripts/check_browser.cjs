@@ -117,7 +117,31 @@ async function main() {
     assert.equal(await evaluate('document.querySelectorAll("#parsing-operations table").length'), 3);
     assert.equal(await evaluate('document.getElementById("parse-category")'), null);
     assert.equal(await evaluate('document.getElementById("parsing-page").innerText.includes("Partial")'), false);
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-trends svg").length'), 3);
+    assert.match(await text("parsing-progress-note"), /second comparable run/);
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-trends svg path").length'), 0,
+      "Different case sets must not be joined into a trend");
+    assert.match(await text("parsing-trends"), /scalar:.*remaining/);
     await screenshot("parsing-sections");
+    // Synthetic browser-only observations exercise a line and failed-run warning.
+    // They never enter receipts or the generated site on disk.
+    await evaluate(`(() => {
+      const next = structuredClone(data.parsing.at(-1));
+      next.id = 'browser-only-next'; next.finished_at = '2026-09-17T00:00:00Z';
+      next.source.commit = 'browser-only-new-revision';
+      const failed = next.results.flatMap(r => r.cases).find(c => c.strict.status !== 'parsed');
+      failed.strict.status = 'parsed';
+      data.parsing.push(next);
+      data.parsing.push({...structuredClone(next), id: 'browser-only-incomplete', complete: false,
+        finished_at: '2026-09-18T00:00:00Z'});
+      renderParsing();
+    })()`);
+    assert.equal(await evaluate('document.querySelectorAll("#parsing-trends svg path").length'), 6);
+    assert.match(await text("parsing-note"), /newer attempt.*incomplete/);
+    assert.match(await text("parsing-progress-note"), /2 complete measurements/);
+    await screenshot("parsing-trend-test");
+    await evaluate('data.parsing.splice(-2); renderParsing()');
+
     await evaluate('document.querySelectorAll("#parsing-categories a")[1].click()');
     await until('location.hash.includes("category=intrinsics") && window.scrollY > 0');
     assert.equal(await evaluate('document.querySelectorAll(".parse-operation").length'), data.catalog.operations.length);
@@ -258,7 +282,7 @@ async function main() {
     console.log(JSON.stringify({browser: (await send("Browser.getVersion", {}, null)).product,
       requirements: data.registry.requirements.length, decisions, operations: data.catalog.operations.length,
       mobile: await evaluate('({viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth})'),
-      checks: ["baseline", "LLVM parsing", "parser modes", "scalar/vector case counts", "individual case permalink", "legacy parser run", "consecutive category sections", "category jump and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence"],
+      checks: ["baseline", "LLVM parsing", "parser burndown baselines", "parser modes", "scalar/vector case counts", "individual case permalink", "legacy parser run", "consecutive category sections", "category jump and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence"],
       screenshots: screenshots || null}));
   } catch (error) {
     error.message += "\nChromium stderr (tail):\n" + stderr;
