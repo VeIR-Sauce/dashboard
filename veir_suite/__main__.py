@@ -23,6 +23,8 @@ def main():
     p = commands.add_parser("parse", help="Measure reference-validated LLVM examples without VeIR verification")
     p.add_argument("--veir", type=Path, required=True)
     p.add_argument("--mlir-opt", type=Path, required=True)
+    p.add_argument("--revalidate-reference", action="store_true",
+                   help="Revalidate unchanged fixtures with a rebuilt reference; record its actual binary hash")
     p.add_argument("--out", type=Path, default=Path(".artifacts/parsing"))
     p.add_argument("--timeout", type=float, default=10.0)
     p = commands.add_parser("report-check", help="Reject incomplete, altered or inconsistent receipts")
@@ -55,7 +57,8 @@ def main():
             return code
         elif args.command == "parse":
             from .parsing import run_parsing
-            _, code = run_parsing(args.root, args.veir, args.mlir_opt, args.out, args.timeout)
+            _, code = run_parsing(args.root, args.veir, args.mlir_opt, args.out, args.timeout,
+                                  revalidate_reference=args.revalidate_reference)
             return code
         elif args.command == "report-check":
             from .history import validate_receipt

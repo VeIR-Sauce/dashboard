@@ -4,10 +4,11 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 REF_DIR="${1:?Provide an isolated reference build directory}"
 LLVM_REVISION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["llvm_revision"])' "$REPO_DIR/profiles/ci.json")"
+read -r -a REF_TOOLS <<< "${REFERENCE_TOOLS:-mlir-opt mlir-translate lli opt FileCheck split-file}"
 mkdir -p "$REF_DIR"
 REF_DIR="$(cd "$REF_DIR" && pwd)"
 if [[ -f "$REF_DIR/revision" ]] && [[ "$(cat "$REF_DIR/revision")" == "$LLVM_REVISION" ]]; then
-  for tool in mlir-opt mlir-translate lli opt FileCheck split-file; do
+  for tool in "${REF_TOOLS[@]}"; do
     test -x "$REF_DIR/bin/$tool"
   done
   exit 0
@@ -23,9 +24,9 @@ cmake -G Ninja -S "$REF_DIR/src/llvm" -B "$REF_DIR/build" \
   -DLLVM_ENABLE_ASSERTIONS=OFF -DLLVM_INCLUDE_TESTS=OFF -DLLVM_BUILD_UTILS=ON \
   -DLLVM_ENABLE_BINDINGS=OFF -DLLVM_ENABLE_TERMINFO=OFF \
   -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_USE_LINKER=lld
-cmake --build "$REF_DIR/build" --target mlir-opt mlir-translate lli opt FileCheck split-file --parallel "${BUILD_JOBS:-2}"
+cmake --build "$REF_DIR/build" --target "${REF_TOOLS[@]}" --parallel "${BUILD_JOBS:-2}"
 mkdir -p "$REF_DIR/bin"
-for tool in mlir-opt mlir-translate lli opt FileCheck split-file; do
+for tool in "${REF_TOOLS[@]}"; do
   cp "$REF_DIR/build/bin/$tool" "$REF_DIR/bin/$tool"
 done
 printf '%s\n' "$LLVM_REVISION" > "$REF_DIR/revision"

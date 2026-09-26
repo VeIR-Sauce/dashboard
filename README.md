@@ -168,17 +168,26 @@ require several hours. Only completed same-repository default-branch push,
 scheduled or manual runs can seed history. PR artifacts, incomplete searches,
 invalid archives and failed restores cannot silently reset a baseline.
 
-For `VeIR-Sauce/dashboard`, configure GitHub Pages to **Deploy from a branch**,
-select branch **codex/veir-progress**, and select **/docs**. This publishes the
-committed, tested snapshot at <https://veir-sauce.github.io/dashboard/>. Later
-pushes that update `docs/` publish the new snapshot at the same address. The
-organization owns this Pages site independently of any personal Pages site.
+The `parsing.yml` workflow measures **current upstream VeIR main daily at
+03:23 UTC** and on manual dispatch. It builds only `veir-opt` and the pinned
+`mlir-opt`, caching both. It revalidates the same committed parser inputs against
+the actual reference binary; a new reference build is a new comparison baseline.
+The initial cold build can take hours. Rejections and blocked cases are results;
+missing tools, control failures and incomplete measurements fail the workflow.
 
-The complete scheduled measurement and Actions-based Pages deployment template
-is retained in `integrations/progress-actions.yml`. Switching to that template
-also requires switching the Pages publishing source to **GitHub Actions**. The
-manual measurement workflow currently produces reviewable artifacts; recording
-that evidence and regenerating `docs/` is a separate reviewed update.
+Validated receipts, including incomplete attempts, accumulate on the
+`measurement-history` branch using normal pushes. This permanent history does not
+rely on artifact retention. The generated site includes both this history and the
+original checked-in evidence. A single workflow concurrency group serializes
+history writes and deployment. Configure Pages to **GitHub Actions**: successful
+site generation publishes even when the measurement is incomplete, so stale or
+failed attempts remain visible. A build failure before measurement preserves the
+previous publication and fails CI.
+
+Presentation changes on `codex/veir-progress` republish existing measurements
+without rebuilding the compilers. Manual dispatch with `measure: false` does the
+same. The separate `progress.yml` remains an on-demand, pinned **compatibility and
+native-test baseline** experiment; it does not update the live parser results.
 
 ## Validate this implementation
 

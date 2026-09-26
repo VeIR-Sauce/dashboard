@@ -155,7 +155,8 @@ def digest_text(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
-def run_parsing(root: Path, veir: Path, mlir_opt: Path, out: Path, timeout: float = 10) -> tuple[dict, int]:
+def run_parsing(root: Path, veir: Path, mlir_opt: Path, out: Path, timeout: float = 10, *,
+                revalidate_reference: bool = False) -> tuple[dict, int]:
     root, veir, mlir_opt = root.resolve(), veir.resolve(), mlir_opt.resolve()
     if timeout <= 0:
         raise InvalidData('Timeout must be positive')
@@ -163,8 +164,8 @@ def run_parsing(root: Path, veir: Path, mlir_opt: Path, out: Path, timeout: floa
     imported = read_json(root / 'requirements/parsing.json')
     if imported['catalog_sha256'] != file_digest(root / 'requirements/catalog.json'):
         raise InvalidData('Parsing fixtures use a different catalog')
-    if imported['reference_sha256'] != file_digest(mlir_opt):
-        raise InvalidData('Reference binary differs from the fixture import; reimport with the intended reference')
+    if imported['reference_sha256'] != file_digest(mlir_opt) and not revalidate_reference:
+        raise InvalidData('Reference binary differs from the fixture import; use --revalidate-reference to check the unchanged inputs')
     imports = [root / 'requirements/parsing.json', root / 'requirements/catalog.json']
     selected = [{**case, 'id': case_id(case), 'label': 'Baseline example'} for case in imported['cases']]
     variant_path = root / 'requirements/parsing-variants.json'

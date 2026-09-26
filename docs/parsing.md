@@ -91,8 +91,11 @@ python3 -m veir_suite site --history evidence --out docs
 On the shared workstation, run the importer and measurement inside an
 `agent-scoped 2G` work scope with output redirected to an SSD log. They use
 existing binaries and need no large build or download. On another machine,
-reimport with its reference binary before measuring; the runner requires the
-same binary hash as the fixture import and revalidates every input anyway.
+use `parse --revalidate-reference` with a reference rebuilt from the pinned LLVM
+revision. This keeps input bytes and IDs unchanged, revalidates every example,
+and records the actual reference binary hash. It does not assume that a rebuilt
+reference is comparable to the old one. Without this explicit option the runner
+requires the same binary hash as the fixture import.
 
 Before the matrix, controls check that an ill-typed add parses when verification
 is disabled, fails verification when enabled, and malformed syntax is rejected.
