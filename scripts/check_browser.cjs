@@ -73,7 +73,7 @@ async function main() {
   const text = id => evaluate("document.getElementById(" + JSON.stringify(id) + ").textContent");
   async function until(expression) {
     for (let attempt = 0; attempt < 100; attempt++) {
-      if (await evaluate(expression)) return;
+      if (await evaluate('document.readyState === "complete" && (' + expression + ')')) return;
       await new Promise(resolve => setTimeout(resolve, 50));
     }
     throw new Error("Browser condition was not reached: " + expression);
@@ -291,7 +291,7 @@ async function main() {
     await send("Emulation.setDeviceMetricsOverride", {width: 1365, height: 960, deviceScaleFactor: 1, mobile: false});
     await screenshot("interpreter-desktop");
     await send("Page.navigate", {url: pathToFileURL(path.join(site, "riscv.html")).href});
-    await until('document.body.innerText.includes("Operations still unlowered")');
+    await until('document.body?.innerText.includes("Operations still unlowered")');
     assert.match(await evaluate('document.body.innerText'), /Naveen Seth Hanig/);
     assert.match(await evaluate('document.body.innerText'), /not yet refreshed automatically/);
     const riscv = JSON.parse(fs.readFileSync(path.join(site, "data/riscv.json"), "utf8"));
@@ -315,7 +315,7 @@ async function main() {
     await screenshot("riscv-expanded-mobile");
     for (const preset of ["O2", "inline"]) {
       await evaluate('document.querySelector(' + JSON.stringify('a[href="riscv-sudoku-' + preset + '.html"]') + ').click()');
-      await until('document.querySelector("h1").textContent === ' + JSON.stringify("Sudoku · " + preset));
+      await until('document.querySelector("h1")?.textContent === ' + JSON.stringify("Sudoku · " + preset));
       await evaluate('document.querySelector("#riscv-diagnostics > summary").click(); document.querySelector("#riscv-examples > summary").click()');
       const expected = riscvDetails.builds["sudoku/" + preset];
       for (const example of expected.examples) {
@@ -327,7 +327,7 @@ async function main() {
       await send("Emulation.setDeviceMetricsOverride", {width: 1365, height: 960, deviceScaleFactor: 1, mobile: false});
       await screenshot("riscv-sudoku-" + preset + "-desktop");
       await evaluate("document.querySelector('main a[href=\"riscv.html\"]').click()");
-      await until('document.querySelector("h1").textContent === "RISC-V backend"');
+      await until('document.querySelector("h1")?.textContent === "RISC-V backend"');
       await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
     }
     assert.deepEqual(errors, [], "Browser exceptions");
