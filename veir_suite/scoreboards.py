@@ -4,6 +4,7 @@ from html import escape
 import json
 from pathlib import Path
 import re
+import tempfile
 
 from .model import InvalidData, read_json
 
@@ -53,6 +54,21 @@ def validate_interpreter(data, allowed):
     require(type(data['schema_version']) is int and data['schema_version'] == 1)
     return normalize_interpreter({'veir': data['veir'], 'tests': data['tests']},
                                  data['source_revision'], data['recorded_at'], allowed)
+
+
+def write_snapshot(path, data):
+    """Replace a validated snapshot atomically, with no shared temporary filename."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent,
+                                         prefix='.' + path.name + '.', delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(json.dumps(data, indent=2) + '\n')
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def build_scoreboards(root: Path, out: Path, history: Path):

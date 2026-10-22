@@ -8,34 +8,57 @@ The caller must confirm the source transfer is complete before invoking this.
 import argparse
 import configparser
 import csv
+from datetime import datetime, timezone
 import io
 import json
+import re
+import stat
 from pathlib import Path
 import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from veir_suite.model import read_json
-from veir_suite.scoreboards import require, sha, timestamp
+from veir_suite.scoreboards import require, sha, timestamp, write_snapshot
 from veir_suite.riscv_scoreboard import STAGES, validate_riscv
 
 
 def git(root, *args):
-    result = subprocess.run(['git', '--no-lazy-fetch', '--no-optional-locks', '-C', str(root),
-                             '-c', 'core.fsmonitor=false', *args], capture_output=True, check=True, text=True)
+    result = subprocess.run(['git', '--no-lazy-fetch', '--no-optional-locks', '--no-replace-objects', '-C', str(root),
+                             '-c', 'core.fsmonitor=false', *args], capture_output=True, check=True, timeout=30)
     return result.stdout
 
 
 def import_snapshot(source, allowed):
-    revision = sha(git(source, 'rev-parse', 'HEAD').strip())
-    recorded_at = timestamp(git(source, 'log', '-1', '--format=%cI', '--', 'leaderboard/results').strip())
+    revision = sha(git(source, 'rev-parse', 'HEAD').decode().strip())
+    # Pin every read to the same commit, even if the source branch moves mid-import.
+    date = datetime.fromisoformat(git(source, 'log', '-1', '--format=%cI', revision,
+                                     '--', 'leaderboard/results').decode().strip())
+    require(date.tzinfo is not None)
+    recorded_at = timestamp(date.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'))
+    committed_paths = git(source, 'ls-tree', '-r', '--name-only', '-z', revision,
+                          '--', 'leaderboard/results').decode().split('\0')
+    result_csvs = {p for p in committed_paths if p.endswith(('/ops.csv', '/stages.csv', '/runs.csv'))}
+    expected = {'leaderboard/results/sudoku/' + preset + '/' + name + '.csv'
+                for preset in ('O2', 'inline') for name in ('ops', 'stages', 'runs')}
+    # A new benchmark must be reviewed, not silently omitted from a fresh snapshot.
+    require(result_csvs == expected)
+
+    def read_private(path):
+        require(path.resolve().is_relative_to(source.resolve()) and not path.is_symlink())
+        require(stat.S_ISREG(path.stat().st_mode))
+        with path.open('rb') as handle:
+            raw = handle.read(1024 * 1024 + 1)
+        require(len(raw) <= 1024 * 1024)
+        return raw
+
     def rows(relative, columns):
         path = source / 'leaderboard/results' / relative
-        require(path.resolve().is_relative_to(source.resolve()) and not path.is_symlink())
-        require(path.stat().st_size < 1024 * 1024)
-        text = path.read_text()
-        # Only claim commit provenance for byte-identical committed input files.
-        require(text == git(source, 'show', revision + ':leaderboard/results/' + relative))
+        raw = read_private(path)
+        obj = revision + ':leaderboard/results/' + relative
+        require(int(git(source, 'cat-file', '-s', obj)) == len(raw))
+        require(raw == git(source, 'show', obj))
+        text = raw.decode('utf-8')
         reader = csv.DictReader(io.StringIO(text))
         require(reader.fieldnames == columns)
         data = list(reader)
@@ -60,8 +83,10 @@ def import_snapshot(source, allowed):
         require([row['stage'] for row in stages] == list(STAGES))
         safe_stages = []
         for row in stages:
-            require(row['status'] in {'0', '1', 'SKIPPED'})
-            safe_stages.append({'stage': row['stage'], 'status': {'0': 'passed', '1': 'failed', 'SKIPPED': 'skipped'}[row['status']]})
+            status = row['status']
+            require(status in {'TIMEOUT', 'SKIPPED'} or re.fullmatch(r'-?(0|[1-9][0-9]{0,2})', status))
+            normalized = 'passed' if status == '0' else 'skipped' if status == 'SKIPPED' else 'failed'
+            safe_stages.append({'stage': row['stage'], 'status': normalized})
         runs = rows(prefix + 'runs.csv', ['input', 'verdict', 'veir_exit', 'gisel_exit'])
         require(len(runs) == 1 and runs[0]['input'] == 'sud1')
         # The raw exit strings and diagnostics are deliberately excluded.
@@ -72,7 +97,8 @@ def import_snapshot(source, allowed):
     # Check known credentials without printing, hashing, or persisting their values.
     config = source / 'zuliprc'
     if config.exists():
-        cp = configparser.ConfigParser(); cp.read(config)
+        cp = configparser.ConfigParser(interpolation=None)
+        cp.read_string(read_private(config).decode('utf-8'))
         payload = json.dumps(result)
         for section in cp.sections():
             for key, value in cp.items(section):
@@ -90,8 +116,7 @@ def main():
         root = Path(__file__).resolve().parents[1]
         allowed = read_json(root / 'requirements/riscv-operations.json')['operations']
         safe = import_snapshot(args.source, allowed)
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        tmp = args.out.with_suffix('.tmp'); tmp.write_text(json.dumps(safe, indent=2) + '\n'); tmp.replace(args.out)
+        write_snapshot(args.out, safe)
         print('Imported reviewed RISC-V results at ' + safe['source_revision'])
     except Exception as error:
         print('RISC-V import rejected; previous data retained. Error type: ' + type(error).__name__, file=sys.stderr)

@@ -6,16 +6,16 @@ names or schema fields require review instead of automatically becoming public.
 """
 import argparse
 import base64
-import json
 import os
 from pathlib import Path
 import sys
+import time
 import urllib.error
 import urllib.request
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from veir_suite.model import parse_json, read_json
-from veir_suite.scoreboards import REPOSITORY, normalize_interpreter, sha, timestamp
+from veir_suite.scoreboards import REPOSITORY, normalize_interpreter, sha, timestamp, write_snapshot
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -28,8 +28,21 @@ def get(endpoint):
     if os.environ.get('GH_TOKEN'):
         headers['Authorization'] = 'Bearer ' + os.environ['GH_TOKEN']
     request = urllib.request.Request(f'https://api.github.com/repos/{REPOSITORY}/{endpoint}', headers=headers)
-    with urllib.request.build_opener(NoRedirect).open(request, timeout=30) as response:
-        payload = response.read(1024 * 1024 + 1)
+    opener = urllib.request.build_opener(NoRedirect)
+    for attempt in range(3):
+        try:
+            with opener.open(request, timeout=30) as response:
+                payload = response.read(1024 * 1024 + 1)
+            break
+        except urllib.error.HTTPError as error:
+            error.close()
+            if attempt == 2 or error.code not in {429, 500, 502, 503, 504}:
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == 2:
+                raise
+        time.sleep(2 ** attempt)
+
     if len(payload) > 1024 * 1024:
         raise ValueError('Source exceeds import size limit')
     return parse_json('{"response":' + payload.decode() + '}', 'external API')['response']
@@ -49,10 +62,7 @@ def main():
             raise ValueError('Unexpected encoding')
         raw = parse_json(base64.b64decode(blob['content']).decode(), 'external results')
         safe = normalize_interpreter(raw, revision, date, read_json(root / 'requirements/interpreter-tests.json')['tests'])
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        temp = args.out.with_suffix('.tmp')
-        temp.write_text(json.dumps(safe, indent=2) + '\n')
-        temp.replace(args.out)
+        write_snapshot(args.out, safe)
         print(f'Imported {len(safe["tests"])} reviewed test results at {revision}')
     except Exception as error:
         # Even JSON parser error messages may contain untrusted secret bytes.

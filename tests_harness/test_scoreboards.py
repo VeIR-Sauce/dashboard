@@ -79,3 +79,78 @@ class ScoreboardTests(unittest.TestCase):
             (history.parent / 'trackers/interpreter.json').write_text(json.dumps(data))
             build_scoreboards(root, out, history)
             self.assertIn('/blob/' + 'c' * 40, (out / 'interpreter.html').read_text())
+
+    def test_snapshot_write_failure_keeps_old_bytes_and_cleans_temporary_file(self):
+        from veir_suite.scoreboards import write_snapshot
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / 'result.json'; out.write_text('previous')
+            with patch.object(Path, 'replace', side_effect=OSError('disk full')), self.assertRaises(OSError):
+                write_snapshot(out, self.normalize(fixture()))
+            self.assertEqual(out.read_text(), 'previous')
+            self.assertEqual(list(Path(tmp).iterdir()), [out])
+
+    def test_import_pins_results_to_source_commit_and_rejects_duplicate_json_fields(self):
+        import base64
+        import contextlib
+        import io
+        from scripts import import_scoreboards as importer
+        revision = 'b' * 40
+        commit = [{'sha': revision, 'commit': {'committer': {'date': '2026-10-22T16:00:00Z'}}}]
+        allowed = {'tests': list(fixture()['tests'])}
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / 'result.json'
+            for payload, success in [(json.dumps(fixture()), True),
+                    ('{"veir":"' + 'a' * 40 + '","veir":"' + 'a' * 40 + '","tests":{}}', False)]:
+                blob = {'encoding': 'base64', 'content': base64.b64encode(payload.encode()).decode()}
+                previous = out.read_bytes() if out.exists() else None
+                log = io.StringIO()
+                with patch('sys.argv', ['import', '--out', str(out)]), patch.object(importer, 'get',
+                        side_effect=[commit, blob]) as get, patch.object(importer, 'read_json', return_value=allowed), contextlib.redirect_stdout(log), contextlib.redirect_stderr(log):
+                    self.assertEqual(importer.main(), 0 if success else 1)
+                    self.assertEqual(get.call_args_list[1].args, ('contents/results.json?ref=' + revision,))
+                if success:
+                    self.assertEqual(json.loads(out.read_text()), self.normalize(fixture()))
+                else:
+                    self.assertEqual(out.read_bytes(), previous)
+
+    def test_transport_retries_only_transient_errors_and_bounds_response_size(self):
+        import io
+        import urllib.error
+        from scripts import import_scoreboards as importer
+        from unittest.mock import Mock
+        for code, calls in [(503, 3), (429, 3), (403, 1), (404, 1), (302, 1)]:
+            opener = Mock()
+            opener.open.side_effect = [urllib.error.HTTPError('https://api.github.com/', code, 'private', {}, None) for _ in range(3)]
+            with patch.object(importer.urllib.request, 'build_opener', return_value=opener), patch.object(importer.time, 'sleep'), self.assertRaises(urllib.error.HTTPError):
+                importer.get('results')
+            self.assertEqual(opener.open.call_count, calls)
+        opener = Mock(); opener.open.side_effect = [TimeoutError(), io.BytesIO(b'{"ok":true}')]
+        with patch.object(importer.urllib.request, 'build_opener', return_value=opener), patch.object(importer.time, 'sleep'):
+            self.assertEqual(importer.get('results'), {'ok': True})
+        opener.open.side_effect = None; opener.open.return_value = io.BytesIO(b' ' * (1024 * 1024 + 1))
+        with patch.object(importer.urllib.request, 'build_opener', return_value=opener), self.assertRaises(ValueError):
+            importer.get('results')
+
+    def test_redirect_cannot_forward_authorization(self):
+        import io
+        import urllib.error
+        import urllib.request
+        import urllib.response
+        from scripts import import_scoreboards as importer
+        requests = []
+
+        class Redirect(urllib.request.HTTPSHandler):
+            def https_open(self, request):
+                requests.append(request)
+                response = urllib.response.addinfourl(io.BytesIO(b''),
+                    {'location': 'https://example.invalid/steal'}, request.full_url, 302)
+                response.msg = 'Found'
+                return response
+
+        opener = urllib.request.build_opener(importer.NoRedirect, Redirect)
+        with patch.dict('os.environ', {'GH_TOKEN': 'synthetic-token'}), patch.object(
+                importer.urllib.request, 'build_opener', return_value=opener), self.assertRaises(urllib.error.HTTPError):
+            importer.get('results')
+        self.assertEqual(len(requests), 1)
+        self.assertEqual(requests[0].host, 'api.github.com')
+        self.assertEqual(requests[0].get_header('Authorization'), 'Bearer synthetic-token')

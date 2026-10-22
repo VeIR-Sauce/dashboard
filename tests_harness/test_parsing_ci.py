@@ -33,10 +33,22 @@ class HistoryPublicationTests(unittest.TestCase):
                 git(root, 'commit', '-m', 'Test seed')
             history = first / '.artifacts/history'
             restore(first, history)
+            from tests_harness.test_scoreboards import fixture
+            from veir_suite.scoreboards import normalize_interpreter
+            tracker = normalize_interpreter(fixture(), 'b' * 40, '2026-10-22T16:00:00Z', fixture()['tests'])
+            (history / 'trackers').mkdir()
+            (history / 'trackers/interpreter.json').write_text(json.dumps(tracker))
             publish(first, history)
             original = (history / 'evidence/parsing-unit/parsing.json').read_bytes()
             history2 = second / '.artifacts/history'
             restore(second, history2)
+            self.assertEqual(json.loads((history2 / 'trackers/interpreter.json').read_text()), tracker)
+            # An unchanged hourly import must not create another history commit.
+            before = git(history2, 'rev-parse', 'HEAD').stdout
+            publish(second, history2)
+            self.assertEqual(git(history2, 'rev-parse', 'HEAD').stdout, before)
+            tracker['source_revision'] = 'c' * 40
+            (history2 / 'trackers/interpreter.json').write_text(json.dumps(tracker))
             report = copy.deepcopy(parser_receipt()); report['id'] = 'parsing-new'
             receipt = second / '.artifacts/parsing/parsing-new/parsing.json'
             receipt.parent.mkdir(parents=True); receipt.write_text(json.dumps(report))

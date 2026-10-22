@@ -4,7 +4,7 @@ from .model import read_json
 from .scoreboards import require, sha, timestamp, write_page
 
 STAGES = ('clang', 'mlir-translate', 'veir-opt', 'veir2mir', 'llc-regalloc', 'llc-emit', 'link')
-VERDICTS = {'PASS', 'FAIL', 'UNSUPPORTED', 'TIMEOUT', 'ERROR'}
+VERDICTS = {'PASS', 'MISMATCH', 'UNSUPPORTED', 'TIMEOUT', 'CRASH'}
 
 
 def validate_riscv(data, allowed):
@@ -12,21 +12,31 @@ def validate_riscv(data, allowed):
     require(type(data['schema_version']) is int and data['schema_version'] == 1)
     sha(data['source_revision']); sha(data['veir']); timestamp(data['recorded_at'])
     require(isinstance(data['builds'], list) and len(data['builds']) == 2)
-    require({(b['program'], b['preset']) for b in data['builds']} == {('sudoku', 'O2'), ('sudoku', 'inline')})
+    identities = []
     for build in data['builds']:
-        require(set(build) == {'program', 'preset', 'stages', 'operations', 'runs'})
-        require([s['stage'] for s in build['stages']] == list(STAGES))
-        for stage in build['stages']:
-            require(set(stage) == {'stage', 'status'} and stage['status'] in {'passed', 'failed', 'skipped'})
-        require(len({op['operation'] for op in build['operations']}) == len(build['operations']))
-        require(bool(build['operations']))
+        require(isinstance(build, dict) and set(build) == {'program', 'preset', 'stages', 'operations', 'runs'})
+        require(build['program'] == 'sudoku' and build['preset'] in ('O2', 'inline'))
+        identities.append((build['program'], build['preset']))
+        require(isinstance(build['stages'], list) and len(build['stages']) == len(STAGES))
+        for stage, name in zip(build['stages'], STAGES):
+            require(isinstance(stage, dict) and set(stage) == {'stage', 'status'})
+            require(stage['stage'] == name and stage['status'] in ('passed', 'failed', 'skipped'))
+        require(isinstance(build['operations'], list) and len(build['operations']) <= len(allowed))
+        names = []
         for op in build['operations']:
-            require(set(op) == {'operation', 'given', 'left'} and op['operation'] in allowed)
-            require(type(op['given']) is int and type(op['left']) is int and 0 <= op['left'] <= op['given'] <= 10000000)
-        require(len(build['runs']) == 1)
+            require(isinstance(op, dict) and set(op) == {'operation', 'given', 'left'})
+            require(isinstance(op['operation'], str) and op['operation'] in allowed)
+            names.append(op['operation'])
+            # Lowering can introduce or duplicate operations; this is not a subset count.
+            require(all(type(op[key]) is int and 0 <= op[key] <= 10000000 for key in ('given', 'left')))
+        require(len(set(names)) == len(names))
+        require(isinstance(build['runs'], list) and len(build['runs']) == 1)
         run = build['runs'][0]
-        require(set(run) == {'input', 'verdict'} and run['input'] == 'sud1' and run['verdict'] in VERDICTS)
-        require(run['verdict'] != 'PASS' or all(stage['status'] == 'passed' for stage in build['stages']))
+        require(isinstance(run, dict) and set(run) == {'input', 'verdict'})
+        require(run['input'] == 'sud1' and isinstance(run['verdict'], str) and run['verdict'] in VERDICTS)
+        compiled = all(stage['status'] == 'passed' for stage in build['stages'])
+        require(run['verdict'] == 'UNSUPPORTED' or compiled)
+    require(set(identities) == {('sudoku', 'O2'), ('sudoku', 'inline')})
     return data
 
 
@@ -55,7 +65,8 @@ def build_riscv(root, out):
     details = ''
     for build in builds:
         failed = next((s['stage'] for s in build['stages'] if s['status'] == 'failed'), None)
-        details += f'<section class="panel"><h2>Sudoku · {build["preset"]}</h2><p>First failed stage: <strong>{failed or "None"}</strong></p>'
+        first_failure = failed or ('None' if all(s['status'] == 'passed' for s in build['stages']) else 'Not reached')
+        details += f'<section class="panel"><h2>Sudoku · {build["preset"]}</h2><p>First failed stage: <strong>{first_failure}</strong></p>'
         details += '<p>' + ' → '.join(f'{stage["stage"]}: <strong>{stage["status"]}</strong>' for stage in build['stages']) + '</p>'
         details += '<p>Input <code>sud1</code>: <strong>' + build['runs'][0]['verdict'] + '</strong></p></section>'
     source = 'https://github.com/opencompl/llvm-riscv-backend-evaluation/blob/' + data['source_revision']

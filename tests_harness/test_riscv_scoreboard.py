@@ -37,11 +37,15 @@ def source_fixture(root):
 
     def git(_, *args):
         if args[0] == 'rev-parse':
-            return 'b' * 40 + '\n'
+            return ('b' * 40 + '\n').encode()
         if args[0] == 'log':
-            return '2026-10-21T11:36:18Z\n'
+            return b'2026-10-21T11:36:18Z\n'
+        if args[0] == 'ls-tree':
+            return ('\0'.join('leaderboard/results/' + name for name in committed) + '\0').encode()
+        if args[0] == 'cat-file':
+            return str(len(committed[args[2].split(':leaderboard/results/', 1)[1]].encode())).encode()
         if args[0] == 'show':
-            return committed[args[1].split(':leaderboard/results/', 1)[1]]
+            return committed[args[1].split(':leaderboard/results/', 1)[1]].encode()
         raise AssertionError('Unexpected Git operation')
 
     return committed, git
@@ -83,7 +87,7 @@ class RiscvScoreboardTests(unittest.TestCase):
                 lambda d: d['builds'][0]['stages'][0].update(error=MARKER),
                 lambda d: d['builds'][0]['operations'][0].update(operation=MARKER),
                 lambda d: d['builds'][0]['operations'][0].update(left=True),
-                lambda d: d['builds'][0]['operations'][0].update(left=11),
+                lambda d: d['builds'][0]['operations'][0].update(left=-1),
                 lambda d: d['builds'][0]['runs'][0].update(verdict=MARKER),
                 lambda d: d['builds'][0]['runs'][0].update(verdict='PASS')]
             for mutate in mutations:
@@ -102,3 +106,70 @@ class RiscvScoreboardTests(unittest.TestCase):
                 self.assertEqual(importer.main(), 1)
             self.assertEqual(out.read_text(), 'previous')
             self.assertNotIn(MARKER, log.getvalue())
+
+    def test_upstream_run_verdicts_and_expanded_or_empty_operation_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); _, git = source_fixture(root)
+            with patch.object(importer, 'git', side_effect=git):
+                data = importer.import_snapshot(root, ALLOWED)
+            data['builds'][0]['operations'][0].update(given=0, left=3)
+            data['builds'][1]['operations'] = []
+            validate_riscv(data, ALLOWED)
+            for build in data['builds']:
+                for stage in build['stages']:
+                    stage['status'] = 'passed'
+            for verdict in ['PASS', 'MISMATCH', 'CRASH', 'TIMEOUT']:
+                data['builds'][0]['runs'][0]['verdict'] = verdict
+                self.assertEqual(validate_riscv(data, ALLOWED), data)
+
+    def test_nonzero_exit_codes_signals_and_timeout_are_failures(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); committed, git = source_fixture(root)
+            name = 'sudoku/O2/stages.csv'; original = committed[name]
+            for status in ['2', '127', '139', '-11', 'TIMEOUT']:
+                committed[name] = original.replace('llc-regalloc,1,', 'llc-regalloc,' + status + ',')
+                (root / 'leaderboard/results' / name).write_text(committed[name])
+                with patch.object(importer, 'git', side_effect=git):
+                    result = importer.import_snapshot(root, ALLOWED)
+                self.assertEqual(result['builds'][0]['stages'][4]['status'], 'failed')
+
+    def test_new_benchmark_and_malformed_nested_shapes_reject_without_source_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); committed, git = source_fixture(root)
+            with patch.object(importer, 'git', side_effect=git):
+                data = importer.import_snapshot(root, ALLOWED)
+                committed['new-program/O2/stages.csv'] = ''
+                with self.assertRaises(InvalidData):
+                    importer.import_snapshot(root, ALLOWED)
+            mutations = [lambda d: d['builds'].__setitem__(0, None),
+                lambda d: d['builds'][0].update(stages=None),
+                lambda d: d['builds'][0]['stages'].__setitem__(0, MARKER),
+                lambda d: d['builds'][0].update(operations=[None]),
+                lambda d: d['builds'][0].update(runs=[{'input': MARKER}])]
+            for mutate in mutations:
+                changed = copy.deepcopy(data); mutate(changed)
+                with self.assertRaises(InvalidData) as error:
+                    validate_riscv(changed, ALLOWED)
+                self.assertNotIn(MARKER, str(error.exception))
+
+    def test_real_git_provenance_timezone_and_byte_comparison(self):
+        import os
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); source_fixture(root)
+            env = dict(os.environ, GIT_AUTHOR_NAME='Test', GIT_AUTHOR_EMAIL='test@example.invalid',
+                       GIT_COMMITTER_NAME='Test', GIT_COMMITTER_EMAIL='test@example.invalid',
+                       GIT_AUTHOR_DATE='2026-10-21T12:36:18+01:00', GIT_COMMITTER_DATE='2026-10-21T12:36:18+01:00')
+            def git(*args):
+                return subprocess.check_output(['git', '-C', str(root), *args], env=env, stderr=subprocess.DEVNULL)
+            git('init'); git('add', 'leaderboard'); git('-c', 'commit.gpgsign=false', 'commit', '-m', 'Fixture')
+            result = importer.import_snapshot(root, ALLOWED)
+            self.assertEqual(result['source_revision'], git('rev-parse', 'HEAD').decode().strip())
+            self.assertEqual(result['recorded_at'], '2026-10-21T11:36:18Z')
+            path = root / 'leaderboard/results/sudoku/O2/ops.csv'
+            original = path.read_bytes(); path.write_bytes(original.replace(b'\n', b'\r\n'))
+            with self.assertRaises(InvalidData):
+                importer.import_snapshot(root, ALLOWED)
+            path.unlink(); path.symlink_to(root / 'leaderboard/results/sudoku/inline/ops.csv')
+            with self.assertRaises(InvalidData):
+                importer.import_snapshot(root, ALLOWED)

@@ -217,8 +217,9 @@ The existing publication workflow imports interpreter results hourly at minute
 43; only its 03:23 UTC schedule builds the parser. It fetches `results.json` at an
 exact source commit and accepts only reviewed test names, booleans/nulls, commit
 IDs and a timestamp. Unexpected fields, strings or test names reject the whole
-update. No upstream code, Git history, archive, raw diagnostics or credentials
-are imported. Imports never execute upstream code. Authentication is optional
+update. Temporary network errors get at most three attempts; permission errors
+and malformed data are not retried. No upstream code, Git history, archive, raw
+diagnostics or credentials are imported. Imports never execute upstream code. Authentication is optional
 for public reads and stays in the process environment, never the site.
 
 Refresh with `python scripts/import_scoreboards.py --out trackers/interpreter.json`,
@@ -236,8 +237,9 @@ python scripts/import_riscv_scoreboard.py --source /private/source --out tracker
 ```
 
 Only selected CSV cells are imported, and selected files must match their source
-commit. Test and stage identifiers, verdicts and operation names are reviewed
-allowlists; counts, hashes and timestamps are validated. Free-text errors,
+commit byte for byte, with all reads pinned to that commit. A changed benchmark
+set rejects the import for review. Test and stage identifiers, verdicts and
+operation names are reviewed allowlists; counts, hashes and timestamps are validated. Free-text errors,
 compiler version strings, paths, exit diagnostics and configuration are excluded.
 The importer also checks the output against known credential fields in the local
 `zuliprc` without logging them. Never copy that repository or its Git history into
