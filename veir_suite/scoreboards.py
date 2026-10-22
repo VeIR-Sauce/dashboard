@@ -95,7 +95,7 @@ def build_scoreboards(root: Path, out: Path, history: Path):
                  f'<td><a href="{base}/llubi-tests/{name}.ll">{escape(name)}</a></td>'
                  f'<td>{"Ran to a result" if value["finished"] else "No result"}</td>{cells}</tr>')
     body = f'''<h1>VeIR interpreter</h1>
-<p>Tracker by <strong>Naveen Seth Hanig</strong>. Compares VeIR with LLVM's <code>llubi</code> and Alive2's <code>alive-exec</code> on selected llubi tests.</p>
+<p>Compares VeIR with LLVM's <code>llubi</code> and Alive2's <code>alive-exec</code> on selected llubi tests.</p>
 <p class="muted">Results recorded {data['recorded_at'].replace('T', ' ').replace('Z', ' UTC')} · VeIR <a href="https://github.com/opencompl/veir/commit/{data['veir']}">{data['veir'][:12]}</a></p>
 <p><a href="{base}/SCOREBOARD.md">Upstream scoreboard and diagnostics ↗</a> · <a href="data/interpreter.json">Download reviewed results</a></p>
 <section class="metrics">{metrics}</section>
@@ -107,7 +107,6 @@ def build_scoreboards(root: Path, out: Path, history: Path):
 <p class="caption">The website checks for published upstream results hourly. The date above is the source commit's date, not a new measurement made by this website. <a href="https://github.com/{REPOSITORY}/actions">Upstream workflow status ↗</a></p>'''
     write_page(out, 'interpreter', 'VeIR interpreter', body)
     write_page(out, 'riscv', 'RISC-V backend', '''<h1>RISC-V backend</h1>
-<p>Tracker by <strong>Naveen Seth Hanig</strong>.</p>
 <section class="panel"><h2>Results awaiting import</h2><p>The source repository is currently private. Its results have not yet been imported into this website. No performance or correctness score is claimed here.</p>
 <p><a href="https://github.com/opencompl/llvm-riscv-backend-evaluation/blob/main/leaderboard/LEADERBOARD.md">Upstream leaderboard (repository access required) ↗</a></p></section>''')
 

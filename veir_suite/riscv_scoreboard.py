@@ -84,7 +84,7 @@ def build_riscv(root, out):
         name = build['program'] + '/' + build['preset']
         upstream = f'{source}/leaderboard/results/{name}/LEADERBOARD_{build["program"]}_{build["preset"]}.md'
         page = f'''<p><a href="riscv.html">← RISC-V leaderboard</a></p><h1>Sudoku · {build['preset']}</h1>
-<p>Tracker by <strong>Naveen Seth Hanig</strong>. Recorded {data['recorded_at'].replace('T', ' ').replace('Z', ' UTC')} · VeIR <a href="https://github.com/opencompl/veir/commit/{data['veir']}">{data['veir'][:12]}</a></p>
+<p>Recorded {data['recorded_at'].replace('T', ' ').replace('Z', ' UTC')} · VeIR <a href="https://github.com/opencompl/veir/commit/{data['veir']}">{data['veir'][:12]}</a></p>
 <p><a href="{upstream}">Upstream build, logs and IR (access required) ↗</a> · <a href="data/riscv.json">Download results</a>{detail_download}</p>
 <p>Run verdict for <code>sud1</code>: <strong>{verdict}</strong></p>
 <section class="metrics"><div><strong>{int(verdict == "PASS")}/1</strong><span>runs pass</span></div><div><strong>{build_left:,}/{build_given:,}</strong><span>operations left unlowered</span></div></section>
@@ -97,7 +97,7 @@ def build_riscv(root, out):
                '<div class="table-scroll"><table><thead><tr><th>Build</th><th>Run verdict</th><th>First failure</th><th>Unlowered / input</th></tr></thead><tbody>'
                + build_rows + '</tbody></table></div></section>' + detail_tables(builds, reviewed, source))
     body = f'''<h1>RISC-V backend</h1>
-<p>Tracker by <strong>Naveen Seth Hanig</strong>. Compiles whole C programs through VeIR's RISC-V backend and compares their execution under gem5 with LLVM GlobalISel. A run passes when output and exit code agree.</p>
+<p>Compiles whole C programs through VeIR's RISC-V backend and compares their execution under gem5 with LLVM GlobalISel. A run passes when output and exit code agree.</p>
 <p class="muted">Snapshot recorded {data['recorded_at'].replace('T', ' ').replace('Z', ' UTC')} · VeIR <a href="https://github.com/opencompl/veir/commit/{data['veir']}">{data['veir'][:12]}</a></p>
 <p><a href="data/riscv.json">Download reviewed results</a>{detail_download} · <a href="{source}/leaderboard/LEADERBOARD.md">Upstream leaderboard (access required) ↗</a></p>
 <section class="metrics">{summary}</section>

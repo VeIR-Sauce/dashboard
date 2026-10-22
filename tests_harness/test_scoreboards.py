@@ -68,7 +68,6 @@ class ScoreboardTests(unittest.TestCase):
             (root / 'trackers').mkdir(); (root / 'trackers/interpreter.json').write_text(json.dumps(data))
             build_scoreboards(root, out, root / 'evidence')
             html = (out / 'interpreter.html').read_text()
-            self.assertIn('Naveen Seth Hanig', html)
             self.assertIn('1/2', html); self.assertIn('Not comparable', html)
             self.assertIn('No result', html); self.assertIn('void', html)
             self.assertIn('/blob/' + 'b' * 40, html)

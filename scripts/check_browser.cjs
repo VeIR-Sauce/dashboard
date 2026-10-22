@@ -281,7 +281,6 @@ async function main() {
     await send("Page.navigate", {url: pathToFileURL(path.join(site, "interpreter.html")).href});
     await until('document.getElementById("test-search") !== null');
     assert.equal(await evaluate('document.querySelectorAll("tbody tr").length'), 102);
-    assert.match(await evaluate('document.body.innerText'), /Naveen Seth Hanig/);
     await evaluate('document.getElementById("test-search").value="main2"; document.getElementById("test-search").dispatchEvent(new Event("input"))');
     assert.equal(await evaluate('document.querySelectorAll("tbody tr:not([hidden])").length'), 1);
     await evaluate('document.getElementById("test-search").value=""; document.getElementById("test-filter").value="unfinished"; document.getElementById("test-filter").dispatchEvent(new Event("change"))');
@@ -292,7 +291,6 @@ async function main() {
     await screenshot("interpreter-desktop");
     await send("Page.navigate", {url: pathToFileURL(path.join(site, "riscv.html")).href});
     await until('document.body?.innerText.includes("Operations still unlowered")');
-    assert.match(await evaluate('document.body.innerText'), /Naveen Seth Hanig/);
     assert.match(await evaluate('document.body.innerText'), /not yet refreshed automatically/);
     const riscv = JSON.parse(fs.readFileSync(path.join(site, "data/riscv.json"), "utf8"));
     const remaining = riscv.builds.flatMap(b => b.operations).reduce((n, op) => n + op.left, 0);
