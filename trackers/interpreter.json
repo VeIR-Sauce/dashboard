@@ -1,0 +1,722 @@
+{
+  "schema_version": 1,
+  "source_revision": "3e35adfd9bbb23b60021ae0fe7bad136c3ae59af",
+  "recorded_at": "2026-10-22T17:24:20Z",
+  "veir": "93b3f2c9fa70dd5033638e2c33bc588ae3d0f763",
+  "tests": {
+    "clean/alloca": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/assume_operand_bundles": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/bitcast_be": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/bitcast_le": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/byval": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/byval_padding": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_arith_bfloat": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_arith_double": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_arith_float": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_arith_fp128": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_arith_fp80": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_arith_half": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_cast": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_cmp": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_denorm": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_fastmath": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/fp_phi_select": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/gep": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/gep-16-bit-addrspace": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "clean/global_constexpr_initializer": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/global_external": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "clean/icmp_ptr": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/int_arith": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_arith_overflow": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_arith_sat": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_bit_manip": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_experimental_vector": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_fp_fma": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_fp_fptoi_sat": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_fp_is_fpclass": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_fp_minmax": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_fp_unary": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_int_arith": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_memory": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_passthrough": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_vector_manip": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_vector_reduce": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/intr_vscale": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/inttoptr": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/inttoptr_ptrtoint_constantexpr": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/loadstore_overaligned": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/main2": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "clean/metadata": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/noalias_scope": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "clean/ptrtoaddr": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/ptrtoaddr_after_ptrtoint": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/reset_return_value_slot": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/struct": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/undef": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "clean/vector": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/alloca_large_count": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "ub/alloca_poison_count": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/alloca_size_overflow": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "ub/assume_false": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_invalid_align": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_misalign": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_misalign_all_ones": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_non_pow2_align_offset": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_nondereferenceable": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_null": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_null_all_ones": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_poison": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_poison_align": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/assume_pow2_align_offset": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_dereferenceable_ub_nullary_provenance": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_dereferenceable_ub_oob1": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_dereferenceable_ub_oob2": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_dereferenceable_ub_oob3": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_dereferenceable_ub_poison": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_noundef_agg_ub": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/attribute_noundef_ub": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/br_poison": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_lifetime": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_misalign": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_misalign_callsite": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_mismatch1": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_mismatch2": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_mismatch3": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_null": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_oversize": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/byval_poison": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/call_mismatched_signature": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/call_poison": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/global_constant_store": {
+      "finished": true,
+      "agrees": {
+        "llubi": false,
+        "alive-exec": false
+      }
+    },
+    "ub/indirectbr_poison": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/intr_memory_constant_ub": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/inttoptr_generation": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "ub/inttoptr_generation2": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "ub/inttoptr_gep": {
+      "finished": true,
+      "agrees": {
+        "llubi": false,
+        "alive-exec": false
+      }
+    },
+    "ub/inttoptr_multiobj": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "ub/inttoptr_multiobj2": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "ub/inttoptr_oob": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "ub/inttoptr_oob2": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    },
+    "ub/load_noundef_ub_poison": {
+      "finished": true,
+      "agrees": {
+        "llubi": false,
+        "alive-exec": false
+      }
+    },
+    "ub/load_noundef_ub_poison_padding": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/load_noundef_ub_undef": {
+      "finished": true,
+      "agrees": {
+        "llubi": false,
+        "alive-exec": false
+      }
+    },
+    "ub/metadata_noundef_ub": {
+      "finished": true,
+      "agrees": {
+        "llubi": false,
+        "alive-exec": false
+      }
+    },
+    "ub/ptrtoaddr_no_expose": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/store_dead": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/store_dead_gep": {
+      "finished": false,
+      "agrees": {
+        "llubi": null,
+        "alive-exec": null
+      }
+    },
+    "ub/switch_poison": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": null
+      }
+    },
+    "ub/unreachable": {
+      "finished": true,
+      "agrees": {
+        "llubi": true,
+        "alive-exec": true
+      }
+    }
+  }
+}
