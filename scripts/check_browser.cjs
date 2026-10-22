@@ -278,11 +278,34 @@ async function main() {
     await evaluate('document.querySelector("#parsing-operations details").open = true');
     assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile parsing page overflows horizontally");
     await screenshot("parsing-mobile");
+    await send("Page.navigate", {url: pathToFileURL(path.join(site, "interpreter.html")).href});
+    await until('document.getElementById("test-search") !== null');
+    assert.equal(await evaluate('document.querySelectorAll("tbody tr").length'), 102);
+    assert.match(await evaluate('document.body.innerText'), /Naveen Seth Hanig/);
+    await evaluate('document.getElementById("test-search").value="main2"; document.getElementById("test-search").dispatchEvent(new Event("input"))');
+    assert.equal(await evaluate('document.querySelectorAll("tbody tr:not([hidden])").length'), 1);
+    await evaluate('document.getElementById("test-search").value=""; document.getElementById("test-filter").value="unfinished"; document.getElementById("test-filter").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('[...document.querySelectorAll("tbody tr:not([hidden])")].every(r => r.dataset.state === "unfinished")'), true);
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile interpreter page overflows horizontally");
+    await screenshot("interpreter-mobile");
+    await send("Emulation.setDeviceMetricsOverride", {width: 1365, height: 960, deviceScaleFactor: 1, mobile: false});
+    await screenshot("interpreter-desktop");
+    await send("Page.navigate", {url: pathToFileURL(path.join(site, "riscv.html")).href});
+    await until('document.body.innerText.includes("Operations still unlowered")');
+    assert.match(await evaluate('document.body.innerText'), /Naveen Seth Hanig/);
+    assert.match(await evaluate('document.body.innerText'), /not yet refreshed automatically/);
+    const riscv = JSON.parse(fs.readFileSync(path.join(site, "data/riscv.json"), "utf8"));
+    const remaining = riscv.builds.flatMap(b => b.operations).reduce((n, op) => n + op.left, 0);
+    assert.ok((await evaluate('document.querySelector(".metrics").innerText')).includes(remaining.toLocaleString("en-US")));
+    await screenshot("riscv-desktop");
+    await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile RISC-V page overflows horizontally");
+    await screenshot("riscv-mobile");
     assert.deepEqual(errors, [], "Browser exceptions");
     console.log(JSON.stringify({browser: (await send("Browser.getVersion", {}, null)).product,
       requirements: data.registry.requirements.length, decisions, operations: data.catalog.operations.length,
       mobile: await evaluate('({viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth})'),
-      checks: ["baseline", "LLVM parsing", "parser burndown baselines", "parser modes", "scalar/vector case counts", "individual case permalink", "legacy parser run", "consecutive category sections", "category jump and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence"],
+      checks: ["baseline", "LLVM parsing", "parser burndown baselines", "parser modes", "scalar/vector case counts", "individual case permalink", "legacy parser run", "consecutive category sections", "category jump and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence", "interpreter filters", "RISC-V snapshot", "mobile tracker layouts"],
       screenshots: screenshots || null}));
   } catch (error) {
     error.message += "\nChromium stderr (tail):\n" + stderr;

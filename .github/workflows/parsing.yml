@@ -3,6 +3,7 @@ name: Measure and publish LLVM parsing
 on:
   schedule:
     - cron: '23 3 * * *'
+    - cron: '43 * * * *'
   workflow_dispatch:
     inputs:
       measure:
@@ -11,7 +12,7 @@ on:
         default: true
   push:
     branches: [codex/veir-progress]
-    paths: ['web/**', 'veir_suite/site.py', '.github/workflows/parsing.yml']
+    paths: ['web/**', 'veir_suite/site.py', 'veir_suite/scoreboards.py', 'veir_suite/riscv_scoreboard.py', 'scripts/import_scoreboards.py', 'trackers/**', 'requirements/interpreter-tests.json', 'requirements/riscv-operations.json', '.github/workflows/parsing.yml']
 
 permissions:
   contents: read
@@ -50,7 +51,7 @@ jobs:
       - name: Select measurement mode and pinned reference
         id: mode
         env:
-          RUN_MEASUREMENT: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.measure) }}
+          RUN_MEASUREMENT: ${{ (github.event_name == 'schedule' && github.event.schedule == '23 3 * * *') || (github.event_name == 'workflow_dispatch' && inputs.measure) }}
         run: |
           echo "measure=$RUN_MEASUREMENT" >> "$GITHUB_OUTPUT"
           python -c 'import json, os; print("revision=" + json.load(open("profiles/ci.json"))["llvm_revision"], file=open(os.environ["GITHUB_OUTPUT"], "a"))'
@@ -126,6 +127,12 @@ jobs:
         id: parsing
         continue-on-error: true
         run: python -u -m veir_suite parse --veir .artifacts/veir --mlir-opt .artifacts/reference/bin/mlir-opt --revalidate-reference
+      - name: Import reviewed interpreter results
+        id: external
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/import_scoreboards.py --out .artifacts/measurement-history/trackers/interpreter.json
       - name: Record receipts and prepare publication
         id: site
         run: |
@@ -144,6 +151,11 @@ jobs:
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: site-output
+      - name: Report import failure after preserving the previous publication
+        if: steps.external.outcome == 'failure'
+        run: |
+          echo 'Interpreter import failed validation or retrieval; previous dated results retained.'
+          exit 1
       - name: Require a complete measurement
         if: steps.mode.outputs.measure == 'true'
         run: |

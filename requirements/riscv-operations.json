@@ -1,0 +1,10 @@
+{
+  "operations": [
+    "llvm.add", "llvm.alloca", "llvm.and", "llvm.br", "llvm.call", "llvm.cond_br",
+    "llvm.getelementptr", "llvm.icmp", "llvm.intr.lifetime.end", "llvm.intr.lifetime.start",
+    "llvm.intr.memcpy", "llvm.intr.memset", "llvm.load", "llvm.mlir.addressof",
+    "llvm.mlir.constant", "llvm.mlir.global", "llvm.mlir.zero", "llvm.mul",
+    "llvm.select", "llvm.sext", "llvm.store", "llvm.sub", "llvm.trunc", "llvm.udiv",
+    "llvm.unreachable", "llvm.urem", "llvm.zext"
+  ]
+}

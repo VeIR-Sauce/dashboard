@@ -200,3 +200,46 @@ python3 -m veir_suite site --history evidence --out site-output
 ```
 
 The harness tests cover complete manifests, stale fixtures, duplicate IDs/JSON fields, path escapes, truthful completion, missing oracles, compatible cohorts, full-width results, independent inputs, output bounds, timeouts and crashes. They also exercise trusted-history restoration, regression gates and compact site generation. The JavaScript tests check plan selection, incomplete attempts and missing scopes. `scripts/check_browser.cjs` exercises the generated page in an installed Chromium, including filters, receipts and desktop/mobile layouts, without downloading browser packages.
+
+## Naveen's trackers
+
+[Interpreter](https://veir-sauce.github.io/dashboard/interpreter.html) displays
+Naveen Seth Hanig's published `opencompl/veir-interpreter-scoreboard` results,
+with per-test completion, llubi/Alive2 agreement, source commit and recorded date.
+It does not rerun his tests or infer that every non-result is a VeIR bug. Agreement
+may be trivial for void-returning tests, which the source JSON does not separate.
+[RISC-V backend](https://veir-sauce.github.io/dashboard/riscv.html) displays a
+reviewed snapshot from the private tracker: compilation stages, run verdicts and
+unlowered operation counts for Sudoku under two compiler presets. Its source
+commit and recorded date are shown; it does not yet refresh automatically.
+
+The existing publication workflow imports interpreter results hourly at minute
+43; only its 03:23 UTC schedule builds the parser. It fetches `results.json` at an
+exact source commit and accepts only reviewed test names, booleans/nulls, commit
+IDs and a timestamp. Unexpected fields, strings or test names reject the whole
+update. No upstream code, Git history, archive, raw diagnostics or credentials
+are imported. Imports never execute upstream code. Authentication is optional
+for public reads and stays in the process environment, never the site.
+
+Refresh with `python scripts/import_scoreboards.py --out trackers/interpreter.json`,
+then regenerate the site normally. The deployment imports to the separate
+`measurement-history` branch instead. A failed import preserves the previous
+snapshot and its date, publishes other available measurements, and fails the
+workflow visibly. New upstream tests require review of
+`requirements/interpreter-tests.json` before automatic ingestion resumes.
+
+To refresh the private RISC-V snapshot, finish transferring its repository into
+private storage outside this checkout, then run:
+
+```sh
+python scripts/import_riscv_scoreboard.py --source /private/source --out trackers/riscv.json
+```
+
+Only selected CSV cells are imported, and selected files must match their source
+commit. Test and stage identifiers, verdicts and operation names are reviewed
+allowlists; counts, hashes and timestamps are validated. Free-text errors,
+compiler version strings, paths, exit diagnostics and configuration are excluded.
+The importer also checks the output against known credential fields in the local
+`zuliprc` without logging them. Never copy that repository or its Git history into
+this public checkout. Changes to its benchmark set require updating and reviewing
+the importer and `requirements/riscv-operations.json` first.

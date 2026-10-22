@@ -42,6 +42,8 @@ def restore(root, checkout):
 def publish(root, checkout):
     merge_receipts(root / '.artifacts/parsing', checkout / 'evidence')
     git(checkout, 'add', 'evidence')
+    if (checkout / 'trackers').exists():
+        git(checkout, 'add', 'trackers')
     changed = git(checkout, 'diff', '--cached', '--quiet', check=False)
     if changed.returncode not in {0, 1}:
         changed.check_returncode()

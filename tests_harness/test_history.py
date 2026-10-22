@@ -241,7 +241,7 @@ class RefactorTests(unittest.TestCase):
             (requirements / filename).write_text(json.dumps(payload))
         (self.root / "web").mkdir()
         (self.root / "web/index.html").write_text('<script id="data">__DATA__</script>')
-        for name in ["model.js", "app.js", "style.css"]:
+        for name in ["model.js", "app.js", "style.css", "scoreboards.js"]:
             (self.root / "web" / name).write_text("")
         for index in range(1, 4):
             contract = report_fixture(self.registry, "ENV_ERROR" if index == 3 else "PASS")
@@ -253,6 +253,12 @@ class RefactorTests(unittest.TestCase):
                 directory = self.history / report["id"]
                 directory.mkdir(parents=True)
                 (directory / filename).write_text(json.dumps(report))
+        from tests_harness.test_scoreboards import fixture
+        from veir_suite.scoreboards import normalize_interpreter
+        (requirements / "interpreter-tests.json").write_text(json.dumps({'tests': list(fixture()['tests'])}))
+        (self.root / 'trackers').mkdir()
+        (self.root / 'trackers/interpreter.json').write_text(json.dumps(normalize_interpreter(
+            fixture(), 'b' * 40, '2026-10-22T16:00:00Z', fixture()['tests'])))
         output = self.root / "site"
         build_site(self.root, self.history, output)
         html = (output / "index.html").read_text()

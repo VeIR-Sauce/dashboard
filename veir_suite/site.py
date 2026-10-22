@@ -172,6 +172,11 @@ def build_site(root: Path, history: Path, out: Path) -> None:
     (out / "index.html").write_text(template.replace("__DATA__", embedded))
     for name in ["model.js", "app.js", "style.css"]:
         shutil.copyfile(root / "web" / name, out / name)
+    from .scoreboards import build_scoreboards
+    build_scoreboards(root, out, history)
+    from .riscv_scoreboard import build_riscv
+    build_riscv(root, out)
+    shutil.copyfile(root / "web/scoreboards.js", out / "scoreboards.js")
     (out / ".nojekyll").touch()
     for name, value in [("registry", registry), ("catalog", catalog), ("sources", sources)]:
         (downloads / f"{name}.json").write_text(json.dumps(value, indent=2) + "\n")

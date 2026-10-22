@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "source_revision": "3c535249c855cadc61673d9c36404f06d13a809b",
+  "recorded_at": "2026-10-21T11:36:18Z",
+  "veir": "1d28db9d434d8bec78a006eafbaa86ec5db0cf23",
+  "builds": [
+    {
+      "program": "sudoku",
+      "preset": "O2",
+      "stages": [
+        {
+          "stage": "clang",
+          "status": "passed"
+        },
+        {
+          "stage": "mlir-translate",
+          "status": "passed"
+        },
+        {
+          "stage": "veir-opt",
+          "status": "passed"
+        },
+        {
+          "stage": "veir2mir",
+          "status": "passed"
+        },
+        {
+          "stage": "llc-regalloc",
+          "status": "failed"
+        },
+        {
+          "stage": "llc-emit",
+          "status": "skipped"
+        },
+        {
+          "stage": "link",
+          "status": "skipped"
+        }
+      ],
+      "operations": [
+        {
+          "operation": "llvm.add",
+          "given": 54,
+          "left": 0
+        },
+        {
+          "operation": "llvm.alloca",
+          "given": 7,
+          "left": 7
+        },
+        {
+          "operation": "llvm.br",
+          "given": 32,
+          "left": 0
+        },
+        {
+          "operation": "llvm.call",
+          "given": 57,
+          "left": 0
+        },
+        {
+          "operation": "llvm.cond_br",
+          "given": 88,
+          "left": 0
+        },
+        {
+          "operation": "llvm.getelementptr",
+          "given": 114,
+          "left": 0
+        },
+        {
+          "operation": "llvm.icmp",
+          "given": 116,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.lifetime.end",
+          "given": 7,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.lifetime.start",
+          "given": 7,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.memcpy",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.memset",
+          "given": 3,
+          "left": 0
+        },
+        {
+          "operation": "llvm.load",
+          "given": 94,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mlir.addressof",
+          "given": 24,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mlir.constant",
+          "given": 116,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mlir.global",
+          "given": 21,
+          "left": 21
+        },
+        {
+          "operation": "llvm.mlir.zero",
+          "given": 1,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mul",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.select",
+          "given": 25,
+          "left": 0
+        },
+        {
+          "operation": "llvm.sext",
+          "given": 4,
+          "left": 0
+        },
+        {
+          "operation": "llvm.store",
+          "given": 38,
+          "left": 0
+        },
+        {
+          "operation": "llvm.trunc",
+          "given": 5,
+          "left": 0
+        },
+        {
+          "operation": "llvm.udiv",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.unreachable",
+          "given": 6,
+          "left": 0
+        },
+        {
+          "operation": "llvm.urem",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.zext",
+          "given": 32,
+          "left": 0
+        }
+      ],
+      "runs": [
+        {
+          "input": "sud1",
+          "verdict": "UNSUPPORTED"
+        }
+      ]
+    },
+    {
+      "program": "sudoku",
+      "preset": "inline",
+      "stages": [
+        {
+          "stage": "clang",
+          "status": "passed"
+        },
+        {
+          "stage": "mlir-translate",
+          "status": "passed"
+        },
+        {
+          "stage": "veir-opt",
+          "status": "passed"
+        },
+        {
+          "stage": "veir2mir",
+          "status": "passed"
+        },
+        {
+          "stage": "llc-regalloc",
+          "status": "failed"
+        },
+        {
+          "stage": "llc-emit",
+          "status": "skipped"
+        },
+        {
+          "stage": "link",
+          "status": "skipped"
+        }
+      ],
+      "operations": [
+        {
+          "operation": "llvm.add",
+          "given": 89,
+          "left": 0
+        },
+        {
+          "operation": "llvm.alloca",
+          "given": 10,
+          "left": 10
+        },
+        {
+          "operation": "llvm.and",
+          "given": 1,
+          "left": 0
+        },
+        {
+          "operation": "llvm.br",
+          "given": 42,
+          "left": 0
+        },
+        {
+          "operation": "llvm.call",
+          "given": 34,
+          "left": 0
+        },
+        {
+          "operation": "llvm.cond_br",
+          "given": 91,
+          "left": 0
+        },
+        {
+          "operation": "llvm.getelementptr",
+          "given": 189,
+          "left": 0
+        },
+        {
+          "operation": "llvm.icmp",
+          "given": 141,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.lifetime.end",
+          "given": 12,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.lifetime.start",
+          "given": 10,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.memcpy",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.intr.memset",
+          "given": 6,
+          "left": 0
+        },
+        {
+          "operation": "llvm.load",
+          "given": 167,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mlir.addressof",
+          "given": 29,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mlir.constant",
+          "given": 86,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mlir.global",
+          "given": 21,
+          "left": 21
+        },
+        {
+          "operation": "llvm.mlir.zero",
+          "given": 1,
+          "left": 0
+        },
+        {
+          "operation": "llvm.mul",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.select",
+          "given": 50,
+          "left": 0
+        },
+        {
+          "operation": "llvm.sext",
+          "given": 1,
+          "left": 0
+        },
+        {
+          "operation": "llvm.store",
+          "given": 64,
+          "left": 0
+        },
+        {
+          "operation": "llvm.sub",
+          "given": 2,
+          "left": 0
+        },
+        {
+          "operation": "llvm.trunc",
+          "given": 7,
+          "left": 0
+        },
+        {
+          "operation": "llvm.unreachable",
+          "given": 8,
+          "left": 0
+        },
+        {
+          "operation": "llvm.urem",
+          "given": 6,
+          "left": 0
+        },
+        {
+          "operation": "llvm.zext",
+          "given": 59,
+          "left": 0
+        }
+      ],
+      "runs": [
+        {
+          "input": "sud1",
+          "verdict": "UNSUPPORTED"
+        }
+      ]
+    }
+  ]
+}
