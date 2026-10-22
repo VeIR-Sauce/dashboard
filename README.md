@@ -210,7 +210,8 @@ It does not rerun his tests or infer that every non-result is a VeIR bug. Agreem
 may be trivial for void-returning tests, which the source JSON does not separate.
 [RISC-V backend](https://veir-sauce.github.io/dashboard/riscv.html) displays a
 reviewed snapshot from the private tracker: compilation stages, run verdicts and
-unlowered operation counts for Sudoku under two compiler presets. Its source
+unlowered operation counts for Sudoku under two compiler presets. Each build has
+its own page, with expandable diagnostic and IR example tables. Its source
 commit and recorded date are shown; it does not yet refresh automatically.
 
 The existing publication workflow imports interpreter results hourly at minute
@@ -219,8 +220,8 @@ exact source commit and accepts only reviewed test names, booleans/nulls, commit
 IDs and a timestamp. Unexpected fields, strings or test names reject the whole
 update. Temporary network errors get at most three attempts; permission errors
 and malformed data are not retried. No upstream code, Git history, archive, raw
-diagnostics or credentials are imported. Imports never execute upstream code. Authentication is optional
-for public reads and stays in the process environment, never the site.
+diagnostics or credentials are imported. Imports never execute upstream code.
+Authentication is optional for public reads and stays in the process environment, never the site.
 
 Refresh with `python scripts/import_scoreboards.py --out trackers/interpreter.json`,
 then regenerate the site normally. The deployment imports to the separate
@@ -239,8 +240,14 @@ python scripts/import_riscv_scoreboard.py --source /private/source --out tracker
 Only selected CSV cells are imported, and selected files must match their source
 commit byte for byte, with all reads pinned to that commit. A changed benchmark
 set rejects the import for review. Test and stage identifiers, verdicts and
-operation names are reviewed allowlists; counts, hashes and timestamps are validated. Free-text errors,
-compiler version strings, paths, exit diagnostics and configuration are excluded.
+operation names are reviewed allowlists; counts, hashes and timestamps are validated.
+Diagnostic excerpts and IR examples are explicitly reviewed in
+`requirements/riscv-reviewed-details.json`, tied to the source commit. The
+importer requires exact agreement with the selected source CSV records and the
+site refuses details from another snapshot. New or changed text needs review
+before an update can be imported. Rendering escapes every diagnostic and example.
+Full logs, whole IR files, compiler version strings, exit diagnostics and
+configuration are excluded.
 The importer also checks the output against known credential fields in the local
 `zuliprc` without logging them. Never copy that repository or its Git history into
 this public checkout. Changes to its benchmark set require updating and reviewing

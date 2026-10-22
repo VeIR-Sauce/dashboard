@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Import selected CSV cells from a locally supplied RISC-V tracker snapshot.
 
-Never copy its repository, credentials, logs, error text, IR or Markdown. All
-string fields are fixed reviewed identifiers, status enums or validated hashes.
+Never copy its repository, credentials, full logs, IR files or Markdown.
+Diagnostic excerpts and examples must exactly match an explicitly reviewed file.
 The caller must confirm the source transfer is complete before invoking this.
 """
 import argparse
@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from veir_suite.model import read_json
 from veir_suite.scoreboards import require, sha, timestamp, write_snapshot
 from veir_suite.riscv_scoreboard import STAGES, validate_riscv
+from veir_suite.riscv_details import validate_details
 
 
 def git(root, *args):
@@ -29,7 +30,7 @@ def git(root, *args):
     return result.stdout
 
 
-def import_snapshot(source, allowed):
+def import_snapshot(source, allowed, reviewed=None):
     revision = sha(git(source, 'rev-parse', 'HEAD').decode().strip())
     # Pin every read to the same commit, even if the source branch moves mid-import.
     date = datetime.fromisoformat(git(source, 'log', '-1', '--format=%cI', revision,
@@ -70,6 +71,7 @@ def import_snapshot(source, allowed):
     veir = sha(by_tool['veir-opt']['version'])
     require(by_tool['veir2mir']['version'] == veir)
     builds = []
+    source_details = {'source_revision': revision, 'builds': {}}
     for preset in ['O2', 'inline']:
         prefix = 'sudoku/' + preset + '/'
         operations = rows(prefix + 'ops.csv', ['op', 'given', 'left'])
@@ -87,6 +89,14 @@ def import_snapshot(source, allowed):
             require(status in {'TIMEOUT', 'SKIPPED'} or re.fullmatch(r'-?(0|[1-9][0-9]{0,2})', status))
             normalized = 'passed' if status == '0' else 'skipped' if status == 'SKIPPED' else 'failed'
             safe_stages.append({'stage': row['stage'], 'status': normalized})
+        if reviewed is not None:
+            examples = rows(prefix + 'unlowered.csv', ['op', 'types', 'left', 'function', 'line', 'definition'])
+            for row in examples:
+                require(row['left'].isdigit() and row['line'].isdigit())
+                row['left'] = int(row['left']); row['line'] = int(row['line'])
+            source_details['builds']['sudoku/' + preset] = {
+                'diagnostics': [{'stage': row['stage'], 'error': row['error']} for row in stages if row['error']],
+                'examples': examples}
         runs = rows(prefix + 'runs.csv', ['input', 'verdict', 'veir_exit', 'gisel_exit'])
         require(len(runs) == 1 and runs[0]['input'] == 'sud1')
         # The raw exit strings and diagnostics are deliberately excluded.
@@ -94,12 +104,16 @@ def import_snapshot(source, allowed):
                        'operations': ops, 'runs': [{'input': 'sud1', 'verdict': runs[0]['verdict']}]})
     result = validate_riscv({'schema_version': 1, 'source_revision': revision,
                              'recorded_at': recorded_at, 'veir': veir, 'builds': builds}, allowed)
+    if reviewed is not None:
+        validate_details(reviewed, result)
+        # Unreviewed private text is never emitted, even on rejection.
+        require(source_details == reviewed)
     # Check known credentials without printing, hashing, or persisting their values.
     config = source / 'zuliprc'
     if config.exists():
         cp = configparser.ConfigParser(interpolation=None)
         cp.read_string(read_private(config).decode('utf-8'))
-        payload = json.dumps(result)
+        payload = json.dumps({'results': result, 'reviewed': reviewed})
         for section in cp.sections():
             for key, value in cp.items(section):
                 if key.lower() in {'key', 'api_key', 'token', 'password', 'email'} and value:
@@ -115,7 +129,9 @@ def main():
     try:
         root = Path(__file__).resolve().parents[1]
         allowed = read_json(root / 'requirements/riscv-operations.json')['operations']
-        safe = import_snapshot(args.source, allowed)
+        review_path = root / 'requirements/riscv-reviewed-details.json'
+        reviewed = read_json(review_path) if review_path.exists() else None
+        safe = import_snapshot(args.source, allowed, reviewed)
         write_snapshot(args.out, safe)
         print('Imported reviewed RISC-V results at ' + safe['source_revision'])
     except Exception as error:

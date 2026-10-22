@@ -12,7 +12,7 @@ on:
         default: true
   push:
     branches: [codex/veir-progress]
-    paths: ['web/**', 'veir_suite/site.py', 'veir_suite/scoreboards.py', 'veir_suite/riscv_scoreboard.py', 'scripts/import_scoreboards.py', 'trackers/**', 'requirements/interpreter-tests.json', 'requirements/riscv-operations.json', '.github/workflows/parsing.yml']
+    paths: ['web/**', 'veir_suite/site.py', 'veir_suite/scoreboards.py', 'veir_suite/riscv_scoreboard.py', 'veir_suite/riscv_details.py', 'scripts/import_scoreboards.py', 'trackers/**', 'requirements/interpreter-tests.json', 'requirements/riscv-operations.json', 'requirements/riscv-reviewed-details.json', '.github/workflows/parsing.yml']
 
 permissions:
   contents: read

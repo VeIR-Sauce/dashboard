@@ -1,0 +1,57 @@
+{
+  "source_revision": "3c535249c855cadc61673d9c36404f06d13a809b",
+  "builds": {
+    "sudoku/O2": {
+      "diagnostics": [
+        {
+          "stage": "llc-regalloc",
+          "error": "error: build/sudoku/O2/veir2mir.mir: Cannot determine class/bank of virtual register v100 in function 'main'"
+        }
+      ],
+      "examples": [
+        {
+          "op": "llvm.mlir.global",
+          "types": "() -> ()",
+          "left": 21,
+          "function": "",
+          "line": 3,
+          "definition": "\"llvm.mlir.global\"() <{\"addr_space\" = 0 : i32, \"alignment\" = 8 : i64, dso_local, \"global_type\" = i64, \"linkage\" = #llvm.linkage<internal>, \"sym_name\" = \"solns\", \"unnamed_addr\" = 2 : i64, \"value\" = 0 : i64, \"visibility_\" = 0 : i64}> ({}) : () -> ()"
+        },
+        {
+          "op": "llvm.alloca",
+          "types": "(i32) -> !llvm.ptr",
+          "left": 7,
+          "function": "main",
+          "line": 72,
+          "definition": "%3834 = \"riscv.li\"() <{\"value\" = 1 : i64}> : () -> !riscv.reg\n%3833 = \"builtin.unrealized_conversion_cast\"(%3834) : (!riscv.reg) -> i32\n%94 = \"llvm.alloca\"(%3833) <{\"alignment\" = 1 : i64, \"elem_type\" = !llvm.array<20 x i8>}> : (i32) -> !llvm.ptr"
+        }
+      ]
+    },
+    "sudoku/inline": {
+      "diagnostics": [
+        {
+          "stage": "llc-regalloc",
+          "error": "error: build/sudoku/inline/veir2mir.mir: Cannot determine class/bank of virtual register v1000 in function 'main'"
+        }
+      ],
+      "examples": [
+        {
+          "op": "llvm.mlir.global",
+          "types": "() -> ()",
+          "left": 21,
+          "function": "",
+          "line": 3,
+          "definition": "\"llvm.mlir.global\"() <{\"addr_space\" = 0 : i32, \"alignment\" = 8 : i64, dso_local, \"global_type\" = i64, \"linkage\" = #llvm.linkage<internal>, \"sym_name\" = \"solns\", \"unnamed_addr\" = 2 : i64, \"value\" = 0 : i64, \"visibility_\" = 0 : i64}> ({}) : () -> ()"
+        },
+        {
+          "op": "llvm.alloca",
+          "types": "(i32) -> !llvm.ptr",
+          "left": 10,
+          "function": "main",
+          "line": 94,
+          "definition": "%4112 = \"riscv.li\"() <{\"value\" = 1 : i64}> : () -> !riscv.reg\n%4111 = \"builtin.unrealized_conversion_cast\"(%4112) : (!riscv.reg) -> i32\n%114 = \"llvm.alloca\"(%4111) <{\"alignment\" = 1 : i64, \"elem_type\" = !llvm.array<10 x i8>}> : (i32) -> !llvm.ptr"
+        }
+      ]
+    }
+  }
+}

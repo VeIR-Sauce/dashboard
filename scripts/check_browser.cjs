@@ -301,11 +301,40 @@ async function main() {
     await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
     assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Mobile RISC-V page overflows horizontally");
     await screenshot("riscv-mobile");
+    const riscvDetails = JSON.parse(fs.readFileSync(path.join(site, "data/riscv-details.json"), "utf8"));
+    await evaluate('document.querySelector("#riscv-diagnostics > summary").click()');
+    assert.equal(await evaluate('document.getElementById("riscv-diagnostics").open'), true);
+    for (const entry of Object.values(riscvDetails.builds)) {
+      for (const diagnostic of entry.diagnostics) {
+        assert.ok((await text("riscv-diagnostics")).includes(diagnostic.error));
+      }
+    }
+    await evaluate('document.querySelector("#riscv-examples > summary").click()');
+    assert.equal(await evaluate('document.getElementById("riscv-examples").open'), true);
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Expanded RISC-V tables overflow on mobile");
+    await screenshot("riscv-expanded-mobile");
+    for (const preset of ["O2", "inline"]) {
+      await evaluate('document.querySelector(' + JSON.stringify('a[href="riscv-sudoku-' + preset + '.html"]') + ').click()');
+      await until('document.querySelector("h1").textContent === ' + JSON.stringify("Sudoku · " + preset));
+      await evaluate('document.querySelector("#riscv-diagnostics > summary").click(); document.querySelector("#riscv-examples > summary").click()');
+      const expected = riscvDetails.builds["sudoku/" + preset];
+      for (const example of expected.examples) {
+        assert.ok((await text("riscv-examples")).includes(example.definition));
+      }
+      assert.ok(await evaluate('document.documentElement.scrollWidth <= document.documentElement.clientWidth'), "Build details overflow on mobile");
+      await evaluate('document.getElementById("riscv-diagnostics").scrollIntoView()');
+      await screenshot("riscv-sudoku-" + preset + "-mobile");
+      await send("Emulation.setDeviceMetricsOverride", {width: 1365, height: 960, deviceScaleFactor: 1, mobile: false});
+      await screenshot("riscv-sudoku-" + preset + "-desktop");
+      await evaluate("document.querySelector('main a[href=\"riscv.html\"]').click()");
+      await until('document.querySelector("h1").textContent === "RISC-V backend"');
+      await send("Emulation.setDeviceMetricsOverride", {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
+    }
     assert.deepEqual(errors, [], "Browser exceptions");
     console.log(JSON.stringify({browser: (await send("Browser.getVersion", {}, null)).product,
       requirements: data.registry.requirements.length, decisions, operations: data.catalog.operations.length,
       mobile: await evaluate('({viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth})'),
-      checks: ["baseline", "LLVM parsing", "parser burndown baselines", "parser modes", "scalar/vector case counts", "individual case permalink", "legacy parser run", "consecutive category sections", "category jump and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence", "interpreter filters", "RISC-V snapshot", "mobile tracker layouts"],
+      checks: ["baseline", "LLVM parsing", "parser burndown baselines", "parser modes", "scalar/vector case counts", "individual case permalink", "legacy parser run", "consecutive category sections", "category jump and reload", "parser run permalink", "input downloads", "inline diagnostics", "parsing filter reload", "focused views", "filter permalink reload", "contract permalink reload", "back/forward", "missing scope", "current plan", "decisions", "filters", "evidence links", "mobile layout", "mobile parser evidence", "interpreter filters", "RISC-V snapshot", "RISC-V collapsible diagnostics and examples", "per-build pages", "mobile tracker layouts"],
       screenshots: screenshots || null}));
   } catch (error) {
     error.message += "\nChromium stderr (tail):\n" + stderr;
