@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "source_revision": "1f1b172e928d01a4dddd6f014b826bb8e5e4d4e1",
-  "recorded_at": "2026-10-30T09:16:37Z",
-  "veir": "d0f3382c6ab7da65df8b285998aca0f88ee1aa17",
+  "source_revision": "ca80111c6db89609a6d929301316ee141679e0d2",
+  "recorded_at": "2026-10-30T14:16:09Z",
+  "veir": "82afbc29a1b2a4a6ab5f9cdfddcad4a4a18884d7",
   "tests": {
     "clean/alloca": {
       "finished": false,
