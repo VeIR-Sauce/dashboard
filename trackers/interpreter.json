@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "source_revision": "b942980436aa3ab9866792f194459873668a0704",
-  "recorded_at": "2026-11-09T20:20:36Z",
-  "veir": "e253470804a6654c1043146b414a266a7c0c0fa1",
+  "source_revision": "e1027e8b58c6ff288bc5fca7818263e034291aa3",
+  "recorded_at": "2026-11-10T10:18:21Z",
+  "veir": "ca6f222320d9e7ece5011f9ec0c5bc7b8fc54d3e",
   "tests": {
     "clean/alloca": {
       "finished": false,
@@ -630,15 +630,15 @@
     "ub/inttoptr_multiobj": {
       "finished": true,
       "agrees": {
-        "llubi": true,
-        "alive-exec": true
+        "llubi": false,
+        "alive-exec": false
       }
     },
     "ub/inttoptr_multiobj2": {
       "finished": true,
       "agrees": {
-        "llubi": true,
-        "alive-exec": true
+        "llubi": false,
+        "alive-exec": false
       }
     },
     "ub/inttoptr_oob": {
